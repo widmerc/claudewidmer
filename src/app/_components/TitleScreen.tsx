@@ -17,24 +17,26 @@ export default function TitleScreen() {
         </div>
   
         {/* Pfeil nach unten */}
-        <div className="absolute bottom-10 left-0 right-0 flex justify-center">
-          <div className="cursor-pointer animate-bounce">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="60"
-              height="60"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="text-white"
-            >
-              <path d="M12 19l-7-7h14z"></path>
-            </svg>
-          </div>
-        </div>
+        <div className="absolute bottom-20 left-0 right-0 flex justify-center">
+  <div className="flex flex-col items-center cursor-pointer animate-bounce text-white">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="60"
+      height="60"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="text-white"
+    >
+      <path d="M12 19l-7-7h14z"></path>
+    </svg>
+    <span className="mb-2 text-lg">scroll down</span>
+
+  </div>
+</div>
       </section>
     );
   }

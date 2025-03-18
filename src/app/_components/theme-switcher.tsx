@@ -1,40 +1,34 @@
 "use client";
 
-import styles from "./switch.module.css";
-import { memo, useEffect, useState } from "react";
+import { useState, useEffect, memo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Moon, Sun } from "lucide-react";
+import styles from './switch.module.css';
+
+const STORAGE_KEY = "nextjs-blog-starter-theme";
+const modes: ("dark" | "light")[] = ["dark", "light"];
 
 declare global {
   var updateDOM: () => void;
 }
 
-type ColorSchemePreference = "dark" | "light"; // Removed "system"
-
-const STORAGE_KEY = "nextjs-blog-starter-theme";
-const modes: ColorSchemePreference[] = ["dark", "light"]; // Only "dark" and "light"
-
-/** to reuse updateDOM function defined inside injected script */
 export const NoFOUCScript = (storageKey: string) => {
-  /* can not use outside constants or function as this script will be injected in a different context */
   const [DARK, LIGHT] = ["dark", "light"];
 
-  /** Modify transition globally to avoid patched transitions */
   const modifyTransition = () => {
     const css = document.createElement("style");
-    css.textContent = "*,*:after,*:before{transition:none !important;}";
+    css.textContent = "*,*:after,*:before{transition:none !important;}"; 
     document.head.appendChild(css);
 
     return () => {
-      /* Force restyle */
       getComputedStyle(document.body);
-      /* Wait for next tick before removing */
       setTimeout(() => document.head.removeChild(css), 1);
     };
   };
 
-  /** function to add/remove dark class */
   window.updateDOM = () => {
     const restoreTransitions = modifyTransition();
-    const mode = localStorage.getItem(storageKey) ?? LIGHT; // Default to "light"
+    const mode = localStorage.getItem(storageKey) ?? LIGHT;
     const classList = document.documentElement.classList;
     if (mode === DARK) classList.add(DARK);
     else classList.remove(DARK);
@@ -44,45 +38,85 @@ export const NoFOUCScript = (storageKey: string) => {
   window.updateDOM();
 };
 
-let updateDOM: () => void;
-
-/**
- * Switch button to quickly toggle user preference.
- */
 const Switch = () => {
-  const [mode, setMode] = useState<ColorSchemePreference>(
+  const [mode, setMode] = useState<"dark" | "light">(
     () =>
       ((typeof localStorage !== "undefined" &&
-        localStorage.getItem(STORAGE_KEY)) ??
-        "light") as ColorSchemePreference // Default to "light" if not set
+        localStorage.getItem(STORAGE_KEY)) ?? 
+        "light") as "dark" | "light"
   );
 
   useEffect(() => {
-    // store global functions to local variables to avoid any interference
-    updateDOM = window.updateDOM;
-    /** Sync the tabs */
-    addEventListener("storage", (e: StorageEvent): void => {
-      e.key === STORAGE_KEY && setMode(e.newValue as ColorSchemePreference);
-    });
+    // Sicherstellen, dass window.updateDOM existiert
+    if (typeof window !== "undefined" && window.updateDOM) {
+      updateDOM = window.updateDOM;
+    }
+
+    const handleStorageChange = (e: StorageEvent): void => {
+      if (e.key === STORAGE_KEY) {
+        setMode(e.newValue as "dark" | "light");
+      }
+    };
+
+    addEventListener("storage", handleStorageChange);
+
+    return () => {
+      removeEventListener("storage", handleStorageChange);
+    };
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, mode);
-    updateDOM();
+    if (typeof window !== "undefined" && window.updateDOM) {
+      localStorage.setItem(STORAGE_KEY, mode);
+      window.updateDOM();
+    }
   }, [mode]);
 
-  /** toggle mode */
   const handleModeSwitch = () => {
     const index = modes.indexOf(mode);
     setMode(modes[(index + 1) % modes.length]);
   };
 
   return (
-    <button
-      suppressHydrationWarning
-      className={styles.switch}
-      onClick={handleModeSwitch}
-    />
+    <div className={styles.container}>
+      <motion.div
+        className={styles.toggle}
+        onClick={handleModeSwitch}
+        layout
+      >
+        <motion.div
+          className={styles.circle}
+          layout
+          initial={{ x: mode === "dark" ? 36 : 2 }}
+          animate={{ x: mode === "dark" ? 36 : 2 }}
+          transition={{ type: "spring", stiffness: 700, damping: 20 }}
+        >
+          <AnimatePresence mode="wait">
+            {mode === "dark" ? (
+              <motion.div
+                key="moon"
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.5 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Moon size={20} className="text-yellow-400" />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="sun"
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.5 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Sun size={20} className="text-yellow-500" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      </motion.div>
+    </div>
   );
 };
 
@@ -94,9 +128,6 @@ const Script = memo(() => (
   />
 ));
 
-/**
- * This component applies classes and transitions.
- */
 export const ThemeSwitcher = () => {
   return (
     <>

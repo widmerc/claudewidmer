@@ -5,18 +5,20 @@ export function Footer() {
   return (
     <footer className="bg-neutral-50 border-t border-neutral-200 dark:bg-slate-800">
       <Container>
-        <div className="py-28 flex flex-col lg:flex-row items-center">
+        <div className="py-10 flex flex-col lg:flex-row items-center">
           <div className="text-center lg:text-left mb-10 lg:mb-0 lg:w-1/2">
-            <p className="text-xl font-bold tracking-tighter leading-tight">
-              Made with ❤️ by Claude Widmer, 2025
+            <p className="text-l tracking-tighter leading-tight">
+              Made with 🩶 by Claude Widmer (2025)
             </p>
           </div>
 
           <div className="flex flex-col lg:flex-row justify-center items-center lg:pl-4 lg:w-1/2">
             {/* LinkedIn Icon */}
             <a
-              href="https://www.linkedin.com/in/claude-widmer/"
+              href="https://www.linkedin.com/in/claude-widmer-a93315251/"
               className="mx-3 text-black hover:text-blue-600 duration-200 transition-colors mb-6 lg:mb-0"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <svg
                 className="w-6 h-6 text-gray-800 dark:text-white"
@@ -38,8 +40,10 @@ export function Footer() {
 
             {/* GitHub Icon */}
             <a
-              href={`https://github.com/vercel/next.js/tree/canary/examples/${EXAMPLE_PATH}`}
+              href={`https://github.com/widmerc`}
               className="mx-3 text-black hover:text-gray-800 duration-200 transition-colors mb-6 lg:mb-0"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <svg
                 className="w-6 h-6 text-gray-800 dark:text-white"

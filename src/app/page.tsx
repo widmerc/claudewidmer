@@ -6,8 +6,8 @@ import { MoreStories } from "@/app/_components/more-stories";
 import { getAllPosts } from "@/lib/api";
 import { useRef } from "react";
 import TitleScreen from "@/app/_components/TitleScreen";
-import { ThemeSwitcher } from "./_components/theme-switcher";
-import AboutMe from "./_components/AboutMe";
+import { ThemeSwitcher } from "@/app/_components/theme-switcher";
+import AboutMe from "@/app/_components/AboutMe";
 
 export default function Index() {
   return (
@@ -16,12 +16,14 @@ export default function Index() {
         <TitleScreen />
       </div>
       <Container>
-      <Intro />
-      <AboutMe />
+        <div className="mt-10"></div>
+        <AboutMe />
+        {/* <ThemeSwitcher /> */}
       </Container>
     </main>
   );
 }
+
 
 
 

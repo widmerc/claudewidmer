@@ -9,13 +9,16 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      screens: {
+        'sm': '500px',
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       colors: {
-        "accent-1": "#FAFAFA",
+        "accent-1": "#c0d896",
         "accent-2": "#EAEAEA",
         "accent-7": "#333",
         success: "#0070f3",
