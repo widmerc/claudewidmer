@@ -33,7 +33,7 @@ const AboutMe: React.FC = () => {
       />
       
       <SkillCard
-        backgroundImage="./img/Qwc2.png"
+        backgroundImage="./img/QWC2.png"
         text="QGisWebClient2"
       />
 
