@@ -6,7 +6,7 @@ const AboutMe: React.FC = () => {
     <div className="flex flex-col items-center justify-start py-4 px-4 bg-gray-10">
 
       {/* Header */}
-      <h1 className="text-2xl font-semibold text-gray-800 dark:text-white mb-3">
+      <h1 className="text-3xl font-semibold text-gray-800 dark:text-white mb-3">
         Über mich
       </h1>
 
@@ -23,13 +23,13 @@ const AboutMe: React.FC = () => {
         backgroundImage="./img/QGIS.png"
         text="QGIS"
       />
+            <SkillCard
+        backgroundImage="./img/PyQGIS.png"
+        text="QGIS Plugins"
+      />
         <SkillCard
         backgroundImage="./img/python.png"
         text="Python"
-      />
-        <SkillCard
-        backgroundImage="./img/nextjs.png"
-        text="Next.js"
       />
       
       <SkillCard
@@ -42,10 +42,11 @@ const AboutMe: React.FC = () => {
         text="QFieldCloud"
       />
 
-      <SkillCard
-        backgroundImage="./img/PyQGIS.png"
-        text="QGIS Plugins"
+    <SkillCard
+        backgroundImage="./img/nextjs.png"
+        text="Next.js"
       />
+
 
           </div>
 

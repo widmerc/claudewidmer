@@ -12,8 +12,8 @@ export function Footer() {
             </p>
           </div>
 
-          <div className="flex flex-col lg:flex-row justify-center items-center lg:pl-4 lg:w-1/2">
-            {/* LinkedIn Icon */}
+          <div className="flex flex-row justify-center items-center lg:pl-4 lg:w-1/2">
+          {/* LinkedIn Icon */}
             <a
               href="https://www.linkedin.com/in/claude-widmer-a93315251/"
               className="mx-3 text-black hover:text-blue-600 duration-200 transition-colors mb-6 lg:mb-0"

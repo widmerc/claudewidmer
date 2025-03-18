@@ -8,6 +8,7 @@ import { useRef } from "react";
 import TitleScreen from "@/app/_components/TitleScreen";
 import { ThemeSwitcher } from "@/app/_components/theme-switcher";
 import AboutMe from "@/app/_components/AboutMe";
+import CV from "@/app/_components/CV";
 
 export default function Index() {
   return (
@@ -19,7 +20,9 @@ export default function Index() {
         <div className="mt-10"></div>
         <AboutMe />
         {/* <ThemeSwitcher /> */}
+      
       </Container>
+      <CV/>
     </main>
   );
 }
