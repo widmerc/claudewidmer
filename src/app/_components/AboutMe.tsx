@@ -3,17 +3,16 @@ import SkillCard from "@/app/_components/SkillCard";
 
 const AboutMe: React.FC = () => {
   return (
-    <div className="flex flex-col items-center justify-start py-4 px-4 bg-gray-10">
+    <div className="max-w-4xl mx-auto p-6 bg-gray-50 dark:bg-gray-900 rounded-lg shadow-lg mt-10 mb-10">
 
       {/* Header */}
-      <h1 className="text-3xl font-semibold text-gray-800 dark:text-white mb-3">
+      <h1 className="text-3xl font-bold text-center mb-6 text-gray-800 dark:text-white">
         Über mich
       </h1>
 
       {/* Content */}
-      <p className="text-base text-gray-700 dark:text-gray-300 max-w-lg text-center mb-12">
-        Diese Webseite ist im Aufbau.
-        Hier werde ich mehr über mich und meine Projekte teilen. Mein Fokus ist:
+      <p className="text-base text-center mb-6 text-gray-800 dark:text-white">
+        Diese Webseite ist im Aufbau.        Hier werde ich mehr über mich und meine Projekte teilen. Mein Fokus ist:
       </p>
 
       {/* Skills Grid */}
