@@ -9,6 +9,7 @@ import TitleScreen from "@/app/_components/TitleScreen";
 import { ThemeSwitcher } from "@/app/_components/theme-switcher";
 import AboutMe from "@/app/_components/AboutMe";
 import CV from "@/app/_components/CV";
+// import MyMap from "@/app/_components/MyMap";
 
 export default function Index() {
   return (
@@ -19,9 +20,9 @@ export default function Index() {
       <Container>
         <div className="mt-10"></div>
         <AboutMe />
+        {/* <MyMap position={[47.3769, 8.5417]} zoom={13} /> Beispiel: Zürich */}
         {/* <ThemeSwitcher /> */}
-      
-      </Container>
+        </Container>
       <CV/>
     </main>
   );
