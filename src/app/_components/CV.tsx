@@ -19,7 +19,6 @@ const convertToImageCoords = (
   return { x, y };
 };
 
-const today = format(new Date(), "MMMM yyyy");
 
 const CV: React.FC = () => {
   const [hoveredLocation, setHoveredLocation] = useState<{ x: number; y: number } | null>(null);
@@ -27,15 +26,30 @@ const CV: React.FC = () => {
 
   const mapRef = useRef<HTMLImageElement | null>(null);
 
-  // Get image dimensions dynamically when it's loaded
-  const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
+// State to hold image dimensions
+const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
 
-  useEffect(() => {
+// Update image dimensions dynamically when loaded and on window resize
+useEffect(() => {
+  const updateImageDimensions = () => {
     if (mapRef.current) {
       const { width, height } = mapRef.current.getBoundingClientRect();
       setImageDimensions({ width, height });
     }
-  }, []);
+  };
+
+  // Initial dimension calculation when component mounts
+  updateImageDimensions();
+
+  // Add event listener for window resize to update dimensions when resizing
+  window.addEventListener("resize", updateImageDimensions);
+
+  // Clean up the event listener on unmount
+  return () => {
+    window.removeEventListener("resize", updateImageDimensions);
+  };
+}, []); // Empty dependency array means it only runs on mount and unmount
+
 
   return (
     <div className="max-w-9xl mx-auto p-6 bg-gray-50 dark:bg-gray-900 rounded-lg shadow-lg mt-10 mb-10">
