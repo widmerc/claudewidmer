@@ -19,7 +19,8 @@ const config: Config = {
       },
       colors: {
         "accent-1": "#c0d896",
-        "accent-2": "#EAEAEA",
+        "accent-2": "#969bd8",
+        "accent-3": "#d89696",
         "accent-7": "#333",
         success: "#0070f3",
         cyan: "#79FFE1",
