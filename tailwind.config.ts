@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import typography from "@tailwindcss/typography"; // ⬅️ importieren
 
 const config: Config = {
   darkMode: "class",
@@ -10,17 +11,16 @@ const config: Config = {
   theme: {
     extend: {
       screens: {
-        'sm': '500px',
+        sm: "500px",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+        "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       colors: {
         "accent-1": "#c0d896",
-        "accent-2": "#969bd8",
-        "accent-3": "#d89696",
+        "accent-2": "#ae96d8",
+        "accent-3": "#9fc35e",
         "accent-7": "#333",
         success: "#0070f3",
         cyan: "#79FFE1",
@@ -43,6 +43,9 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    typography, // ✅ hier hinzufügen
+  ],
 };
+
 export default config;

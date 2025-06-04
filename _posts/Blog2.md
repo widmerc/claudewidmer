@@ -1,19 +1,44 @@
 ---
-title: "Blog 2"
-excerpt: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus."
-coverImage: "/assets/blog/hello-world/cover.jpg"
-date: "2020-03-16T05:35:07.322Z"
+title: "Schulwegsicherheit automatisiert bewerten (Teil 2)"
+excerpt: "Im zweiten Teil zeige ich, wie ich YOLOv11 mit gedrehten Bounding Boxes auf Luftbilder anwende, um Fussgängerstreifen automatisiert zu erkennen – und damit den ersten Schritt zur KI-gestützten Schulwegklassifikation mache."
+coverImage: "/img/Blog1/Title.png"
+
+
+date: "2025-06-01T12:00:00.000Z"
 author:
-  name: Tim Neutkens
-  picture: "/assets/blog/authors/tim.jpeg"
+  name: Claude Widmer
+  picture: "/img/Blog1/Title.png"
 ogImage:
-  url: "/assets/blog/hello-world/cover.jpg"
+  url: "/img/Blog1/Title.png"
+tags: ["Masterarbeit", "YOLO11", "Technisch"]
+
 ---
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus. Praesent elementum facilisis leo vel fringilla. Congue mauris rhoncus aenean vel. Egestas sed tempus urna et pharetra pharetra massa massa ultricies.
+# Schulwegsicherheit automatisiert bewerten (Teil 2)
+(#Masterarbeit #YOLOv11 #Rastermodell #StreetSafety)
 
-Venenatis cras sed felis eget velit. Consectetur libero id faucibus nisl tincidunt. Gravida in fermentum et sollicitudin ac orci phasellus egestas tellus. Volutpat consequat mauris nunc congue nisi vitae. Id aliquet risus feugiat in ante metus dictum at tempor. Sed blandit libero volutpat sed cras. Sed odio morbi quis commodo odio aenean sed adipiscing. Velit euismod in pellentesque massa placerat. Mi bibendum neque egestas congue quisque egestas diam in arcu. Nisi lacus sed viverra tellus in. Nibh cras pulvinar mattis nunc sed. Luctus accumsan tortor posuere ac ut consequat semper viverra. Fringilla ut morbi tincidunt augue interdum velit euismod.
+## KI auf Luftbildern: Fussgängerstreifen automatisch erkennen
 
-## Lorem Ipsum
+Nachdem ich im ersten Teil meine Motivation und den konzeptionellen Rahmen vorgestellt habe, geht es nun ans Eingemachte:  
+Ich habe ein erstes Modell trainiert, das Fussgängerstreifen in Luftbildern automatisch erkennt – auf Basis von **YOLOv11** mit **gedrehten Bounding Boxes (OBB)**.
 
-Tristique senectus et netus et malesuada fames ac turpis. Ridiculous mus mauris vitae ultricies leo integer malesuada nunc vel. In mollis nunc sed id semper. Egestas tellus rutrum tellus pellentesque. Phasellus vestibulum lorem sed risus ultricies tristique nulla. Quis blandit turpis cursus in hac habitasse platea dictumst quisque. Eros donec ac odio tempor orci dapibus ultrices. Aliquam sem et tortor consequat id porta nibh. Adipiscing elit duis tristique sollicitudin nibh sit amet commodo nulla. Diam vulputate ut pharetra sit amet. Ut tellus elementum sagittis vitae et leo. Arcu non odio euismod lacinia at quis risus sed vulputate.
+Das Ziel:  
+> **Automatisierte Erkennung von Fussgängern und anderen Merkmalen auf Luftbildern**
+
+---
+
+## Mein Setting
+Python, eigener PC mit ryzen 7900x und RTX4080 (cuda für YOLO Training), Internetverbindung ;).
+
+
+### Python: Klassenbasiert
+-> ich habe verschiedene Klassen für das Projekt gemacht:
+... 
+...
+...
+...
+
+Danach habe ich mein eigenes "rezeptbuch" gehabt, was alles automatishc macht:
+1. in QGIS Linien zeichnen und als Attribut die Art des Features beschreiben
+2. Die Pyhton Klasse CreateBoundingBox ausführen
+3. ...

@@ -5,6 +5,8 @@ import AboutMe from "@/app/_components/AboutMe";
 import CV from "@/app/_components/CV";
 import TitleScreen from "@/app/_components/TitleScreen";
 import BlogpostSection from "@/app/_components//BlogpostSection";
+import "@/app/globals.css";
+import Navbar from "@/app/_components/Navbar";
 
 
 export default function Index() {
@@ -14,12 +16,13 @@ export default function Index() {
       <div>
       <TitleScreen />
       </div>
+
       <Container>
         <div className="mt-10"></div>
         <AboutMe />
         {/* <ThemeSwitcher /> */}
         {/* <div className="mt-10"></div> */}
-        {/* <BlogpostSection /> */}
+        <BlogpostSection />
         <CV />
       </Container>
     </main>

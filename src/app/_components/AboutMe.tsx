@@ -1,10 +1,12 @@
 import React from "react";
 import SkillCard from "@/app/_components/SkillCard";
 import PageWrapper from "@/app/_components/PageWrapper";
+import Navbar from "@/app/_components/Navbar";
 
 const AboutMe: React.FC = () => {
   return (
-    <PageWrapper>
+<PageWrapper>
+
       <h1 className="text-3xl font-bold text-center mb-6 text-gray-800 dark:text-white">
         Über mich
       </h1>

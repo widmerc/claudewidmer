@@ -1,19 +1,79 @@
 ---
-title: "Blog 1"
-excerpt: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus."
-coverImage: "/assets/blog/dynamic-routing/cover.jpg"
-date: "2024-03-16T05:35:07.322Z"
+title: "Schulwegsicherheit automatisiert bewerten (Teil 1)"
+excerpt: "Wie sicher sind unsere Schulwege wirklich – und wie kann moderne Technologie helfen, das objektiv zu bewerten? In meiner neuen Blog-Serie nehme ich euch mit auf die Reise durch meine Masterarbeit über automatisierte Schulwegsicherheit in Zürich."
+coverImage: "/img/Blog1/Title.png"
+date: "2025-05-20T05:35:07.322Z"
 author:
   name: Claude Widmer
-  picture: "/assets/blog/authors/jj.jpeg"
+  picture: "/img/Blog1/Title.png"
 ogImage:
-  url: "/assets/blog/dynamic-routing/cover.jpg"
+  url: "/img/Blog1/Title.png"
+tags: ["Masterarbeit", "YOLO11", "Technisch"]
+
+---
+## Teil 1: Thema und Motivation
+
+Willkommen zur ersten Ausgabe meiner Blog-Serie zur Masterarbeit. Ich möchte euch hier regelmässig mitnehmen in die verschiedenen Phasen meines Projekts – von der ersten Idee bis zur finalen Umsetzung. Dabei soll der Blog nicht nur mein persönlicher Prozess dokumentieren, sondern auch Fachinteressierten, Stadtplanenden oder einfach neugierigen Leserinnen und Lesern spannende Einblicke geben.
+
+## Thema: Automatisierte Bewertung von Schulwegsicherheit mit Computer Vision
+
+Die Sicherheit von Schulwegen ist ein zentrales Thema in der Stadtentwicklung – nicht nur für Zürich. Wenn Kinder ihren Schulweg alleine bewältigen, müssen sie sich in komplexen Verkehrssituationen orientieren können. Der städtische Raum sollte sie dabei bestmöglich schützen.
+
+Heute existieren in vielen Städten Schulwegkarten – auch Zürich hat solche entwickelt ([hier mehr](https://www.stadt-zuerich.ch/schulen/de/organisation/schulwegsicherheit.html)). Das Problem: Diese basieren meist auf **manuellen Einschätzungen**. Die Bewertungen sind dadurch **zeitintensiv**, **wenig skalierbar** und zum Teil **subjektiv**.
+
+Genau hier setzt meine Masterarbeit an. Ich entwickle ein **automatisiertes Framework**, das auf Basis von **Street-Level-Bildern (Mapillary)**, **OpenStreetMap-Daten** und **Computer-Vision-Technologien** wie **YOLO** (You Only Look Once) sicherheitsrelevante Merkmale automatisch erkennt. Dazu gehören u.a.:
+
+- Fussgängerstreifen  
+- Verkehrsinseln  
+- Ampeln  
+- Schulzonen und Temporeduktionen  
+- Fahrbahnbreite und Sichtverhältnisse 
+- ... 
+
+## Motivation: Warum ist das relevant?
+
+![Kinder im Verkehr Illustration](https://www.tcs.ch/mam/Digital-Media/Images/Illustrations/weblication/wThumbnails/die-strasse-und-ich-fussgaengerstreifen-9514cd287b1cc43g2a3d1ddd6e5be85b.webp)
+*Foto: Illustration TCS Schweiz*
+
+Die Motivation für meine Arbeit ist dreigeteilt:
+
+1. **Gesellschaftlich**: Kinder sollen ihren Schulweg sicher und selbständig zurücklegen können. Nur wenn Wege sicher sind, ist aktive Mobilität im Alltag möglich – mit positiven Folgen für Gesundheit, Umwelt und Stadtklima.
+
+2. **Fachlich**: In der Forschung gibt es zwar zahlreiche Studien zu Schulwegsicherheit oder auch zur Nutzung von Street-Level Imagery in der Stadtplanung – doch die Kombination beider Ansätze wurde bislang kaum gemacht.
+
+3. **Technologisch**: Der Einsatz von Computer Vision in der urbanen Analyse ist ein dynamisches Feld. Die Möglichkeit, damit automatisiert Infrastrukturmerkmale zu erkennen, eröffnet ganz neue Perspektiven für datenbasierte Stadtplanung.
+
+## Mein Workflow: Von der Idee zur Umsetzung
+
+Die Masterarbeit folgt einem klar strukturierten Arbeitsprozess, der mehrere Phasen umfasst:
+
+1. **Datenbeschaffung**  
+   Sammlung und Aufbereitung von Mapillary-Bildern, OSM-Daten und städtischen Geodaten
+
+   
+<iframe width="640" height="320" src="https://www.mapillary.com/embed?map_style=Mapillary%20light&image_key=1453935251611353&x=0.5&y=0.5&style=split" frameborder="0"></iframe>
+*Mapillary ist eine open-source Datenbank für strassenbasierte Bilder*
+
+
+2. **Feature-Erkennung**  
+   Anwendung von Objekterkennungsalgorithmen (z. B. YOLO) auf Street-Level-Bilder zur Identifikation sicherheitsrelevanter Merkmale
+
+3. **Georeferenzierung & Netzwerkmodellierung**  
+   Zuordnung der erkannten Merkmale auf ein GIS-Netzwerk – dabei Abwägung zwischen Vektor- und Rasterdaten
+
+4. **Klassifikation**  
+   Bewertung der Sicherheit mittels Machine Learning (z. B. Entscheidungsbäume, Random Forest oder neuronale Netze)
+
+5. **Validierung**  
+   Abgleich mit offiziellen Schulwegplänen und punktueller Vor-Ort-Kontrolle ausgewählter Routen
+
+6. **Übertragbarkeit**  
+   Diskussion, wie sich das Framework auf andere Städte und Regionen anwenden lässt
+
+## Ausblick
+
+Die kommenden Beiträge dieser Blog-Serie werden jeweils einen dieser Schritte näher beleuchten. Ich werde über technische Herausforderungen schreiben, über ethische Fragen beim Einsatz von KI im öffentlichen Raum und auch über ganz praktische Dinge: Welche Daten waren schwer zu bekommen? Was hat gut funktioniert – und was weniger?
+
 ---
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus. Praesent elementum facilisis leo vel fringilla. Congue mauris rhoncus aenean vel. Egestas sed tempus urna et pharetra pharetra massa massa ultricies.
-
-Venenatis cras sed felis eget velit. Consectetur libero id faucibus nisl tincidunt. Gravida in fermentum et sollicitudin ac orci phasellus egestas tellus. Volutpat consequat mauris nunc congue nisi vitae. Id aliquet risus feugiat in ante metus dictum at tempor. Sed blandit libero volutpat sed cras. Sed odio morbi quis commodo odio aenean sed adipiscing. Velit euismod in pellentesque massa placerat. Mi bibendum neque egestas congue quisque egestas diam in arcu. Nisi lacus sed viverra tellus in. Nibh cras pulvinar mattis nunc sed. Luctus accumsan tortor posuere ac ut consequat semper viverra. Fringilla ut morbi tincidunt augue interdum velit euismod.
-
-## Lorem Ipsum
-
-Tristique senectus et netus et malesuada fames ac turpis. Ridiculous mus mauris vitae ultricies leo integer malesuada nunc vel. In mollis nunc sed id semper. Egestas tellus rutrum tellus pellentesque. Phasellus vestibulum lorem sed risus ultricies tristique nulla. Quis blandit turpis cursus in hac habitasse platea dictumst quisque. Eros donec ac odio tempor orci dapibus ultrices. Aliquam sem et tortor consequat id porta nibh. Adipiscing elit duis tristique sollicitudin nibh sit amet commodo nulla. Diam vulputate ut pharetra sit amet. Ut tellus elementum sagittis vitae et leo. Arcu non odio euismod lacinia at quis risus sed vulputate.
+Bleibt also dran – im nächsten Beitrag geht es um den ersten technischen Ansatz und meine ersten Experimente mit YOLO auf **SWISSIMAGE-Luftbildern** zur Erkennung sicherheitsrelevanter Merkmale aus der Vogelperspektive.
