@@ -1,24 +1,44 @@
-import { remark } from "remark";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkGfm from "remark-gfm";
 import remarkFrontmatter from "remark-frontmatter";
-import remarkGfm from "remark-gfm"; // für Listen, Tabellen, etc.
 import remarkRehype from "remark-rehype";
 import rehypeRaw from "rehype-raw";
 import rehypeStringify from "rehype-stringify";
+import { rehypePrettyCode } from "rehype-pretty-code";
+import { transformerCopyButton } from "@rehype-pretty/transformers";
 import matter from "gray-matter";
 
-export default async function parseMarkdown(markdown: string) {
+type ParsedMarkdown = {
+  html: string;
+  metadata: Record<string, any>;
+};
+
+export default async function parseMarkdown(markdown: string): Promise<ParsedMarkdown> {
   const { content, data } = matter(markdown);
 
-  const result = await remark()
+  const processor = unified()
+    .use(remarkParse)
     .use(remarkFrontmatter, ["yaml"])
-    .use(remarkGfm) // ✅ für Aufzählungen, Checkboxen, Tabellen usw.
+    .use(remarkGfm)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeRaw)
-    .use(rehypeStringify, { allowDangerousHtml: true })
-    .process(content);
+    .use(rehypePrettyCode, {
+      theme: undefined, // Wichtig: verhindert Einbindung des Theme-CSS
+      keepBackground: false,
+      transformers: [
+        transformerCopyButton({
+          visibility: "always",
+          feedbackDuration: 2000,
+        }),
+      ],
+    })
+    .use(rehypeStringify);
+
+  const html = (await processor.process(content)).toString();
 
   return {
-    html: result.toString(),
+    html,
     metadata: data,
   };
 }

@@ -31,7 +31,6 @@ type CVMapProps = {
   setHoveredId: (id: string | null) => void;
 };
 
-// Dauer formatieren
 const formatDuration = (start: Date, end: Date = new Date()) => {
   const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
   const years = Math.floor(months / 12);
@@ -41,7 +40,6 @@ const formatDuration = (start: Date, end: Date = new Date()) => {
   return [yearStr, monthStr].filter(Boolean).join(', ');
 };
 
-// Lebenslauf-Einträge
 const entries: Entry[] = [
   {
     id: 'edu-1',
@@ -113,13 +111,34 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
   const handleHover = (id: string, position: [number, number]) => {
     Object.values(markerRefs.current).forEach((marker) => marker.closeTooltip());
     setHoveredId(id);
-    mapRef.current?.flyTo(position, 18, { duration: 2 });
+
+    const isMobile = window.innerWidth < 768;
+    const zoomLevel = isMobile ? 16 : 18;
+
+    mapRef.current?.flyTo(position, zoomLevel, { duration: 2 });
     markerRefs.current[id]?.openTooltip();
     resetFlyTimeout();
   };
 
   useEffect(() => {
     resetFlyTimeout();
+
+    if (window.innerWidth < 768) {
+      let currentIndex = 0;
+      const flyInterval = setInterval(() => {
+        const next = entries[currentIndex];
+        if (next) {
+          handleHover(next.id, next.position);
+          currentIndex = (currentIndex + 1) % entries.length;
+        }
+      }, 8000);
+
+      return () => {
+        clearInterval(flyInterval);
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      };
+    }
+
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
@@ -129,7 +148,7 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
     <div>
       <h1 className="text-3xl font-bold text-center mb-6 text-gray-800 dark:text-white">Lebenslauf</h1>
 
-      <div className="w-full h-[500px] rounded overflow-hidden mb-10 z-0 shadow-lg border-2 border-gray-200 dark:border-gray-700">
+      <div className="w-full h-[300px] md:h-[500px] rounded overflow-hidden mb-10 z-0 shadow-lg border-2 border-gray-200 dark:border-gray-700">
         <MapContainer
           center={defaultPosition}
           zoom={8}
@@ -151,7 +170,7 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
           />
 
           {entries.map((entry) => {
-            const color = entry.type === 'education' ? 'deepskyblue' : 'limegreen';
+            const color = entry.type === 'education' ? '#ae96d8' : '#9fc35e';
             const size = hoveredId === entry.id ? 20 : 14;
 
             return (
@@ -194,14 +213,13 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
         </MapContainer>
       </div>
 
-      {/* Bildung und Erfahrung nebeneinander */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-6">
           <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">🎓 Bildung</h2>
           {entries.filter(e => e.type === 'education').map((entry) => (
             <motion.div
               key={entry.id}
-              className="p-4 rounded-lg shadow-md transition border-2 cursor-pointer border-blue-400 hover:bg-blue-50 dark:border-blue-600"
+              className="p-4 rounded-lg shadow-md transition border-2 cursor-pointer border-accent-2 hover:bg-blue-50 dark:border-blue-600"
               onMouseEnter={() => handleHover(entry.id, entry.position)}
               onMouseLeave={() => setHoveredId(null)}
               initial={{ opacity: 0, y: 20 }}
@@ -230,7 +248,7 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
           {entries.filter(e => e.type === 'experience').map((entry) => (
             <motion.div
               key={entry.id}
-              className="p-4 rounded-lg shadow-md transition border-2 cursor-pointer border-green-300 hover:bg-green-50 dark:border-green-600"
+              className="p-4 rounded-lg shadow-md transition border-2 cursor-pointer border-accent-3 hover:bg-green-50 dark:border-green-600"
               onMouseEnter={() => handleHover(entry.id, entry.position)}
               onMouseLeave={() => setHoveredId(null)}
               initial={{ opacity: 0, y: 20 }}
@@ -257,4 +275,3 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
     </div>
   );
 }
-

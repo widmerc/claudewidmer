@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* === Markdown-Tabelle stylen === */
+/* === Markdown Tabellen === */
 .prose table {
   @apply w-full border border-gray-300 text-sm;
 }
@@ -20,7 +20,7 @@
   @apply bg-gray-50 dark:bg-gray-900;
 }
 
-/* === Aufzählungen stylen === */
+/* === Listen === */
 .prose ul {
   @apply list-disc pl-6 text-base text-gray-800 dark:text-gray-200;
 }
@@ -31,4 +31,7 @@
 
 .prose li {
   @apply mb-1;
+}
+.prose li::marker {
+  @apply text-gray-600 dark:text-gray-400;
 }

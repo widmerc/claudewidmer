@@ -72,11 +72,34 @@ Das bringt Bewegung rein, ohne unruhig zu wirken.
 **Technisch** besteht der Aufbau aus einem `MapContainer`, einem `TileLayer` (z. B. von CartoDB), und einem dynamischen `Marker`-Array, das mithilfe von `map()` aus den `entries` erzeugt wird.  
 Jeder `Marker` wird mit einem eindeutigen `key`, einem `position`-Array und einem individuell gestylten `icon` versehen. Zusätzlich sind `eventHandlers` für `mouseover` und `mouseout` eingebunden – damit der Tooltip erscheint und das automatische `flyTo` ausgelöst wird. Auch habe ich eingebaut, dass nach einer gewissen Zeit die Karte wieder an ihren Ursprungsort zurückgesetzt wird.
 
+Darüber hinaus habe ich folgendes speziell für mobile Geräte umgesetzt:
+
+- 📱 **Autoplay-Funktion auf Mobile**: Da auf Mobilgeräten kein `hover` möglich ist, fliegt die Karte automatisch im Intervall von Ort zu Ort und zeigt den jeweiligen Tooltip an.
+- 📏 **Angepasste Kartenhöhe**: Die Kartenhöhe wurde für kleinere Bildschirme reduziert (z. B. 300px statt 500px), um Platz zu sparen und ein besseres Layout zu ermöglichen.
+- 🔍 **Erhöhter Zoom auf Mobile**: Beim automatischen oder manuellen Fokussieren auf einen Marker wird auf Mobilgeräten eine höhere Zoomstufe verwendet (z. B. `19` statt `18`), um trotz kleinerem Bildschirm mehr Details anzuzeigen.
+
 ---
 
 ### 🧩 Schematischer Aufbau
 
 ```tsx
+
+
+const entries = [
+  {
+    id: 'edu-1',
+    label: 'Universität Zürich – MSc Geoinformation',
+    position: [47.3965, 8.5494],
+    type: 'education',
+    title: 'Master of Science - MS, Geografische Informationswissenschaft',
+    details: 'GIS, R, Python, QGIS, Statistik, Leaflet, Machine Learning',
+    start: new Date(2023, 7),
+    end: null
+  },
+  // weitere Einträge …
+];
+
+
 <MapContainer center={[46.8, 8.3]} zoom={8} ...>
   <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
 
