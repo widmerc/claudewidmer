@@ -8,7 +8,7 @@ author:
   picture: "/img/Blog1/Title.png"
 ogImage:
   url: "/img/Blog1/Title.png"
-tags: ["Masterarbeit", "YOLO11", "Technisch"]
+tags: ["Masterarbeit"]
 
 ---
 ## Teil 1: Thema und Motivation
@@ -51,7 +51,13 @@ Die Masterarbeit folgt einem klar strukturierten Arbeitsprozess, der mehrere Pha
    Sammlung und Aufbereitung von Mapillary-Bildern, OSM-Daten und städtischen Geodaten
 
    
-<iframe width="640" height="320" src="https://www.mapillary.com/embed?map_style=Mapillary%20light&image_key=1453935251611353&x=0.5&y=0.5&style=split" frameborder="0"></iframe>
+<div class="responsive-iframe">
+  <iframe
+    src="https://www.mapillary.com/embed?map_style=Mapillary%20light&image_key=1453935251611353&x=0.5&y=0.5&style=split"
+    allowfullscreen
+  ></iframe>
+</div>
+
 *Mapillary ist eine open-source Datenbank für strassenbasierte Bilder*
 
 

@@ -8,7 +8,7 @@ author:
   picture: "/img/Blog1/Title.png"
 ogImage:
   url: "/img/Blog1/Title.png"
-tags: ["Masterarbeit", "YOLO11", "Technisch"]
+tags: ["Masterarbeit"]
 
 ---
 

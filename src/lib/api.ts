@@ -41,9 +41,34 @@ export async function getAdjacentPosts(slug: string): Promise<{
   next: Post | null;
 }> {
   const posts = await getAllPosts();
-  const index = posts.findIndex((p) => p.slug === slug);
-  return {
-    prev: index < posts.length - 1 ? posts[index + 1] : null,
-    next: index > 0 ? posts[index - 1] : null,
-  };
+  const currentIndex = posts.findIndex((p) => p.slug === slug);
+  if (currentIndex === -1) return { prev: null, next: null };
+
+  const currentPost = posts[currentIndex];
+  const currentTags = new Set(currentPost.tags ?? []);
+
+  function hasCommonTag(post: Post): boolean {
+    return (post.tags ?? []).some((tag) => currentTags.has(tag));
+  }
+
+  let prev: Post | null = null;
+  let next: Post | null = null;
+
+  // Suche nach vorherigem passenden Post
+  for (let i = currentIndex + 1; i < posts.length; i++) {
+    if (hasCommonTag(posts[i])) {
+      prev = posts[i];
+      break;
+    }
+  }
+
+  // Suche nach nächstem passenden Post
+  for (let i = currentIndex - 1; i >= 0; i--) {
+    if (hasCommonTag(posts[i])) {
+      next = posts[i];
+      break;
+    }
+  }
+
+  return { prev, next };
 }

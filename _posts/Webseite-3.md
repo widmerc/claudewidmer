@@ -8,7 +8,7 @@ author:
   picture: "/img/Webseite-3/Titelbild.png"
 ogImage:
   url: "/img/Webseite-3/Titelbild.png"
-tags: ["Webseite", "Komponenten", "React", "Tailwind"]
+tags: ["Webseite"]
 ---
 
 # 🙋‍♂️ Webseite Teil 3 – About Me & Skills

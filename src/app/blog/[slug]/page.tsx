@@ -58,29 +58,36 @@ export default async function PostPage({ params }: Props) {
 
         <PageWrapper>
           <PostBody content={html} />
-          <div className="mt-16 flex justify-between gap-4 flex-wrap">
-            {next ? (
-              <a
-                href={`/blog/${next.slug}`}
-                className="p-4 rounded-lg shadow-md transition border-2 cursor-pointer border-accent-2 hover:bg-green-50 dark:border-green-600 dark:hover:bg-green-800 font-bold dark:text-green-300 w-full sm:w-auto"
-              >
-                ← {next.title}
-              </a>
-            ) : (
-              <div className="w-full sm:w-auto" />
-            )}
+<div className="mt-16">
+  <div className="flex flex-col sm:flex-row justify-between gap-4">
+    {next ? (
+      <a
+        href={`/blog/${next.slug}`}
+        className="group flex-1 sm:flex-none sm:w-1/2 p-4 border rounded-2xl shadow hover:shadow-md transition bg-white dark:bg-zinc-900 border-accent-3 hover:bg-accent-3/10 dark:hover:bg-accent-3/20"
+      >
+        <span className="block text-sm text-zinc-500 dark:text-zinc-400 mb-1">Vorheriger Beitrag</span>
+        <span className="block font-semibold text-accent-3 dark:text-accent-3 mb-2">← {next.title}</span>
+      </a>
+    ) : (
+      <div className="hidden sm:block sm:w-1/2" />
+    )}
 
-            {prev ? (
-              <a
-                href={`/blog/${prev.slug}`}
-                className="p-4 rounded-lg shadow-md transition border-2 cursor-pointer border-accent-1 hover:bg-green-50 dark:border-green-600 dark:hover:bg-green-800 dark:text-green-300 font-bold w-full sm:w-auto text-right"
-              >
-                {prev.title} →
-              </a>
-            ) : (
-              <div className="w-full sm:w-auto" />
-            )}
-          </div>
+    {prev ? (
+      <a
+        href={`/blog/${prev.slug}`}
+        className="group flex-1 sm:flex-none sm:w-1/2 p-4 border rounded-2xl shadow hover:shadow-md transition bg-white dark:bg-zinc-900 border-accent-3 hover:bg-accent-3/10 dark:hover:bg-accent-3/20 text-right"
+
+      >
+        <span className="block text-sm text-zinc-500 dark:text-zinc-400 mb-1">Nächster Beitrag</span>
+        <span className="block font-semibold text-accent-3 dark:text-accent-3 mb-2">{prev.title} →</span>
+      </a>
+    ) : (
+      <div className="hidden sm:block sm:w-1/2" />
+    )}
+  </div>
+</div>
+
+
         </PageWrapper>
       </Container>
     </main>

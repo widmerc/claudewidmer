@@ -8,7 +8,7 @@ author:
   picture: "/img/Webseite-4/Titelbild.png"
 ogImage:
   url: "/img/Webseite-4/Titelbild.png"
-tags: ["Webseite", "GIS", "Leaflet", "React", "CV"]
+tags: ["Webseite"]
 ---
 
 # 🗺️ Webseite Teil 4 – Mein Lebenslauf mit interaktiver Karte

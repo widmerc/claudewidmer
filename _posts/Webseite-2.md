@@ -8,7 +8,7 @@ author:
   picture: "/img/Webseite-2/Titelbild.png"
 ogImage:
   url: "/img/Webseite-2/Titelbild.png"
-tags: ["Webseite", "Next.js", "Komponenten"]
+tags: ["Webseite"]
 ---
 
 # 🌄 Webseite Teil 2 – Der Einstieg: Die Titelseite

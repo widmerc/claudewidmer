@@ -35,3 +35,29 @@
 .prose li::marker {
   @apply text-gray-600 dark:text-gray-400;
 }
+
+
+.markdown-body img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.5em auto;
+}
+
+.markdown-body .responsive-iframe {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+  margin: 1.5em 0;
+}
+
+.markdown-body .responsive-iframe iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}

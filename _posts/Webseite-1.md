@@ -8,7 +8,7 @@ author:
   picture: "/img/Webseite-1/Titelbild.png"
 ogImage:
   url: "/img/Webseite-1/Titelbild.png"
-tags: ["Webseite", "Next.js"]
+tags: ["Webseite"]
 ---
 
 # 🚀 Wie ich meine persönliche Webseite aufgebaut habe
