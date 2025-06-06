@@ -1,7 +1,7 @@
 // import { useState } from "react";
 import Container from "@/app/_components/container";
 import { ThemeSwitcher } from "@/app/_components/theme-switcher";
-import AboutMe from "@/app/_components/AboutMe";
+import AboutMe from "@/app/_components/AboutMeShort";
 import CV from "@/app/_components/CV";
 import TitleScreen from "@/app/_components/TitleScreen";
 import BlogpostSection from "@/app/_components//BlogpostSection";

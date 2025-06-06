@@ -146,8 +146,10 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-center mb-6 text-gray-800 dark:text-white">Lebenslauf</h1>
-
+      <h1 className="text-3xl font-bold text-center text-gray-800 dark:text-white">Mein Lebenslauf</h1>
+      <h2 className="text-xl font-small text-center text-gray-800 dark:text-white mb-4">
+        Visuell dargestellt
+      </h2>
       <div className="w-full h-[300px] md:h-[500px] rounded overflow-hidden mb-10 z-0 shadow-lg border-2 border-gray-200 dark:border-gray-700">
         <MapContainer
           center={defaultPosition}
@@ -220,8 +222,15 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
             <motion.div
               key={entry.id}
               className="p-4 rounded-lg shadow-md transition border-2 cursor-pointer border-accent-2 hover:bg-blue-50 dark:border-blue-600"
-              onMouseEnter={() => handleHover(entry.id, entry.position)}
-              onMouseLeave={() => setHoveredId(null)}
+              onMouseEnter={() => {
+                if (timeoutRef.current) clearTimeout(timeoutRef.current);
+                timeoutRef.current = setTimeout(() => {
+                  handleHover(entry.id, entry.position);
+                }, 500);
+              }} onMouseLeave={() => {
+                if (timeoutRef.current) clearTimeout(timeoutRef.current);
+                setHoveredId(null);
+              }}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
