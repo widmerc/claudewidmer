@@ -32,12 +32,11 @@ export default async function PostPage({ params }: Props) {
 
 
       <Container>
-              <Navbar />
-        <PageWrapper>
-          <h1 className="text-3xl font-bold text-center mb-4 text-gray-800 dark:text-white">
+        <PageWrapper className="text-left">
+          <h1 className="text-3xl font-bold mb-4 text-gray-800 dark:text-white mt-8">
             {title}
           </h1>
-          <p className="text-sm text-center text-gray-600 dark:text-gray-300 mb-6">
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
             {new Date(date).toLocaleDateString("de-CH", {
               day: "2-digit",
               month: "2-digit",
@@ -56,7 +55,7 @@ export default async function PostPage({ params }: Props) {
           )}
         </PageWrapper>
 
-        <PageWrapper>
+        <PageWrapper className="text-left">
           <PostBody content={html} />
 <div className="mt-16">
   <div className="flex flex-col sm:flex-row justify-between gap-4">

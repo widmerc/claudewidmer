@@ -92,10 +92,6 @@ export default function SkillSpiderChart() {
 
   return (
     <PageWrapper>
-      <h1 className="text-3xl font-bold text-center text-gray-800 dark:text-white">Meine Fähigkeiten</h1>
-      <h2 className="text-xl font-small text-center text-gray-800 dark:text-white mb-4">
-        nach Kategorie filterbar
-      </h2>
 
       <div className="w-full max-w-6xl mx-auto p-2">
         <div className="flex justify-center gap-2 mb-6 flex-wrap">

@@ -3,9 +3,9 @@
 import React from "react";
 import SkillRadar from "@/app/_components/SkillRadar";
 import PageWrapper from "@/app/_components/PageWrapper";
-import Navbar from "@/app/_components/Navbar";
-import Container from "@/app/_components/container";
 import CV from "@/app/_components/CV";
+import { SectionSeparator } from "@/app/_components/section-separator";
+import FadeInOnScroll from "@/app/_components/FadeInOnScroll";
 
 const About: React.FC = () => {
   const birthDate = new Date(2001, 5, 2); // 2. Juni 2001
@@ -16,17 +16,18 @@ const About: React.FC = () => {
     (now < new Date(now.getFullYear(), birthDate.getMonth(), birthDate.getDate()) ? 1 : 0);
 
   return (
-    <Container>
-      <Navbar />
-      <PageWrapper>
+    <>
+      <FadeInOnScroll>
+        <SectionSeparator text="👋 Über mich" />
+      </FadeInOnScroll>
+
+      <FadeInOnScroll>
         <section className="max-w-3xl mx-auto text-center mb-6">
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-2">👋 Über mich</h2>
           <p className="text-md text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
             Ich bin {age} Jahre alt, begeistere mich für Geoinformatik, räumliche Datenanalyse und moderne Webtechnologien.
             Mit Erfahrung aus Studium, Beruf und Freizeit entwickle ich datengetriebene Lösungen mit GIS, Python, R und Webtechnologien.
             Unten seht ihr eine Auswahl meiner Fähigkeiten, meines bisherigen Werdegangs sowie Stationen aus Studium, Beruf und Freizeit – interaktiv und visuell aufbereitet.
           </p>
-
           <div className="flex justify-center gap-4 mt-4">
             {/* LinkedIn */}
             <a
@@ -55,7 +56,7 @@ const About: React.FC = () => {
 
             {/* GitHub */}
             <a
-              href="https://github.com/claudewidmer" // <-- anpassen falls nötig
+              href="https://github.com/claudewidmer"
               className="mx-3 text-black hover:text-gray-800 dark:hover:text-white duration-200 transition-colors"
               target="_blank"
               rel="noopener noreferrer"
@@ -75,11 +76,26 @@ const About: React.FC = () => {
             </a>
           </div>
         </section>
-      </PageWrapper>
+      </FadeInOnScroll>
 
-      <SkillRadar />
-      <CV />
-    </Container>
+      <FadeInOnScroll>
+        <SectionSeparator text="🛠️ Meine Fähigkeiten" />
+      </FadeInOnScroll>
+      <FadeInOnScroll>
+        <div className="flex justify-center w-full">
+          <div className="max-w-4xl w-full">
+            <SkillRadar />
+          </div>
+        </div>
+      </FadeInOnScroll>
+
+      <FadeInOnScroll>
+        <SectionSeparator text="Lebenslauf" />
+      </FadeInOnScroll>
+      <FadeInOnScroll>
+        <CV />
+      </FadeInOnScroll>
+   </>
   );
 };
 

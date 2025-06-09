@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, Tooltip } from 'react-leaflet';
@@ -94,6 +94,7 @@ const entries: Entry[] = [
 ];
 
 export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
+  const [mounted, setMounted] = useState(false);
   const mapRef = useRef<LeafletMap | null>(null);
   const markerRefs = useRef<Record<string, L.Marker>>({});
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -109,6 +110,7 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
   };
 
   const handleHover = (id: string, position: [number, number]) => {
+    if (typeof window === 'undefined') return;
     Object.values(markerRefs.current).forEach((marker) => marker.closeTooltip());
     setHoveredId(id);
 
@@ -121,9 +123,14 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
   };
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     resetFlyTimeout();
 
-    if (window.innerWidth < 768) {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
       let currentIndex = 0;
       const flyInterval = setInterval(() => {
         const next = entries[currentIndex];
@@ -142,11 +149,12 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, []);
+  }, [mounted]);
+
+  if (!mounted) return null;
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-center text-gray-800 dark:text-white">Mein Lebenslauf</h1>
       <h2 className="text-xl font-small text-center text-gray-800 dark:text-white mb-4">
         Visuell dargestellt
       </h2>

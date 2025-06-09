@@ -6,14 +6,13 @@ export default async function BlogpostSection() {
   const posts = await getAllPosts();
 
   return (
-    <PageWrapper>
-      <h1 className="text-3xl font-bold text-center mb-6 text-gray-800 dark:text-white">
-        Blogposts
-      </h1>
-      <p className="text-base text-center mb-6 text-gray-800 dark:text-white">
-        Hier findest du eine Übersicht meiner Blogposts:
-      </p>
-      <PostList posts={posts} />
-    </PageWrapper>
+    <section>
+        <PageWrapper>
+        <p className="text-lg text-gray-700 dark:text-gray-300 mb-12 max-w-2xl mx-auto">
+          Hier findest du eine Übersicht meiner Beiträge zu GIS, Daten, Programmierung & Webtechnologien.
+        </p>
+        <PostList posts={posts} />
+      </PageWrapper>
+    </section>
   );
-}
+};

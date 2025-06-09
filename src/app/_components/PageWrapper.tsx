@@ -7,7 +7,9 @@ type PageWrapperProps = {
 
 const PageWrapper: React.FC<PageWrapperProps> = ({ children, className = '' }) => {
   return (
-<section className={`max-w-[1600px] mx-auto mb-3 px-4 py-5 bg-gray-50 dark:bg-gray-900 backdrop-blur border border-white/20 dark:border-white/10 shadow-lg rounded-xl  ${className}`}>
+    <section
+      className={`max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8 mb-12 ${className || 'text-center'}`}
+    >
       {children}
     </section>
   );

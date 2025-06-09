@@ -3,68 +3,23 @@ import { EXAMPLE_PATH } from "@/lib/constants";
 
 export function Footer() {
   return (
-    <footer className="bg-neutral-50 border-t border-neutral-200 dark:bg-slate-800">
-      <Container>
-        <div className="py-10 flex flex-col lg:flex-row items-center">
-          <div className="text-center lg:text-left mb-10 lg:mb-0 lg:w-1/2">
-            <p className="text-l tracking-tighter leading-tight">
-              Made with 🩶 by Claude Widmer (2025)
-            </p>
+        <footer className="bg-gray-100 dark:bg-gray-900 mt-20 py-12 border-t border-gray-200 dark:border-gray-700">
+          <div className="max-w-5xl mx-auto px-4 flex flex-col items-center text-center gap-4">
+            <p className="text-sm">Made with ❤️ by Claude Widmer</p>
+            <div className="flex gap-4">
+                <a href="https://www.linkedin.com/in/claude-widmer-a93315251/" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500" aria-label="LinkedIn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="inline-block" viewBox="0 0 24 24">
+                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.268c-.966 0-1.75-.784-1.75-1.75s.784-1.75 1.75-1.75 1.75.784 1.75 1.75-.784 1.75-1.75 1.75zm15.5 11.268h-3v-5.604c0-1.337-.026-3.063-1.868-3.063-1.869 0-2.156 1.459-2.156 2.967v5.7h-3v-10h2.881v1.367h.041c.401-.761 1.381-1.563 2.844-1.563 3.043 0 3.604 2.004 3.604 4.609v5.587z"/>
+                </svg>
+                </a>
+                <a href="https://github.com/widmerc" target="_blank" rel="noopener noreferrer" className="hover:text-gray-700" aria-label="GitHub">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="inline-block" viewBox="0 0 24 24">
+                  <path d="M12 0c-6.627 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.84 1.236 1.84 1.236 1.07 1.834 2.809 1.304 3.495.997.108-.775.418-1.305.762-1.605-2.665-.305-5.466-1.334-5.466-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.523.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.553 3.297-1.23 3.297-1.23.653 1.653.242 2.873.118 3.176.77.84 1.235 1.91 1.235 3.221 0 4.609-2.803 5.624-5.475 5.921.43.371.823 1.102.823 2.222v3.293c0 .322.218.694.825.576 4.765-1.589 8.2-6.085 8.2-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                </a>
+            </div>
           </div>
-
-          <div className="flex flex-row justify-center items-center lg:pl-4 lg:w-1/2">
-          {/* LinkedIn Icon */}
-            <a
-              href="https://www.linkedin.com/in/claude-widmer-a93315251/"
-              className="mx-3 text-black hover:text-blue-600 duration-200 transition-colors mb-6 lg:mb-0"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <svg
-                className="w-6 h-6 text-gray-800 dark:text-white"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M12.51 8.796v1.697a3.738 3.738 0 0 1 3.288-1.684c3.455 0 4.202 2.16 4.202 4.97V19.5h-3.2v-5.072c0-1.21-.244-2.766-2.128-2.766-1.827 0-2.139 1.317-2.139 2.676V19.5h-3.19V8.796h3.168ZM7.2 6.106a1.61 1.61 0 0 1-.988 1.483 1.595 1.595 0 0 1-1.743-.348A1.607 1.607 0 0 1 5.6 4.5a1.601 1.601 0 0 1 1.6 1.606Z"
-                  clipRule="evenodd"
-                />
-                <path d="M7.2 8.809H4V19.5h3.2V8.809Z" />
-              </svg>
-            </a>
-
-            {/* GitHub Icon */}
-            <a
-              href={`https://github.com/widmerc`}
-              className="mx-3 text-black hover:text-gray-800 duration-200 transition-colors mb-6 lg:mb-0"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <svg
-                className="w-6 h-6 text-gray-800 dark:text-white"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M12.006 2a9.847 9.847 0 0 0-6.484 2.44 10.32 10.32 0 0 0-3.393 6.17 10.48 10.48 0 0 0 1.317 6.955 10.045 10.045 0 0 0 5.4 4.418c.504.095.683-.223.683-.494 0-.245-.01-1.052-.014-1.908-2.78.62-3.366-1.21-3.366-1.21a2.711 2.711 0 0 0-1.11-1.5c-.907-.637.07-.621.07-.621.317.044.62.163.885.346.266.183.487.426.647.71.135.253.318.476.538.655a2.079 2.079 0 0 0 2.37.196c.045-.52.27-1.006.635-1.37-2.219-.259-4.554-1.138-4.554-5.07a4.022 4.022 0 0 1 1.031-2.75 3.77 3.77 0 0 1 .096-2.713s.839-.275 2.749 1.05a9.26 9.26 0 0 1 5.004 0c1.906-1.325 2.74-1.05 2.74-1.05.37.858.406 1.828.101 2.713a4.017 4.017 0 0 1 1.029 2.75c0 3.939-2.339 4.805-4.564 5.058a2.471 2.471 0 0 1 .679 1.897c0 1.372-.012 2.477-.012 2.814 0 .272.18.592.687.492a10.05 10.05 0 0 0 5.388-4.421 10.473 10.473 0 0 0 1.313-6.948 10.32 10.32 0 0 0-3.39-6.165A9.847 9.847 0 0 0 12.007 2Z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </a>
-          </div>
-        </div>
-      </Container>
-    </footer>
+        </footer>
   );
 }
 
