@@ -20,6 +20,7 @@ export default function Index() {
       <Container>
         <div className="mt-10"></div>
         <AboutMe />
+         {/* TODO: 2x3 zu 1x6 machen für handy */}
         {/* <ThemeSwitcher /> */}
         {/* <div className="mt-10"></div> */}
         <BlogpostSection />

@@ -57,9 +57,16 @@ export default function RootLayout({
         <meta name="theme-color" content="#000" />
         <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
       </head>
-      <body
-        className={cn(inter.className, "dark:bg-slate-900 dark:text-slate-400")}
-      >
+<body
+  className={cn(
+    inter.className,
+    "text-gray-800 dark:text-slate-400",
+    "bg-gradient-to-br from-gray-100 to-white",
+    "dark:bg-gradient-to-br dark:from-slate-900 dark:to-slate-800"
+  )}
+>
+
+
         <div className="min-h-screen">{children}</div>
         <Footer />
       </body>

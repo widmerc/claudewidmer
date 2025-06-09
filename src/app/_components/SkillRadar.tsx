@@ -137,18 +137,18 @@ export default function SkillSpiderChart() {
 
           <div className="w-full lg:w-1/2 text-gray-800 dark:text-white text-sm sm:text-base lg:text-lg leading-relaxed">
 <AnimatePresence mode="wait">
-  <motion.p
+  <motion.div
     key={selectedCategory}
     initial={{ opacity: 0, y: 10 }}
     animate={{ opacity: 1, y: 0 }}
     exit={{ opacity: 0, y: -10 }}
     transition={{ duration: 0.4, ease: 'easeOut' }}
   >
-            <h3 className="text-lg font-semibold mb-2">Beschreibung ({selectedCategory})</h3>
-
-    {descriptions[selectedCategory]}
-  </motion.p>
-</AnimatePresence>          </div>
+    <h3 className="text-lg font-semibold mb-2">Beschreibung ({selectedCategory})</h3>
+    <p>{descriptions[selectedCategory]}</p>
+  </motion.div>
+</AnimatePresence>
+          </div>
         </div>
       </div>
     </PageWrapper>
