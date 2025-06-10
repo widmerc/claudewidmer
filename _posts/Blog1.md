@@ -17,7 +17,7 @@ Willkommen zur ersten Ausgabe meiner Blog-Serie zur Masterarbeit. Ich möchte eu
 
 ## Thema: Automatisierte Bewertung von Schulwegsicherheit mit Computer Vision
 
-Die Sicherheit von Schulwegen ist ein zentrales Thema in der Stadtentwicklung – nicht nur für Zürich. Wenn Kinder ihren Schulweg alleine bewältigen, müssen sie sich in komplexen Verkehrssituationen orientieren können. Der städtische Raum sollte sie dabei bestmöglich schützen.
+Die Sicherheit von Schulwegen ist ein zentrales Thema – nicht nur für Zürich. Wenn Kinder ihren Schulweg alleine bewältigen, müssen sie sich in komplexen Verkehrssituationen orientieren können. Der städtische Raum sollte sie dabei bestmöglich schützen.
 
 Heute existieren in vielen Städten Schulwegkarten – auch Zürich hat solche entwickelt ([hier mehr](https://www.stadt-zuerich.ch/schulen/de/organisation/schulwegsicherheit.html)). Das Problem: Diese basieren meist auf **manuellen Einschätzungen**. Die Bewertungen sind dadurch **zeitintensiv**, **wenig skalierbar** und zum Teil **subjektiv**.
 
@@ -65,7 +65,7 @@ Die Masterarbeit folgt einem klar strukturierten Arbeitsprozess, der mehrere Pha
    Anwendung von Objekterkennungsalgorithmen (z. B. YOLO) auf Street-Level-Bilder zur Identifikation sicherheitsrelevanter Merkmale
 
 3. **Georeferenzierung & Netzwerkmodellierung**  
-   Zuordnung der erkannten Merkmale auf ein GIS-Netzwerk – dabei Abwägung zwischen Vektor- und Rasterdaten
+   Zuordnung der erkannten Merkmale auf ein GIS-Netzwerk/GIS-Karte – dabei Abwägung zwischen Vektor- und Rasterdaten
 
 4. **Klassifikation**  
    Bewertung der Sicherheit mittels Machine Learning (z. B. Entscheidungsbäume, Random Forest oder neuronale Netze)
@@ -75,6 +75,9 @@ Die Masterarbeit folgt einem klar strukturierten Arbeitsprozess, der mehrere Pha
 
 6. **Übertragbarkeit**  
    Diskussion, wie sich das Framework auf andere Städte und Regionen anwenden lässt
+
+7. **Visualisierung**
+   Eine visuell schöne Darstellung der Karte und einen möglichen Routenmechanismus
 
 ## Ausblick
 
