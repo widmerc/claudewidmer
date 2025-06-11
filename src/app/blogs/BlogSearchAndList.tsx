@@ -1,7 +1,7 @@
 "use client";
 import FadeInOnScroll from "@/app/_components/FadeInOnScroll";
 import { SectionSeparator } from "@/app/_components/section-separator";
-import HorizontalPostSlider from "@/app/_components/HorizontalPostSlider";
+import PostList from "@/app/_components/PostList";
 import { useState } from "react";
 
 export default function BlogSearchAndList({ allTags, tagMap, featuredPosts = [], featuredTag = "" }: { allTags: string[]; tagMap: Record<string, any[]>; featuredPosts?: any[]; featuredTag?: string }) {
@@ -14,7 +14,7 @@ export default function BlogSearchAndList({ allTags, tagMap, featuredPosts = [],
         <FadeInOnScroll>
           <div className="mb-12">
             <SectionSeparator text={`Featured: ${featuredTag}`} />
-            <HorizontalPostSlider posts={featuredPosts} tag={featuredTag} />
+            <PostList posts={featuredPosts} showTagFilter={false} />
           </div>
         </FadeInOnScroll>
       )}
@@ -33,7 +33,7 @@ export default function BlogSearchAndList({ allTags, tagMap, featuredPosts = [],
             placeholder="Hashtag suchen..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="px-4 py-2 border rounded-lg w-full max-w-xs text-gray-800 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-accent-1"
+            className="px-4 py-2 border-2 border-gray-300 rounded-lg w-full max-w-xs text-gray-800 dark:text-white bg-white dark:bg-gray-800 focus:outline-none transition-colors duration-200 hover:border-accent-1 hover:ring-accent-1"
           />
         </div>
       </FadeInOnScroll>
@@ -44,7 +44,7 @@ export default function BlogSearchAndList({ allTags, tagMap, featuredPosts = [],
               <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">
                 #{tag}
               </h2>
-              <HorizontalPostSlider posts={tagMap[tag]} tag={tag} />
+              <PostList posts={tagMap[tag]} showTagFilter={false} />
             </div>
           </FadeInOnScroll>
         ))}

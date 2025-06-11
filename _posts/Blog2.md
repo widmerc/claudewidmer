@@ -22,6 +22,7 @@ Nachdem ich im ersten Teil meine Motivation und den konzeptionellen Rahmen vorge
 **Das Ziel:**
 > **Automatisierte Erkennung von Fussgängern und anderen Merkmalen auf Luftbildern**
 
+
 ---
 
 
@@ -29,18 +30,17 @@ Nachdem ich im ersten Teil meine Motivation und den konzeptionellen Rahmen vorge
 
 Image Recognition ist eine Art von **Artificial Intelligence (AI)**. In einfachen Worten: Sie versucht, Muster und Objekte in Bildern zu erkennen – ähnlich wie das menschliche Auge, nur automatisiert und viel schneller.
 
-![Beispiel für Image Recognition](https://dummyimage.com/600x200/cccccc/000000&text=Image+Recognition+Beispiel)
-
 ### Was sind die **Inputs**?
 - **Viele verschiedene Klassifikationen:** Für ein gutes Modell braucht man oft **mindestens 1000 Bilder pro Klasse**.
   - Ich habe zunächst nur **2 Klassen** verwendet: **Fussgänger** und **Vortrittsregeln**.
   - *(Siehe Beispielbild unten)*
 
-![Dummy Bild: Klassifikationen](https://dummyimage.com/400x200/cccccc/000000&text=Klassifikationen)
+  <img src="/img/blog2/Blog1_Klassifikationen.png" alt="Klassifikationen" style="aspect-ratio: 5/3;" />
+
 
 - **Viele Bounding Boxes:** Also Boxen, die zeigen, wo sich welches Feature befindet: Klasse, x1, x2, x3, x4, y1, y2, y3, y4 *(siehe YOLO Oriented Bounding Boxes)*
 
-![Dummy Bild: Bounding Boxes](https://dummyimage.com/400x200/cccccc/000000&text=Bounding+Boxes)
+  <img src="/img/Blog2/aabb_vs_obb_madmann91_github.svg" alt="Bounding Boxes" style="aspect-ratio: 5/3;" />
 
 ### Und jetzt?
 
@@ -51,19 +51,20 @@ Mit einer Programmiersprache – ich benutze **Python** – kann man bereits vor
 Wie läuft das Training ab?
 
 #### Mein Setting
-Für diese Modelle braucht man einen **leistungsstarken PC** oder Cloud-Services. Mein Setup:
+Für diese Modelle braucht man einen **leistungsstarken PC** oder Cloud-Services. Mein Setup:s
 - **Ryzen 7900x** und **RTX4080** (CUDA für YOLO Training)
 - **Gute Internetverbindung** (über 20GB Luftbilder werden benötigt)
 - **6–7 Stunden Wartezeit**
+<img src="/img/blog2/My_Setting.jpg" alt="MySetting" style="max-width: 50%;" />
 
-![Dummy Bild: PC Setup](https://dummyimage.com/400x200/cccccc/000000&text=Mein+PC+Setup)
+
 
 ### **Python Code – Schritt für Schritt**
 
 1. **Herunterladen aller Luftbilder**, die mit den Oriented Bounding Boxes überschneiden.
 2. **Zuschneiden** der Luftbilder in 512x512px Bilder (.tif): Die Koordinaten bleiben erhalten und sind georeferenziert.
 3. **Umrechnen der Bounding Box-Koordinaten** auf relative Werte (YOLO-Standard).
-   - ![Dummy Bild: Koordinatenumrechnung](https://dummyimage.com/400x200/cccccc/000000&text=Koordinatenumrechnung)
+![Dummy Bild: Koordinatenumrechnung](https://dummyimage.com/400x200/cccccc/000000&text=Koordinatenumrechnung)
 4. **Modelltraining starten:**
    - Je mehr **Epochs** (Wiederholungen), desto besser lernt das Modell.
    - Je mehr **Bilder pro Durchlauf**, desto schneller das Training (aber auch höhere Hardware-Anforderungen).

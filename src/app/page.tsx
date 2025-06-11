@@ -1,10 +1,12 @@
+
 // import { useState } from "react";
 import Container from "@/app/_components/container";
 import { ThemeSwitcher } from "@/app/_components/theme-switcher";
 import AboutMe from "@/app/_components/AboutMeShort";
 import CV from "@/app/_components/CV";
 import { TitleScreen } from "@/app/_components/TitleScreen";
-import BlogPostSection from "@/app/_components/BlogPostSection";
+import BlogpostSection from "@/app/_components/BlogPostSection";
+import "@/app/globals.css";
 import Navbar from "@/app/_components/Navbar";
 import PageWrapper from "./_components/PageWrapper";
 import { SectionSeparator } from "./_components/section-separator";
@@ -27,14 +29,13 @@ export default function Index() {
       </FadeInOnScroll>
 
       <FadeInOnScroll>
-
         <SectionSeparator text="Blogposts" />
       </FadeInOnScroll>
 
 
       {/* <ThemeSwitcher /> */}
       <FadeInOnScroll>
-        <BlogPostSection />
+        <BlogpostSection />
       </FadeInOnScroll>
 
       <FadeInOnScroll>
