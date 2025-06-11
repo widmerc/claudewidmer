@@ -5,7 +5,7 @@ import { TitleScreen } from "@/app/_components/TitleScreen";
 import "@/app/globals.css";
 import { SectionSeparator } from "./_components/section-separator";
 import FadeInOnScroll from "@/app/_components/FadeInOnScroll";
-import BlogPostSection from "@/app/_components/BlogPostSection";
+import BlogPostSlider from "@/app/_components/BlogPostSlider";
 
 export default function Index() {
 
@@ -30,7 +30,7 @@ export default function Index() {
 
       {/* <ThemeSwitcher /> */}
       <FadeInOnScroll>
-        <BlogPostSection />
+        <BlogPostSlider />
       </FadeInOnScroll>
 
       <FadeInOnScroll>
