@@ -12,7 +12,7 @@ export default function Index() {
   return (
     <main>
       <div>
-        <TitleScreen />
+      <TitleScreen />
       </div>
       <FadeInOnScroll>
         <SectionSeparator text="Hallo 🗺️" />
@@ -40,6 +40,8 @@ export default function Index() {
       <FadeInOnScroll>
         <CV />
       </FadeInOnScroll>
+
+
 
     </main>
   );

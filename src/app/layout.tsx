@@ -1,30 +1,24 @@
-import { Inter } from "next/font/google";
-import Link from "next/link";
-import Image from "next/image";
-import Navbar from "./_components/Navbar";
-import Footer from "./_components/footer";
-import "@/app/globals.css";
+import type { Metadata } from 'next'
+import { Geist, Geist_Mono } from 'next/font/google'
+import './globals.css'
+import Navbar from './_components/Navbar'
+import Footer from './_components/footer'
 
-// Simple cn utility to join class names
-function cn(...classes: (string | undefined | false | null)[]) {
-  return classes.filter(Boolean).join(" ");
-}
 
-const inter = Inter({ subsets: ["latin"] });
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
   return (
-    <html lang="de" className="scroll-smooth">
-        
-        <body className={cn(inter.className, "bg-white text-gray-900 antialiased")}>        
-      <Navbar />
-
+    <html lang='de' className='bg-white text-gray-900 antialiased'>
+      <body className={``}>
+        <Navbar />
         <main>
           {children}
         </main>
-
-      <Footer />
+        <Footer />
       </body>
     </html>
-  );
+  )
 }

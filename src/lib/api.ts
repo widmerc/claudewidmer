@@ -1,27 +1,35 @@
-import { Post } from "@/interfaces/post";
+import { Post } from "../app/interfaces/post";
 import { promises as fs } from "fs";
-import matter from "gray-matter";
 import { join } from "path";
 
-const postsDirectory = join(process.cwd(), "_posts");
+const postsDirectory = join(process.cwd(), "src/blogs");
 
 export async function getPostSlugs(): Promise<string[]> {
   return await fs.readdir(postsDirectory);
 }
 
 export async function getPostBySlug(slug: string): Promise<Post> {
-  const realSlug = slug.replace(/\.md$/, '');
-  const fullPath = join(postsDirectory, `${realSlug}.md`);
-  const fileContents = await fs.readFile(fullPath, 'utf8');
-  const { data, content } = matter(fileContents);
+  const realSlug = slug.replace(/\.mdx$/, '');
+  // Korrigierter Import-Pfad für Next.js/MDX
+  const postModule = await import(`@/blogs/${realSlug}.mdx`);
+  const data = postModule.metadata || {};
+  const content = ''; // Optional: Du kannst das MDX-File als Komponente rendern, aber "content" ist für Vorschau meist leer
 
-  const wordCount = content.trim().split(/\s+/).length;
-  const readingTime = Math.ceil(wordCount / 200);
+  // Lesezeit grob schätzen (optional, da kein reiner Markdown-Text)
+  const wordCount = data.excerpt ? data.excerpt.trim().split(/\s+/).length : 0;
+  const readingTime = wordCount ? Math.ceil(wordCount / 200) : 1;
 
   return {
-    ...data,
     slug: realSlug,
+    title: data.title || realSlug,
+    date: data.date || '',
+    coverImage: data.coverImage || '',
+    author: data.author || { name: '', picture: '' },
+    excerpt: data.excerpt || '',
+    ogImage: data.ogImage || { url: '' },
     content,
+    preview: data.preview || false,
+    tags: data.tags || [],
     readingTime,
   } as Post;
 }
@@ -30,7 +38,7 @@ export async function getAllPosts(): Promise<Post[]> {
   const slugs = await getPostSlugs();
   const posts = await Promise.all(slugs.map((slug) => getPostBySlug(slug)));
 
-  return posts.sort((b, a) =>
+  return posts.sort((b: Post, a: Post) =>
     new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 }
@@ -48,7 +56,7 @@ export async function getAdjacentPosts(slug: string): Promise<{
   const currentTags = new Set(currentPost.tags ?? []);
 
   function hasCommonTag(post: Post): boolean {
-    return (post.tags ?? []).some((tag) => currentTags.has(tag));
+    return (post.tags ?? []).some((tag: string) => currentTags.has(tag));
   }
 
   let prev: Post | null = null;

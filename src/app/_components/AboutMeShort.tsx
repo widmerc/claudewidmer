@@ -9,14 +9,14 @@ const AboutMe: React.FC = () => {
 <section id="about">
         <PageWrapper>
         <div className="text-center mb-8">
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed">
-            Ich bin <span className="font-semibold text-accent-3 dark:text-blue-400">Claude Widmer</span> und arbeite im GIS-Bereich. Privat beschäftige ich mich mit Web-Technologien und datenbasierten Projekten.
+          <p className="text-lg text-gray-600  max-w-2xl mx-auto leading-relaxed">
+            Ich bin <span className="font-semibold text-accent-3">Claude Widmer</span> und arbeite im GIS-Bereich. Privat beschäftige ich mich mit Web-Technologien und datenbasierten Projekten.
           </p>
         </div>
 
 
         <div className="text-center">
-          <h3 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">Möchtest du mehr über mich erfahren?</h3>
+          <h3 className="text-2xl font-semibold mb-4 text-gray-800">Möchtest du mehr über mich erfahren?</h3>
           <AboutMeButton />
         </div>
       </PageWrapper>

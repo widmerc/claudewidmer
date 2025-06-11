@@ -23,7 +23,7 @@ const About: React.FC = () => {
 
       <FadeInOnScroll>
         <section className="max-w-3xl mx-auto text-center mb-6">
-          <p className="text-md text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+          <p className="text-md text-gray-700 leading-relaxed mb-4">
             Ich bin {age} Jahre alt, begeistere mich für Geoinformatik, räumliche Datenanalyse und moderne Webtechnologien.
             Mit Erfahrung aus Studium, Beruf und Freizeit entwickle ich datengetriebene Lösungen mit GIS, Python, R und Webtechnologien.
             Unten seht ihr eine Auswahl meiner Fähigkeiten, meines bisherigen Werdegangs sowie Stationen aus Studium, Beruf und Freizeit – interaktiv und visuell aufbereitet.

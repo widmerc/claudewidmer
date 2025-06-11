@@ -1,0 +1,132 @@
+export const metadata = {
+  title: "Webseite Teil 4 – Mein Lebenslauf mit interaktiver Karte",
+  excerpt: "In diesem Teil zeige ich, wie ich meinen Werdegang visuell mit Leaflet und React umgesetzt habe – direkt integriert in meine Webseite.",
+  coverImage: "/img/Webseite-4/Titelbild.png",
+  date: "2025-04-17T12:00:00.000Z",
+  author: {
+    name: "Claude Widmer",
+    picture: "/img/Webseite-4/Titelbild.png"
+  },
+  ogImage: {
+    url: "/img/Webseite-4/Titelbild.png"
+  },
+  tags: ["Webseite"]
+}
+
+# 🗺️ Webseite Teil 4 – Mein Lebenslauf mit interaktiver Karte
+
+Der letzte Abschnitt meiner Webseite zeigt meinen **beruflichen Werdegang** – nicht nur als klassische Liste, sondern kombiniert mit einer **interaktiven Karte**.  
+Diese Komponente heisst `CV.tsx` und nutzt im Inneren `CVMap.tsx`, basierend auf **React Leaflet**.
+
+---
+
+## 🌍 Warum eine Karte?
+
+Da ich im GIS-Bereich arbeite, lag es nahe, meinen Lebenslauf auch **räumlich zu visualisieren**.  
+Statt nur Textblöcke zu zeigen, wollte ich Standorte, Bildungsorte und Arbeitserfahrungen **visuell auf der Karte platzieren** – inklusive Animationen und Tooltip-Effekten.
+
+---
+
+## ⚙️ Was steckt dahinter?
+
+Die Komponente `CVMap.tsx` nutzt:
+
+- **Leaflet via React-Leaflet**  
+- Massgeschneiderte Marker mit Farben & Animation  
+- Tooltip beim Hover  
+- `flyTo()` für dynamisches Zoomen  
+- Eine Timeout-Funktion, die automatisch zurück zur Übersicht fliegt
+
+Der Code enthält auch ein bisschen **State-Management mit React**, um z. B. den aktuell „gehoverten“ Eintrag visuell hervorzuheben und Infos synchron anzuzeigen.
+
+---
+
+## 🧩 Aufbau der Karte
+
+Jeder Eintrag (z. B. „Universität Zürich“) hat:
+
+- `id`, `label`, `position` – für Marker und Zuordnung
+- `title`, `details`, `start`, `end` – für Textinfos
+- `type` – „education“ oder „experience“, je nach Farbe
+
+Beispiel:
+
+```ts
+{
+  id: 'edu-1',
+  label: 'Universität Zürich – MSc Geoinformation',
+  position: [47.3965, 8.5493],
+  type: 'education',
+  title: 'Master of Science – Geoinformation',
+  details: 'GIS, Python, Leaflet, Datenanalyse ...',
+  start: new Date(2023, 7),
+  end: null
+}
+```
+
+---
+
+## ✨ Animation & UX
+
+Sobald man mit der Maus über eine Station fährt, zoomt die Karte automatisch darauf, zeigt den Tooltip – und springt nach einigen Sekunden wieder zurück.  
+Das bringt Bewegung rein, ohne unruhig zu wirken.
+
+**Technisch** besteht der Aufbau aus einem `MapContainer`, einem `TileLayer` (z. B. von CartoDB), und einem dynamischen `Marker`-Array, das mithilfe von `map()` aus den `entries` erzeugt wird.  
+Jeder `Marker` wird mit einem eindeutigen `key`, einem `position`-Array und einem individuell gestylten `icon` versehen. Zusätzlich sind `eventHandlers` für `mouseover` und `mouseout` eingebunden – damit der Tooltip erscheint und das automatische `flyTo` ausgelöst wird. Auch habe ich eingebaut, dass nach einer gewissen Zeit die Karte wieder an ihren Ursprungsort zurückgesetzt wird.
+
+Darüber hinaus habe ich folgendes speziell für mobile Geräte umgesetzt:
+
+- 📱 **Autoplay-Funktion auf Mobile**: Da auf Mobilgeräten kein `hover` möglich ist, fliegt die Karte automatisch im Intervall von Ort zu Ort und zeigt den jeweiligen Tooltip an.
+- 📏 **Angepasste Kartenhöhe**: Die Kartenhöhe wurde für kleinere Bildschirme reduziert (z. B. 300px statt 500px), um Platz zu sparen und ein besseres Layout zu ermöglichen.
+- 🔍 **Erhöhter Zoom auf Mobile**: Beim automatischen oder manuellen Fokussieren auf einen Marker wird auf Mobilgeräten eine höhere Zoomstufe verwendet (z. B. `19` statt `18`), um trotz kleinerem Bildschirm mehr Details anzuzeigen.
+
+---
+
+### 🧩 Schematischer Aufbau
+
+```tsx
+
+
+const entries = [
+  {
+    id: 'edu-1',
+    label: 'Universität Zürich – MSc Geoinformation',
+    position: [47.3965, 8.5494],
+    type: 'education',
+    title: 'Master of Science - MS, Geografische Informationswissenschaft',
+    details: 'GIS, R, Python, QGIS, Statistik, Leaflet, Machine Learning',
+    start: new Date(2023, 7),
+    end: null
+  },
+  // weitere Einträge …
+];
+
+
+<MapContainer center={[46.8, 8.3]} zoom={8} ...>
+  <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
+
+  {entries.map(entry => (
+    <Marker
+      key={entry.id}
+      position={entry.position}
+      icon={customIcon(entry)}
+      eventHandlers={{
+        mouseover: () => handleHover(entry.id),
+        mouseout: () => clearHover()
+      }}
+    >
+      <Tooltip>{entry.label}</Tooltip>
+    </Marker>
+  ))}
+</MapContainer>
+```
+
+---
+
+## 🔜 Wie geht’s weiter?
+
+Im nächsten Teil geht es um die dynamische **Blogpost-Sektion (`BlogpostSection.tsx`)** – wie Markdown-Dateien gerendert, Slugs verarbeitet und Vorschauen generiert werden.
+
+---
+
+Claude 👨‍💻

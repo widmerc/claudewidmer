@@ -10,6 +10,12 @@ import Image from 'next/image';
 import { useState } from 'react';
 import BlogPostCard from '@/app/_components/BlogPostCard';
 
+// Define the Author type here or import it from its correct location
+type Author = {
+  name: string;
+  picture?: string;
+};
+
 type Post = {
   title: string;
   date: string;
@@ -18,6 +24,9 @@ type Post = {
   excerpt?: string;
   tags?: string[];
   readingTime?: number;
+  author: Author;
+  ogImage: string;
+  content: string;
 };
 
 type Props = {
@@ -47,7 +56,7 @@ export default function PostList({ posts, showTagFilter = true }: Props) {
               className={`px-3 py-1 rounded-full text-sm transition ${
                 selectedTag === tag
                   ? 'bg-accent-1 text-white'
-                  : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                  : 'bg-gray-200 text-gray-700 dark:text-gray-300'
               }`}
             >
               #{tag}
@@ -58,12 +67,12 @@ export default function PostList({ posts, showTagFilter = true }: Props) {
 
         {/* Navigation Buttons */}
         <div className="absolute -left-6 top-1/2 z-10">
-          <button className="swiper-prev bg-white dark:bg-gray-800 text-gray-800 dark:text-white border rounded-full w-12 h-12 shadow hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-accent-1 hover:font-bold border-2 text-2xl font-semibold transition flex items-center justify-center">
+          <button className="swiper-prev bg-white text-gray-800 border rounded-full w-12 h-12 shadow hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-accent-1 hover:font-bold border-2 text-2xl font-semibold transition flex items-center justify-center">
             ‹
           </button>
         </div>
         <div className="absolute -right-7 top-1/2 z-10">
-          <button className="swiper-next bg-white dark:bg-gray-800 text-gray-800 dark:text-white border rounded-full w-12 h-12 shadow hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-accent-1 hover:font-bold border-2 text-2xl font-semibold transition flex items-center justify-center">
+          <button className="swiper-next bg-white text-gray-800 border rounded-full w-12 h-12 shadow hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-accent-1 hover:font-bold border-2 text-2xl font-semibold transition flex items-center justify-center">
             ›
           </button>
         </div>
@@ -88,7 +97,7 @@ export default function PostList({ posts, showTagFilter = true }: Props) {
       >
         {filteredPosts.map((post) => (
           <SwiperSlide key={post.slug} className="h-[420px] flex">
-            <BlogPostCard post={post} />
+            <BlogPostCard post={{ ...post, coverImage: post.coverImage ?? '' }} />
           </SwiperSlide>
         ))}
       </Swiper>

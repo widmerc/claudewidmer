@@ -7,7 +7,7 @@ type Props = {
 export default function PostBody({ content }: Props) {
   return (
   <div
-  className="markdown-body prose prose-base sm:prose-lg max-w-none dark:prose-invert"
+  className="markdown-body prose prose-base sm:prose-lg max-w-none"
     dangerouslySetInnerHTML={{ __html: content }}
   />
   );

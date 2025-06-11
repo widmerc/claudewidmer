@@ -32,7 +32,7 @@ export default function HorizontalPostSlider({ posts, tag }: Props) {
       <div className="absolute -left-5 top-1/2 z-10">
         <button
           id={`prev-${tag}`}
-          className="bg-white dark:bg-gray-800 text-gray-800 dark:text-white border rounded-full w-10 h-10 shadow hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+          className="bg-white text-gray-800 border rounded-full w-10 h-10 shadow hover:bg-gray-100 dark:hover:bg-gray-700 transition"
         >
           ‹
         </button>
@@ -40,7 +40,7 @@ export default function HorizontalPostSlider({ posts, tag }: Props) {
       <div className="absolute -right-5 top-1/2 z-10">
         <button
           id={`next-${tag}`}
-          className="bg-white dark:bg-gray-800 text-gray-800 dark:text-white border rounded-full w-10 h-10 shadow hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+          className="bg-white text-gray-800 border rounded-full w-10 h-10 shadow hover:bg-gray-100 dark:hover:bg-gray-700 transition"
         >
           ›
         </button>
@@ -66,7 +66,7 @@ export default function HorizontalPostSlider({ posts, tag }: Props) {
         {posts.map((post) => (
           <SwiperSlide key={post.slug} className="h-[420px] flex">
             <Link href={`/blog/${post.slug}`} className="block h-full w-full">
-              <div className="flex flex-col h-full bg-white dark:bg-gray-800 border-4 border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden hover:border-accent-1 shadow hover:shadow-lg transition-all duration-300">
+              <div className="flex flex-col h-full bg-white border-4 border-gray-200 rounded-xl overflow-hidden hover:border-accent-1 shadow hover:shadow-lg transition-all duration-300">
                 {post.coverImage && (
                   <Image
                     src={post.coverImage}
@@ -77,10 +77,10 @@ export default function HorizontalPostSlider({ posts, tag }: Props) {
                   />
                 )}
                 <div className="p-4 flex flex-col flex-grow">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+                  <h3 className="text-lg font-bold text-gray-900 mb-1">
                     {post.title}
                   </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                  <p className="text-sm text-gray-500 mb-2">
                     {new Date(post.date).toLocaleDateString('de-CH', {
                       day: 'numeric',
                       month: 'long',
@@ -89,7 +89,7 @@ export default function HorizontalPostSlider({ posts, tag }: Props) {
                     {post.readingTime && ` • Lesezeit: ${post.readingTime} Min.`}
                   </p>
                   {post.excerpt && (
-                    <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3">
+                    <p className="text-sm text-gray-700 line-clamp-3">
                       {post.excerpt}
                     </p>
                   )}

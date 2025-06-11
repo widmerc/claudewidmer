@@ -155,7 +155,7 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
 
   return (
     <div>
-      <h2 className="text-xl font-small text-center text-gray-800 dark:text-white mb-4">
+      <h2 className="text-xl font-small text-center text-gray-800 mb-4">
         Visuell dargestellt
       </h2>
       <div className="w-full h-[300px] md:h-[500px] rounded overflow-hidden mb-10 z-0 shadow-lg border-2 border-gray-200 dark:border-gray-700">

@@ -103,7 +103,7 @@ export default function SkillSpiderChart() {
                 ${
                   selectedCategory === cat
                     ? 'bg-accent-1 text-white border-accent-1'
-                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-white border-accent-3 dark:border-accent-3'
+                    : 'bg-white text-gray-700 border-accent-3 dark:border-accent-3'
                 }`}
             >
               {cat}
@@ -131,7 +131,7 @@ export default function SkillSpiderChart() {
             </ResponsiveContainer>
           </div>
 
-          <div className="w-full lg:w-1/2 text-gray-800 dark:text-white text-sm sm:text-base lg:text-lg leading-relaxed">
+          <div className="w-full lg:w-1/2 text-gray-800 text-sm sm:text-base lg:text-lg leading-relaxed">
 <AnimatePresence mode="wait">
   <motion.div
     key={selectedCategory}

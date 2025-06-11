@@ -19,7 +19,7 @@ const FancyAboutMeButton = () => {
       <button
         onClick={() => router.push("/about")}
         onMouseEnter={handleHover}
-        className="inline-flex items-center px-4 py-1 rounded-full border-2 border-accent-1 text-accent-1 font-extrabold text-lg tracking-wide bg-white dark:bg-zinc-900 shadow-md hover:bg-accent-1 hover:text-white hover:shadow-lg transition-all duration-200"
+        className="inline-flex items-center px-4 py-1 rounded-full border-2 border-accent-1 text-accent-1 font-extrabold text-lg tracking-wide bg-white shadow-md hover:bg-accent-1 hover:text-white hover:shadow-lg transition-all duration-200"
         style={{ fontFamily: 'Montserrat, Inter, Arial, sans-serif' }}
         title="Über mich"
       >

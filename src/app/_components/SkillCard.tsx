@@ -14,11 +14,11 @@ const SkillCard: React.FC<SkillCardProps> = ({ backgroundImage, text }) => {
   style={{ backgroundImage: `url(${backgroundImage})` }}
 >
       {/* Hover-Overlay */}
-      <div className="absolute inset-0 bg-white/30 dark:bg-gray-800/30 backdrop-blur-md 
+      <div className="absolute inset-0 bg-white/30 backdrop-blur-md 
                       opacity-0 group-hover:opacity-90 transition-opacity duration-500 z-0 rounded-md"></div>
 
       {/* Text */}
-      <h2 className="text-xs sm:text-sm md:text-base font-bold text-gray-800 dark:text-white 
+      <h2 className="text-xs sm:text-sm md:text-base font-bold text-gray-800 
                      opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 text-center">
         {text}
       </h2>

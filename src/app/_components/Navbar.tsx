@@ -7,7 +7,7 @@ export default function Navbar() {
   return (
     <header
       id="main-header"
-      className="sticky top-0 z-50 w-full backdrop-blur-lg bg-white/80 dark:bg-gray-900/80 border-b border-gray-200 dark:border-gray-700 shadow-sm"
+      className="sticky top-0 z-50 w-full backdrop-blur-lg bg-white/80 border-b border-gray-200 shadow-sm"
     >
 <nav className=" mx-auto px-6 sm:px-8 py-4 flex items-center justify-between">
         <Link
@@ -20,7 +20,7 @@ export default function Navbar() {
           <Link href="/about" className="hover:text-accent-500 transition">
             Über mich
           </Link>
-          <Link href="/blogs" className="hover:text-accent-500 transition">
+          <Link href="/blog_overview" className="hover:text-accent-500 transition">
             Alle Blogs
           </Link>
         </div>
