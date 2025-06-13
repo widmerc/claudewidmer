@@ -14,8 +14,12 @@ export default async function BlogPostSlider() {
         <PostList
           posts={posts.map(post => ({
             ...post,
-            author: typeof post.author === 'object' && post.author !== null ? post.author.name : post.author,
-            ogImage: typeof post.ogImage === 'object' && post.ogImage !== null ? post.ogImage.url : post.ogImage
+            author: typeof post.author === 'object' && post.author !== null
+              ? { name: post.author.name, picture: post.author.picture }
+              : { name: String(post.author), picture: '' },
+            ogImage: typeof post.ogImage === 'object' && post.ogImage !== null
+              ? post.ogImage.url
+              : String(post.ogImage)
           }))}
           showTagFilter={true}
         />
