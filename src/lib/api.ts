@@ -33,7 +33,7 @@ export async function getPostBySlug(slug: string): Promise<Post> {
     const words = fileContent.trim().split(/\s+/).filter(Boolean);
     // 1/2 Minute pro Bild zusätzlich
     readingTime = words.length ? Math.max(1, Math.ceil(words.length / 200) + Math.ceil(imageCount * 0.5)) : 1;
-  } catch (e) {
+  } catch {
     // Fallback: excerpt verwenden
     const wordCount = data.excerpt ? data.excerpt.trim().split(/\s+/).length : 0;
     readingTime = wordCount ? Math.ceil(wordCount / 200) : 1;
