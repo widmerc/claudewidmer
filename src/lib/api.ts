@@ -15,9 +15,29 @@ export async function getPostBySlug(slug: string): Promise<Post> {
   const data = postModule.metadata || {};
   const content = ''; // Optional: Du kannst das MDX-File als Komponente rendern, aber "content" ist für Vorschau meist leer
 
-  // Lesezeit grob schätzen (optional, da kein reiner Markdown-Text)
-  const wordCount = data.excerpt ? data.excerpt.trim().split(/\s+/).length : 0;
-  const readingTime = wordCount ? Math.ceil(wordCount / 200) : 1;
+  // Lesezeit anhand des gesamten Blogpost-Textes schätzen
+  let readingTime = 1;
+  try {
+    const filePath = join(postsDirectory, `${realSlug}.mdx`);
+    let fileContent = await fs.readFile(filePath, 'utf8');
+    // Entferne Metadaten-Export und Import-Zeilen
+    fileContent = fileContent.replace(/(^|\n)\s*(import|export const metadata)[^\n]*\n([\s\S]*?\n})?;?\n?/g, '\n');
+    // Zähle Bilder (Markdown und MDX)
+    const imageCount = (fileContent.match(/!\[[^\]]*\]\([^\)]*\)/g) || []).length + (fileContent.match(/<img\s[^>]*>/gi) || []).length;
+    // Entferne alle MDX-Komponenten (z.B. <RevealBox ...>...</RevealBox> und <Component ... />)
+    fileContent = fileContent.replace(/<([A-Z][A-Za-z0-9_]*)(\s[^>]*)?\/>/g, ''); // self-closing
+    fileContent = fileContent.replace(/<([A-Z][A-Za-z0-9_]*)(\s[^>]*)?>[\s\S]*?<\/\1>/g, ''); // block
+    // Entferne Kommentare
+    fileContent = fileContent.replace(/<!--([\s\S]*?)-->/g, '');
+    // Zähle Wörter
+    const words = fileContent.trim().split(/\s+/).filter(Boolean);
+    // 1/2 Minute pro Bild zusätzlich
+    readingTime = words.length ? Math.max(1, Math.ceil(words.length / 200) + Math.ceil(imageCount * 0.5)) : 1;
+  } catch (e) {
+    // Fallback: excerpt verwenden
+    const wordCount = data.excerpt ? data.excerpt.trim().split(/\s+/).length : 0;
+    readingTime = wordCount ? Math.ceil(wordCount / 200) : 1;
+  }
 
   return {
     slug: realSlug,

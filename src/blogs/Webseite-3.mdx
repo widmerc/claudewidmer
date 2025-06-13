@@ -17,11 +17,11 @@ export const metadata = {
 
 # 🙋‍♂️ Webseite Teil 3 – About Me & Skills
 
-Nach dem visuellen Einstieg mit der `TitleScreen`-Komponente folgt direkt der Bereich **„Über mich“**. Diese Sektion stellt mich als Person vor, zeigt meine beruflichen Schwerpunkte und die wichtigsten Tools, mit denen ich arbeite.
+Nach dem visuellen Einstieg mit der `TitleScreen`-Komponente folgt direkt der Bereich **„Über mich“**. Diese Sektion stellt mich als Person vor, zeigt meine beruflichen Schwerpunkte und die wichtigsten Tools, mit denen ich arbeite. Mit einem Klick auf **„Mehr Erfahren“** kommt man auf meine About Page.
 
 ---
 
-## 👤 `AboutMe.tsx` – Wer steckt hinter der Seite?
+## 👤 `AboutMe.tsx` – Wer steckt hinter der Seite `Über Mich`?
 
 Die Komponente `AboutMe.tsx` ist in drei Bereiche gegliedert:
 
@@ -29,25 +29,70 @@ Die Komponente `AboutMe.tsx` ist in drei Bereiche gegliedert:
 2. **Ein kurzer Vorstellungstext** – wer ich bin, was ich beruflich mache und was Besucher:innen auf der Seite erwartet.
 3. **Ein Grid aus SkillCards** – interaktive Karten, die meine wichtigsten Technologien und Tools zeigen.
 
----
-
-## 🧩 Code-Struktur (vereinfacht)
-
 ```tsx
 <PageWrapper>
   <h1>Über mich</h1>
   <p>Ich bin Claude Widmer und arbeite im GIS-Bereich ...</p>
 
-  <div className="grid ...">
-    <SkillCard backgroundImage="./img/QGIS.png" text="QGIS" />
-    <SkillCard backgroundImage="./img/PyQGIS.png" text="QGIS Plugins" />
+  <section className="max-w-3xl mx-auto text-center mb-6">
+  Ich bin {age} Jahre alt, begeistere mich für Geoinformatik, räumliche Datenanalyse und moderne Webtechnologien. ....
+  </section>
+
+
+  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-w-4xl mx-auto my-8">
+    <SkillCard backgroundImage="/img/QGIS.png" text="QGIS" />
+    <SkillCard backgroundImage="/img/PyQGIS.png" text="QGIS Plugins" />
     ...
   </div>
+
+  <SkillRadar />
+
+  <CV /> <- Map
+
 </PageWrapper>
 ```
+Nachdem ich eine kurze Section geschrieben habe, wer ich bin und für was ich mich interessiere, folgt eine Übersicht meiner wichtigsten Skills und Tools. Diese **SkillCards** zeigen auf einen Blick, mit welchen Technologien, Programmiersprachen und Frameworks ich am meisten arbeite – von QGIS und Python über Next.js bis hin zu React und R.
+
+Die SkillCards sind nicht nur ein optisches Element, sondern helfen auch, meine Schwerpunkte und Interessen für Besucher:innen schnell sichtbar zu machen. Sie werden dynamisch aus einer Datenstruktur generiert und können einfach erweitert werden, wenn neue Tools oder Technologien dazukommen.
+
+<RevealBox title="Beispiel SkillCards">
+  <img
+    src="/img/Webseite-4/Skillcards.png"
+    alt="Skillcards"
+    style={{ width: '100%', maxWidth: '900px', borderRadius: '12px', boxShadow: '0 2px 16px rgba(0,0,0,0.12)' }}
+  />
+  <div style={{ textAlign: 'center', marginTop: '0.5rem', color: '#666', fontSize: '0.95em' }}>
+    Abbildung: Interaktive SkillCards mit Logos und Titeln der wichtigsten Tools.
+  </div>
+</RevealBox>
+
+Direkt darunter folgt der **SkillRadar**: ein Radardiagramm, das meine Fähigkeiten in verschiedenen Kategorien visualisiert. Über Buttons kann zwischen Kategorien wie „Arbeit“, „Studium“ oder „Programmieren“ umgeschaltet werden, wodurch sich das Diagramm und die Beschreibung dynamisch anpassen. So bekommen Besucher:innen einen schnellen, aber auch detaillierten Überblick über meine Kompetenzen.
+
+<RevealBox title="Beispiel SkillRadar">
+  <img
+    src="/img/Webseite-4/Skillradar.png"
+    alt="Skillradar"
+    style={{ width: '100%', maxWidth: '900px', borderRadius: '12px', boxShadow: '0 2px 16px rgba(0,0,0,0.12)' }}
+  />
+  <div style={{ textAlign: 'center', marginTop: '0.5rem', color: '#666', fontSize: '0.95em' }}>
+    Abbildung: SkillRadar – Radardiagramm zur Visualisierung meiner Fähigkeiten in verschiedenen Kategorien.
+  </div>
+</RevealBox>
+
+Abschließend ist eine Karte eingebunden, die meinen Lebenslauf als interaktive Map darstellt. Auf diese gehe ich im nächsten Blog weiter ein.
+
+<RevealBox title="CV-Map Beispiel">
+  <img
+    src="/img/Webseite-4/CVMap.png"
+    alt="CVMap"
+    style={{ width: '100%', maxWidth: '900px', borderRadius: '12px', boxShadow: '0 2px 16px rgba(0,0,0,0.12)' }}
+  />
+  <div style={{ textAlign: 'center', marginTop: '0.5rem', color: '#666', fontSize: '0.95em' }}>
+    Abbildung: Interaktive Karte mit Stationen meines Lebenslaufs.
+  </div>
+</RevealBox>
 
 ---
-
 ## 🛠️ `SkillCard.tsx` – visuelle Übersicht meiner Tools
 
 Jede `SkillCard` ist eine kleine, interaktive Kachel mit einem Bild (z. B. QGIS-Logo) und einem Titel, der beim Hover sichtbar wird. Das Design basiert auf Tailwind CSS und nutzt einfache Hover-Logik:
@@ -87,15 +132,70 @@ Der SkillRadar ist eine dynamische, interaktive Komponente, die meine wichtigste
 - **Datenstruktur:** Die Skills sind als Array von Objekten definiert, mit Name, Kategorie(n) und Wert. Das macht die Komponente flexibel und leicht erweiterbar.
 - **Technik:** Für das Radardiagramm wird die Bibliothek `recharts` verwendet. Die Animationen und Übergänge (z. B. beim Wechsel der Kategorie) werden mit Framer Motion umgesetzt.
 
-<RevealBox title="Technische Details zum SkillRadar">
-- Die Skills werden als Array mit Name, Kategorie(n) und Wert gepflegt. Die Filterbuttons erzeugen ein gefiltertes Array für das Diagramm.
-- Die Komponente nutzt einen State-Hook für die aktuelle Kategorie und einen weiteren für responsive Einstellungen (z. B. Schriftgröße).
-- Das Radardiagramm wird mit `RadarChart` aus recharts gerendert. Die Achsenbeschriftungen werden je nach Bildschirmgröße automatisch gekürzt.
-- Die Kategorie-Beschreibung wird mit Framer Motion animiert eingeblendet.
-- Die gesamte Komponente ist so gebaut, dass neue Skills oder Kategorien einfach ergänzt werden können.
+<RevealBox title="Technische Details: SkillRadar-Komponente">
+
+**Wie funktioniert das SkillRadar?**
+
+- Die Skills werden als Liste von Objekten im Code definiert. Jeder Skill hat einen Namen, eine Kategorie (z.B. Arbeit, Studium, Freizeit) und einen Wert (0–100).
+- Die Kategorien können per Button gefiltert werden. Die Anzeige passt sich dynamisch an.
+- Für die Visualisierung wird das Open-Source-Charting-Framework **Recharts** genutzt (RadarChart).
+- Die Labels sind immer kurz, damit das Chart auch auf kleinen Bildschirmen lesbar bleibt.
+- Die Beschreibung rechts wechselt animiert mit Framer Motion.
+
+**Vereinfachtes Beispiel (TypeScript):**
+```tsx
+const skills = [
+  { subject: 'QGIS', value: 90, category: ['Arbeit'] },
+  { subject: 'Python', value: 75, category: ['Studium', 'Programmieren'] },
+  // ...
+];
+
+const filtered = selectedCategory === 'Gesamt'
+  ? skills
+  : skills.filter(skill => skill.category.includes(selectedCategory));
+
+<RadarChart data={filtered}>
+  <Radar dataKey="value" />
+</RadarChart>
+```
+
+Die Komponente ist so gebaut, dass du neue Skills oder Kategorien einfach ergänzen kannst. Die Animationen und das Responsive Design sorgen dafür, dass das Chart auf allen Geräten gut aussieht.
+
+<RevealBox title="Wie funktioniert das Filtern und Umschalten im SkillRadar?">
+
+- Die Kategorie-Buttons setzen den State `selectedCategory`.
+- Bei jedem Klick wird die Skill-Liste neu gefiltert und das Chart aktualisiert.
+- Die Beschreibung rechts wird mit Framer Motion animiert eingeblendet und zeigt immer den passenden Text zur gewählten Kategorie.
+- Alles läuft rein im Frontend, ohne Reload oder Server-Request.
+
+**Vereinfachter React-Code:**
+```tsx
+const [selectedCategory, setSelectedCategory] = useState('Gesamt');
+
+const filteredSkills = selectedCategory === 'Gesamt'
+  ? skills
+  : skills.filter(skill => skill.category.includes(selectedCategory));
+
+// Beim Klick auf einen Button:
+<button onClick={() => setSelectedCategory('Arbeit')}>Arbeit</button>
+
+// Beschreibung animiert wechseln:
+<AnimatePresence mode="wait">
+  <motion.div key={selectedCategory} ...>
+    <p>{descriptions[selectedCategory]}</p>
+  </motion.div>
+</AnimatePresence>
+```
+
+So bleibt das UI immer reaktiv und fühlt sich modern an.
+</RevealBox>
+
 </RevealBox>
 
 ---
+
+
+
 
 ## 🎯 Warum das so gebaut ist
 

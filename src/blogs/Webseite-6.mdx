@@ -32,6 +32,8 @@ Die Blogübersicht besteht aus mehreren modularen Komponenten:
 - **BlogPostCard**: Einzelne Blogpost-Vorschau
 
 <RevealBox title="Code: Komponentenstruktur Blogübersicht">
+Die folgende Struktur zeigt, wie die wichtigsten Komponenten der Blogübersicht zusammenspielen. Das hilft dir, die Architektur schnell zu verstehen und eigene Anpassungen vorzunehmen.
+
 ```tsx
 <PageWrapper>
   <SectionSeparator text="Alle Blogs" />
@@ -41,6 +43,8 @@ Die Blogübersicht besteht aus mehreren modularen Komponenten:
   <BlogSearchAndList ... />
 </PageWrapper>
 ```
+
+Diese Übersicht macht es einfach, die Komponenten zu erweitern oder neu zu kombinieren.
 </RevealBox>
 
 ---
@@ -54,6 +58,8 @@ Die Komponente `BlogSearchAndList` erhält alle verfügbaren Tags (`allTags`), e
 - **Featured:** Optional können bestimmte Tags/Posts hervorgehoben werden
 
 <RevealBox title="Code: Tag-Suche & Filter (Ausschnitt)">
+Hier siehst du, wie die Suche und das Tag-Filtering technisch umgesetzt sind. Das Beispiel zeigt, wie die Tags gefiltert und die zugehörigen Blogposts gruppiert angezeigt werden.
+
 ```tsx
 const filteredTags = allTags.filter(tag => tag.toLowerCase().includes(search.toLowerCase()) && tag !== featuredTag);
 ...
@@ -64,6 +70,8 @@ const filteredTags = allTags.filter(tag => tag.toLowerCase().includes(search.toL
   </FadeInOnScroll>
 ))}
 ```
+
+So kannst du die Filter- und Suchlogik leicht anpassen oder erweitern.
 </RevealBox>
 
 ---
@@ -73,6 +81,8 @@ const filteredTags = allTags.filter(tag => tag.toLowerCase().includes(search.toL
 Die Daten für die Übersicht werden mit `getAllPosts()` aus `src/lib/api.ts` geladen. Jeder Post enthält Metadaten, Tags, Titel, Bild, etc. Die Gruppierung erfolgt in der Übersicht dynamisch nach Tags.
 
 <RevealBox title="Code: Tag-Map-Bildung">
+Die folgende Logik gruppiert alle Blogposts dynamisch nach ihren Tags. Das ist die Grundlage für die Tag-Übersicht und das Filtern in der Blogübersicht.
+
 ```ts
 const tagMap: Record<string, Post[]> = {};
 posts.forEach((post) => {
@@ -82,6 +92,25 @@ posts.forEach((post) => {
   });
 });
 ```
+
+Diese Information wird dann als Map an die Übersichtskomponente übergeben und sorgt für die Gruppierung nach Hashtags.
+</RevealBox>
+
+---
+
+## ⏱️ Lesezeit (Reading Time)
+
+<RevealBox title="Wie wird die Lesezeit berechnet?">
+Die ungefähre Lesezeit für einen Blogpost wird automatisch berechnet. Gezählt werden alle Wörter im Beitrag. Zusätzlich wird für jedes Bild (egal ob Markdown oder `<img />`) eine halbe Minute extra gerechnet.
+
+**Code-Beispiel:**
+```ts
+const words = text.split(/\s+/).filter(Boolean);
+const imageCount = ... // Anzahl Bilder im Text
+const readingTime = Math.max(1, Math.ceil(words.length / 200) + Math.ceil(imageCount * 0.5));
+```
+
+Die berechnete Lesezeit wird dann im Blogpost angezeigt, damit du als Leser:in sofort weißt, wie viel Zeit du ungefähr einplanen solltest.
 </RevealBox>
 
 ---
