@@ -4,6 +4,11 @@ import { getBlogPost, listBlogPosts } from '@/lib/mdx'
 import PageWrapper from '@/app/_components/PageWrapper'
 import Container from '@/app/_components/container'
 import CoverImage from '@/app/_components/cover-image'
+import MdxLayout from '@/app/_components/mdx-layout'
+import FadeInOnScroll from '@/app/_components/FadeInOnScroll';
+import Favicon from '@/app/_components/Favicon';
+
+
 
 type BlogPageProps = {
   params: Promise<{ slug: string }>
@@ -58,62 +63,76 @@ export default async function BlogPage({ params }: BlogPageProps) {
   }
 
   return (
-    <main>
-      <Container>
-        <PageWrapper className="text-left">
-          <h1 className="text-3xl font-bold mb-4 text-gray-800 dark:text-white mt-8">
-            {title}
-          </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
-            {new Date(date).toLocaleDateString("de-CH", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-            })} {" "}
-            · von {authorName}
-          </p>
-          {metadata.coverImage && (
-            <div className="flex justify-center mb-8">
-              <CoverImage
-                src={metadata.coverImage}
-                title={title}
-                slug={slug}
-              />
-            </div>
-          )}
-        </PageWrapper>
-        <PageWrapper className="text-left">
-          <article className='prose prose-base sm:prose-lg max-w-none'>
-
-            <MDXContent />
-            <div className="mt-16">
-              <div className="flex flex-col sm:flex-row justify-between gap-4">
-                {prev && prev.slug !== slug ? (
-                  <a
-                    href={`/blogs/${prev.slug}`}
-                    className="group flex-1 sm:flex-none sm:w-1/2 p-4 border rounded-2xl shadow hover:shadow-md transition bg-white dark:bg-zinc-900 border-accent-3 hover:bg-accent-3/10 dark:hover:bg-accent-3/20"
-                  >
-                    <span className="block font-semibold text-accent-3 dark:text-accent-3 mb-2">← {prev.metadata.title}</span>
-                  </a>
-                ) : (
-                  <div className="hidden sm:block sm:w-1/2" />
-                )}
-                {next && next.slug !== slug ? (
-                  <a
-                    href={`/blogs/${next.slug}`}
-                    className="group flex-1 sm:flex-none sm:w-1/2 p-4 border rounded-2xl shadow hover:shadow-md transition bg-white dark:bg-zinc-900 border-accent-3 hover:bg-accent-3/10 dark:hover:bg-accent-3/20 text-right"
-                  >
-                    <span className="block font-semibold text-accent-3 dark:text-accent-3 mb-2">{next.metadata.title} →</span>
-                  </a>
-                ) : (
-                  <div className="hidden sm:block sm:w-1/2" />
-                )}
-              </div>
-            </div>
-          </article>
-        </PageWrapper>
-      </Container>
-    </main>
+    <>
+      <Favicon name={title} />
+      <main>
+        <Container>
+          <PageWrapper className="text-left">
+            <FadeInOnScroll>
+              <h1 className="text-3xl font-bold mb-4 text-gray-800 dark:text-white mt-8">
+                {title}
+              </h1>
+            </FadeInOnScroll>
+            <FadeInOnScroll>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
+                {new Date(date).toLocaleDateString("de-CH", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                })} {" "}
+                · von {authorName}
+              </p>
+            </FadeInOnScroll>
+            {metadata.coverImage && (
+              <FadeInOnScroll>
+                <div className="flex justify-center mb-8">
+                  <CoverImage
+                    src={metadata.coverImage}
+                    title={title}
+                    slug={slug}
+                  />
+                </div>
+              </FadeInOnScroll>
+            )}
+          </PageWrapper>
+          <PageWrapper className="text-left">
+            <article className='prose prose-base sm:prose-lg max-w-none'>
+              <FadeInOnScroll>
+                <MdxLayout>
+                  <MDXContent />
+                </MdxLayout>
+              </FadeInOnScroll>
+              <FadeInOnScroll>
+                <div className="mt-16">
+                  <div className="flex flex-col sm:flex-row justify-between gap-4">
+                    {prev && prev.slug !== slug ? (
+                      <a
+                        href={`/blogs/${prev.slug}`}
+                        className="group flex-1 sm:flex-none sm:w-1/2 p-4 border rounded-2xl shadow hover:shadow-md transition bg-white dark:bg-zinc-900 border-accent-3 hover:bg-accent-3/10 dark:hover:bg-accent-3/20 no-underline"
+                      >
+                        <span className="block font-semibold text-accent-3 dark:text-accent-3 mb-2">← {prev.metadata.title}</span>
+                      </a>
+                    ) : (
+                      <div className="hidden sm:block sm:w-1/2" />
+                    )}
+                    {next && next.slug !== slug ? (
+                      <a
+                        href={`/blogs/${next.slug}`}
+                        className="group flex-1 sm:flex-none sm:w-1/2 p-4 border rounded-2xl shadow hover:shadow-md transition bg-white dark:bg-zinc-900 border-accent-3 hover:bg-accent-3/10 dark:hover:bg-accent-3/20 text-right no-underline"
+                      >
+                        <span className="block font-semibold text-accent-3 dark:text-accent-3 mb-2">{next.metadata.title} →</span>
+                      </a>
+                    ) : (
+                      <div className="hidden sm:block sm:w-1/2" />
+                    )}
+                  </div>
+                </div>
+              </FadeInOnScroll>
+            </article>
+          </PageWrapper>
+        </Container>
+      </main>
+    </>
   )
 }
 

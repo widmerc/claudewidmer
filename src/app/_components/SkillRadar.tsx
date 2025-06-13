@@ -78,7 +78,7 @@ export default function SkillSpiderChart() {
   const [selectedCategory, setSelectedCategory] = useState<(typeof categories)[number]>('Gesamt');
   const { fontSize, outerRadius } = useResponsiveChartSettings();
 
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  // const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   const filteredSkills =
     selectedCategory === 'Gesamt'
@@ -87,11 +87,11 @@ export default function SkillSpiderChart() {
 
   const chartData = filteredSkills.map((skill) => ({
     ...skill,
-    subject: isMobile ? skill.subject.short : skill.subject.long
+    subject: skill.subject.short // immer kurze Bezeichnung, egal ob mobile oder nicht
   }));
 
   return (
-    <PageWrapper>
+    <PageWrapper >
 
       <div className="w-full max-w-6xl mx-auto p-2">
         <div className="flex justify-center gap-2 mb-6 flex-wrap">

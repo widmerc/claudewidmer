@@ -80,3 +80,20 @@ export async function getAdjacentPosts(slug: string): Promise<{
 
   return { prev, next };
 }
+
+/**
+ * Listet alle Bilddateien in einem Ordner unterhalb von public/img/...
+ * @param folder z.B. "/img/Blog1_2"
+ * @returns Array der Dateinamen (ohne Pfad)
+ */
+export async function listImagesInFolder(folder: string): Promise<string[]> {
+  if (!folder.startsWith('/img/')) return [];
+  try {
+    const path = join(process.cwd(), 'public', folder);
+    const files = await fs.readdir(path);
+    // Nach Dateiname sortieren
+    return files.filter(f => /\.(jpe?g|png|webp|gif|svg)$/i.test(f)).sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+  } catch {
+    return [];
+  }
+}

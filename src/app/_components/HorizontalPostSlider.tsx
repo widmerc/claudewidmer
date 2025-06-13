@@ -65,7 +65,7 @@ export default function HorizontalPostSlider({ posts, tag }: Props) {
       >
         {posts.map((post) => (
           <SwiperSlide key={post.slug} className="h-[420px] flex">
-            <Link href={`/blog/${post.slug}`} className="block h-full w-full">
+            <Link href={`/blogs/${post.slug}`} className="block h-full w-full">
               <div className="flex flex-col h-full bg-white border-4 border-gray-200 rounded-xl overflow-hidden hover:border-accent-1 shadow hover:shadow-lg transition-all duration-300">
                 {post.coverImage && (
                   <Image

@@ -1,4 +1,5 @@
 import ImageGallery from '@/app/_components/ImageGallery'
+import RevealBox from "@/app/_components/RevealBox";
 import React from 'react';
 
 export const metadata = {
@@ -17,7 +18,11 @@ export const metadata = {
 }
 
 
-## KI auf Luftbildern: **Fussgängerstreifen automatisch erkennen**
+# 🤖 Schulwegsicherheit automatisiert bewerten (Teil 2)
+
+---
+
+## 🛰️ KI auf Luftbildern: Fussgängerstreifen automatisch erkennen
 
 Nachdem ich im ersten Teil meine Motivation und den konzeptionellen Rahmen vorgestellt habe, geht es nun ans **Eigentliche**:
 
@@ -30,16 +35,16 @@ Nachdem ich im ersten Teil meine Motivation und den konzeptionellen Rahmen vorge
 ---
 
 
-## Was habe ich vor – was ist **Image Recognition**?
+## ❓ Was habe ich vor – was ist **Image Recognition**?
 
 Image Recognition ist eine Art von **Artificial Intelligence (AI)**. In einfachen Worten: Sie versucht, Muster und Objekte in Bildern zu erkennen – ähnlich wie das menschliche Auge, nur automatisiert und viel schneller.
 
-### Was sind die **Inputs**?
+### 🏷️ Was sind die **Inputs**?
 - **Viele verschiedene Klassifikationen:** Für ein gutes Modell braucht man oft **mindestens 1000 Bilder pro Klasse**.
   - Ich habe zunächst nur **2 Klassen** verwendet: **Fussgänger** und **Vortrittsregeln**.
   - *(Siehe Beispielbild unten)*
 
-  <img src="/img/blog2/Blog1_Klassifikationen.png" alt="Klassifikationen" style={{ aspectRatio: '1/1', width: '100%', height: 'auto', maxWidth: '900px' }} />
+  <img src="/img/Blog2/Blog1_Klassifikationen.png" alt="Klassifikationen" style={{ aspectRatio: '1/1', width: '100%', height: 'auto', maxWidth: '900px' }} />
 
 
 - **Viele Bounding Boxes:** Also Boxen, die zeigen, wo sich welches Feature befindet: Klasse, x1, x2, x3, x4, y1, y2, y3, y4 *(siehe YOLO Oriented Bounding Boxes)*
@@ -63,12 +68,11 @@ Für diese Modelle braucht man einen **leistungsstarken PC** oder Cloud-Services
 
 
 
-### **Python Code – Schritt für Schritt**
+### 🐍 Python Code – Schritt für Schritt
 
 1. **Herunterladen aller Luftbilder**, die mit den Oriented Bounding Boxes überschneiden.
 2. **Zuschneiden** der Luftbilder in 512x512px Bilder (.tif): Die Koordinaten bleiben erhalten und sind georeferenziert.
 3. **Umrechnen der Bounding Box-Koordinaten** auf relative Werte (YOLO-Standard).
-![Dummy Bild: Koordinatenumrechnung](https://dummyimage.com/400x200/cccccc/000000&text=Koordinatenumrechnung)
 4. **Modelltraining starten:**
    - Je mehr **Epochs** (Wiederholungen), desto besser lernt das Modell.
    - Je mehr **Bilder pro Durchlauf**, desto schneller das Training (aber auch höhere Hardware-Anforderungen).
@@ -79,122 +83,56 @@ Für diese Modelle braucht man einen **leistungsstarken PC** oder Cloud-Services
 
 ---
 
-### **Python: Technisch**
+### ⚙️ Python: Technisch
 
-Für alle, die es genauer wissen wollen, gibt es einen eigenen Beitrag (Teil 2.1), der die technischen Hintergründe erklärt.
+<RevealBox title="Technische Details: YOLOv11 Training & Datenpipeline">
 
+**Trainingsdaten:**
+- Luftbilder (SWISSIMAGE, Mapillary)
+- Manuell gelabelte Bounding Boxes (OBB)
+- Zwei Klassen: Fussgänger, Vortrittsregeln
+
+**Pipeline:**
+1. Download & Preprocessing der Bilder
+2. Zuschneiden, Georeferenzierung, Label-Konvertierung
+3. Training mit YOLOv11 (Python, CUDA, RTX4080)
+4. Validierung & Visualisierung der Ergebnisse
+
+**Code-Snippet (Python):**
+```python
+# Beispiel: Training mit YOLOv11
+from yolov11 import Trainer
+trainer = Trainer(
+    data='data.yaml',
+    model='yolov11-obb.yaml',
+    epochs=100,
+    imgsz=512,
+    device='cuda:0'
+)
+trainer.train()
+```
+
+**Hardware:** Ryzen 7900x, RTX4080, 64GB RAM
+
+</RevealBox>
 ---
 
-## **Resultat**
+## 🏁 Resultat
 
 Ich habe mein trainiertes Modell jetzt für die **Region Zürich** angewendet. Hier seht ihr das Resultat:
-<ImageGallery
-  images={[
-    { src: '/img/Blog2/img_galery_result/kachel_0.png', alt: 'kachel_0.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_1.png', alt: 'kachel_1.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_2.png', alt: 'kachel_2.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_3.png', alt: 'kachel_3.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_4.png', alt: 'kachel_4.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_5.png', alt: 'kachel_5.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_6.png', alt: 'kachel_6.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_7.png', alt: 'kachel_7.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_8.png', alt: 'kachel_8.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_9.png', alt: 'kachel_9.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_10.png', alt: 'kachel_10.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_11.png', alt: 'kachel_11.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_12.png', alt: 'kachel_12.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_13.png', alt: 'kachel_13.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_14.png', alt: 'kachel_14.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_15.png', alt: 'kachel_15.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_16.png', alt: 'kachel_16.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_17.png', alt: 'kachel_17.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_18.png', alt: 'kachel_18.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_19.png', alt: 'kachel_19.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_20.png', alt: 'kachel_20.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_21.png', alt: 'kachel_21.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_22.png', alt: 'kachel_22.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_23.png', alt: 'kachel_23.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_24.png', alt: 'kachel_24.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_25.png', alt: 'kachel_25.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_26.png', alt: 'kachel_26.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_27.png', alt: 'kachel_27.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_28.png', alt: 'kachel_28.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_29.png', alt: 'kachel_29.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_30.png', alt: 'kachel_30.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_31.png', alt: 'kachel_31.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_32.png', alt: 'kachel_32.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_33.png', alt: 'kachel_33.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_34.png', alt: 'kachel_34.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_35.png', alt: 'kachel_35.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_36.png', alt: 'kachel_36.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_37.png', alt: 'kachel_37.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_38.png', alt: 'kachel_38.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_39.png', alt: 'kachel_39.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_40.png', alt: 'kachel_40.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_41.png', alt: 'kachel_41.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_42.png', alt: 'kachel_42.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_43.png', alt: 'kachel_43.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_44.png', alt: 'kachel_44.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_45.png', alt: 'kachel_45.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_46.png', alt: 'kachel_46.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_47.png', alt: 'kachel_47.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_48.png', alt: 'kachel_48.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_49.png', alt: 'kachel_49.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_50.png', alt: 'kachel_50.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_51.png', alt: 'kachel_51.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_52.png', alt: 'kachel_52.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_53.png', alt: 'kachel_53.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_54.png', alt: 'kachel_54.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_55.png', alt: 'kachel_55.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_56.png', alt: 'kachel_56.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_57.png', alt: 'kachel_57.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_58.png', alt: 'kachel_58.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_59.png', alt: 'kachel_59.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_60.png', alt: 'kachel_60.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_61.png', alt: 'kachel_61.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_62.png', alt: 'kachel_62.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_63.png', alt: 'kachel_63.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_64.png', alt: 'kachel_64.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_65.png', alt: 'kachel_65.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_66.png', alt: 'kachel_66.png' },
-    { src: '/img/Blog2/img_galery_result/kachel_67.png', alt: 'kachel_67.png' },
-  ]}
-/>
+<ImageGallery folder="/img/Blog2/img_galery_result" title="Ergebnisgalerie" />
 
 ---
 
-## **Weitere Impressionen**
+## 🖼️ Weitere Impressionen
 
-<ImageGallery
-  images={[
-    { src: '/img/Blog2/img_galery/confusion_matrix.png', alt: 'confusion_matrix.png' },
-    { src: '/img/Blog2/img_galery/confusion_matrix_normalized.png', alt: 'confusion_matrix_normalized.png' },
-    { src: '/img/Blog2/img_galery/F1_curve.png', alt: 'F1_curve.png' },
-    { src: '/img/Blog2/img_galery/labels.jpg', alt: 'labels.jpg' },
-    { src: '/img/Blog2/img_galery/labels_correlogram.jpg', alt: 'labels_correlogram.jpg' },
-    { src: '/img/Blog2/img_galery/Overview Shift.png', alt: 'Overview Shift.png' },
-    { src: '/img/Blog2/img_galery/PR_curve.png', alt: 'PR_curve.png' },
-    { src: '/img/Blog2/img_galery/P_curve.png', alt: 'P_curve.png' },
-    { src: '/img/Blog2/img_galery/results.png', alt: 'results.png' },
-    { src: '/img/Blog2/img_galery/R_curve.png', alt: 'R_curve.png' },
-    { src: '/img/Blog2/img_galery/train_batch0.jpg', alt: 'train_batch0.jpg' },
-    { src: '/img/Blog2/img_galery/train_batch1.jpg', alt: 'train_batch1.jpg' },
-    { src: '/img/Blog2/img_galery/train_batch2.jpg', alt: 'train_batch2.jpg' },
-    { src: '/img/Blog2/img_galery/train_batch4230.jpg', alt: 'train_batch4230.jpg' },
-    { src: '/img/Blog2/img_galery/train_batch4231.jpg', alt: 'train_batch4231.jpg' },
-    { src: '/img/Blog2/img_galery/train_batch4232.jpg', alt: 'train_batch4232.jpg' },
-    { src: '/img/Blog2/img_galery/val_batch0_labels.jpg', alt: 'val_batch0_labels.jpg' },
-    { src: '/img/Blog2/img_galery/val_batch0_pred.jpg', alt: 'val_batch0_pred.jpg' },
-    { src: '/img/Blog2/img_galery/val_batch1_labels.jpg', alt: 'val_batch1_labels.jpg' },
-    { src: '/img/Blog2/img_galery/val_batch1_pred.jpg', alt: 'val_batch1_pred.jpg' },
-    { src: '/img/Blog2/img_galery/val_batch2_labels.jpg', alt: 'val_batch2_labels.jpg' },
-    { src: '/img/Blog2/img_galery/val_batch2_pred.jpg', alt: 'val_batch2_pred.jpg' },
-  ]}
-/>
+<ImageGallery folder="/img/Blog2/img_galery" title="Originalbilder" />
+
+
 
 ---
 
-## **Ausblick**
+## 🔭 Ausblick
 
 Im nächsten Beitrag (Teil 3) geht es um die **Erarbeitung eines automatisierten Workflows**: Wie kann ich mein "Rezeptbuch" für die Allgemeinheit (mit Python-Erfahrung) zur Verfügung stellen?
 
@@ -202,3 +140,4 @@ Im nächsten Beitrag (Teil 3) geht es um die **Erarbeitung eines automatisierten
 
 ---
 Claude
+

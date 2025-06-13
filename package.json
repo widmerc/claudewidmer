@@ -27,6 +27,13 @@
     "react-dom": "^19.0.0",
     "react-leaflet": "^5.0.0",
     "recharts": "^2.15.3",
+    "rehype-highlight": "^7.0.2",
+    "rehype-pretty-code": "^0.14.1",
+    "rehype-stringify": "^10.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
+    "shiki": "^3.6.0",
     "swiper": "^11.2.8"
   },
   "devDependencies": {

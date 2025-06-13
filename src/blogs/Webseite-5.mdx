@@ -1,0 +1,256 @@
+import RevealBox from "@/app/_components/RevealBox";
+
+export const metadata = {
+  title: "Webseite Teil 5 – Dynamische Blogpost-Sektion",
+  excerpt: "Wie ich die Blogpost-Sektion mit dynamischem Routing, Markdown-Rendering, Vorschau-Komponenten und automatischer Slug-Verarbeitung umgesetzt habe.",
+  coverImage: "/img/Webseite-5/Titelbild.png",
+  date: "2025-04-20T12:00:00.000Z",
+  author: {
+    name: "Claude Widmer",
+    picture: "/img/Webseite-5/Titelbild.png"
+  },
+  ogImage: {
+    url: "/img/Webseite-5/Titelbild.png"
+  },
+  tags: ["Webseite"]
+}
+
+# 📝 Webseite Teil 5 – Dynamische Blogpost-Sektion
+
+Im fünften Teil meiner Serie zeige ich im Detail, wie die Blogpost-Sektion meiner Webseite funktioniert. Ziel war es, Markdown-Dateien als Blogposts zu rendern, Slugs automatisch zu verarbeiten, Metadaten auszulesen und für jeden Beitrag eine ansprechende Vorschau zu generieren – alles modular, performant und einfach erweiterbar.
+
+---
+
+## 📁 Projektstruktur & Ordneraufbau
+
+Die gesamte Blog-Logik ist in einer klaren, modularen Struktur organisiert:
+
+- **`src/blogs/`** – Alle Blogartikel als MDX-Dateien mit Metadaten-Export (z.B. `Webseite-1.mdx`, `Webseite-2.mdx` ...)
+- **`src/app/blogs/[slug]/page.tsx`** – Dynamisches Routing: Jede Blogpost-Seite wird statisch generiert und rendert den jeweiligen MDX-Inhalt
+- **`src/lib/mdx.ts`** – Hilfsfunktionen zum Auslesen, Parsen und Bereitstellen der Blogposts und Metadaten
+- **`src/app/_components/`** – Wiederverwendbare Komponenten wie `BlogPostCard`, `BlogPostSlider`, `CoverImage`, `SectionSeparator`, `FadeInOnScroll`, `Favicon` usw.
+- **`public/img/`** – Alle Bilder, die in Blogposts oder Komponenten verwendet werden
+
+---
+
+## 🗂️ Projektstruktur als Tree-View
+
+Hier die aktuelle Ordnerstruktur meines Projekts als Übersicht (gekürzt):
+
+```text
+claudewidmer/
+├── public/
+│   ├── favicon/
+│   ├── img/
+│   │   ├── Blog1/
+│   │   ├── Blog1_2/
+│   │   ├── Blog2/
+│   │   ├── Blog3/
+│   │   ├── Webseite-1/
+│   │   ├── Webseite-2/
+│   │   ├── Webseite-3/
+│   │   ├── Webseite-4/
+│   │   ├── Webseite-5/
+│   │   └── ...
+├── src/
+│   ├── app/
+│   │   ├── _components/
+│   │   │   ├── AboutMeShort.tsx
+│   │   │   ├── BlogPostCard.tsx
+│   │   │   ├── BlogPostSlider.tsx
+│   │   │   ├── CoverImage.tsx
+│   │   │   ├── FadeInOnScroll.tsx
+│   │   │   ├── Favicon.tsx
+│   │   │   ├── ImageGallery.tsx
+│   │   │   ├── RevealBox.tsx
+│   │   │   ├── SectionSeparator.tsx
+│   │   │   ├── SkillCard.tsx
+│   │   │   ├── SkillRadar.tsx
+│   │   │   └── ...
+│   │   ├── blogs/
+│   │   │   └── [slug]/page.tsx
+│   │   ├── about/page.tsx
+│   │   └── ...
+│   ├── blogs/
+│   │   ├── Webseite-1.mdx
+│   │   ├── Webseite-2.mdx
+│   │   ├── Webseite-3.mdx
+│   │   ├── Webseite-4.mdx
+│   │   ├── Webseite-5.mdx
+│   │   └── ...
+│   ├── lib/
+│   │   ├── api.ts
+│   │   ├── constants.ts
+│   │   ├── mdx.ts
+│   │   └── ...
+├── package.json
+├── next.config.ts
+├── tsconfig.json
+└── ...
+```
+
+---
+
+## 🗂️ Wie funktioniert das dynamische Routing?
+
+Jeder Blogpost liegt als `.mdx`-Datei im Verzeichnis `src/blogs/`. Die Datei `src/app/blogs/[slug]/page.tsx` nutzt das Next.js Dynamic Routing: Der `[slug]`-Parameter wird automatisch aus dem Dateinamen generiert. Beispiel: `Webseite-1.mdx` ist unter `/blogs/Webseite-1` erreichbar.
+
+Die Funktion `getBlogPost` (in `mdx.ts`) importiert die MDX-Datei anhand des Slugs, liest die Metadaten aus und gibt die React-Komponente für den Inhalt zurück. Die Funktion `listBlogPosts` listet alle verfügbaren Blogposts auf, indem sie das Verzeichnis einliest und für jede Datei die Metadaten extrahiert.
+
+<RevealBox title="Code: Blogpost-Laden und Slug-Verarbeitung">
+```ts
+export const getBlogPost = async (slug: string): Promise<BlogPostData> => {
+  const post = await import(`@/blogs/${slug}.mdx`)
+  const data = post.metadata
+  // ...
+  return {
+    slug,
+    metadata,
+    component: post.default,
+  }
+}
+
+export const listBlogPosts = async (): Promise< Omit<BlogPostData, 'component'>[] > => {
+  const files = await fs.readdir(path.join(process.cwd(), 'src/blogs'))
+  return Promise.all(
+    files.map(async (file) => {
+      const slug = file.replace(/\.mdx$/, '')
+      const { metadata } = await getBlogPost(slug)
+      return { slug, metadata }
+    })
+  )
+}
+```
+</RevealBox>
+
+---
+
+## 🏷️ Beispiel: Metadaten-Export in MDX
+
+Jeder Blogpost beginnt mit einem Metadaten-Export. Diese Daten werden für SEO, OpenGraph, Navigation und Vorschau genutzt.
+
+```mdx
+export const metadata = {
+  title: "Mein erster Blogpost",
+  excerpt: "Kurze Zusammenfassung für die Vorschau.",
+  coverImage: "/img/Blog1/Titel.png",
+  date: "2025-01-01T12:00:00.000Z",
+  author: {
+    name: "Claude Widmer",
+    picture: "/img/Blog1/Titel.png"
+  },
+  ogImage: {
+    url: "/img/Blog1/Titel.png"
+  },
+  tags: ["Webseite", "Next.js", "MDX"]
+}
+```
+
+<RevealBox title="Tipp: Metadaten für SEO und Social Media">
+Die Metadaten werden automatisch für Title, Description, OpenGraph und Twitter Cards verwendet. So sieht jeder Blogpost beim Teilen auf Social Media optimal aus!
+</RevealBox>
+
+---
+
+## 📄 MDX vs. Markdown: Rendering, Komponenten & Probleme
+
+Ursprünglich habe ich versucht, reine `.md`-Dateien für Blogposts zu nutzen. Das Markdown-Parsing erfolgte mit `remark` und `rehype`. Das Problem: In klassischen Markdown-Dateien kann kein JavaScript ausgeführt und keine React-Komponenten eingebunden werden. Das bedeutet:
+
+- **Keine Komponenten:** Custom-Komponenten wie `RevealBox`, `ImageGallery` oder animierte Abschnitte sind in `.md` nicht möglich.
+- **Kein JS/Interaktivität:** Es können keine Props, States oder Hooks verwendet werden.
+- **Eingeschränkte Gestaltung:** Nur Standard-Markdown-Elemente, keine Animationen oder dynamische Inhalte.
+
+Mit **MDX** ist das anders: Hier kann ich Markdown und React-Komponenten beliebig mischen. Das ermöglicht z.B. RevealBoxen, animierte Abschnitte, Galerien und vieles mehr direkt im Blogpost.
+
+<RevealBox title="Code: Unterschied Markdown vs. MDX">
+```md
+<!-- Markdown (.md): -->
+# Mein Blogpost
+
+Das ist ein Absatz.
+
+<!-- Keine Komponenten möglich! -->
+```
+
+```mdx
+// MDX (.mdx):
+# Mein Blogpost
+
+Das ist ein Absatz.
+
+<RevealBox title="Technisches Detail">
+  Hier kann ich beliebige React-Komponenten einbinden!
+</RevealBox>
+```
+</RevealBox>
+
+---
+
+## 🛠️ Technische Details: MDX-Rendering & Komponenten-Mapping
+
+Das MDX-Rendering erfolgt mit `@next/mdx` und eigenen Komponenten-Mappings. In `mdx-components.tsx` werden alle Standard-Elemente (h1-h6, p, ul, li, img, etc.) automatisch mit `FadeInOnScroll` umhüllt – so werden alle Abschnitte animiert. Codeblöcke (`pre`) sind davon ausgenommen und werden mit `rehype-pretty-code` für Syntax-Highlighting gestylt.
+
+<RevealBox title="Code: Automatisches Komponenten-Mapping in MDX">
+```tsx
+// mdx-components.tsx
+export const components = {
+  h1: (props) => <FadeInOnScroll><h1 {...props} /></FadeInOnScroll>,
+  p: (props) => <FadeInOnScroll><p {...props} /></FadeInOnScroll>,
+  ul: (props) => <FadeInOnScroll><ul {...props} /></FadeInOnScroll>,
+  // ...weitere Elemente
+  pre: (props) => <pre {...props} /> // Kein FadeIn für Codeblöcke
+}
+```
+</RevealBox>
+
+---
+
+## ⚡ Performance, SEO & Favicon
+
+- **Statische Generierung:** Alle Blogposts werden bei Build-Time generiert (SSG), was für schnelle Ladezeiten sorgt.
+- **SEO:** Die Metadaten werden für Title, Description und Keywords genutzt. OpenGraph- und Twitter-Meta-Tags werden automatisch gesetzt.
+- **Favicon:** Über die Komponente `Favicon` wird für jede Seite ein passender Favicon und App-Name gesetzt.
+- **Responsives Design:** Alle Komponenten sind mit Tailwind CSS responsiv gestaltet.
+
+---
+
+## 🧩 Komponenten im Detail
+
+- **`CoverImage`**: Zeigt das Titelbild eines Blogposts, ist optional verlinkt.
+- **`FadeInOnScroll`**: Animiert Abschnitte beim Scrollen mit Framer Motion.
+- **`SectionSeparator`**: Trennt Abschnitte optisch und nimmt ein flexibles Spacing entgegen.
+- **`ImageGallery`**: Für Bildergalerien mit Lightbox und Keyboard-Navigation.
+- **`RevealBox`**: Klappbox für technische Details oder Zusatzinfos.
+- **`BlogPostCard` & `BlogPostSlider`**: Vorschau und Slider für Blogposts.
+
+Jede Komponente ist so gebaut, dass sie wiederverwendbar und leicht anpassbar ist.
+
+---
+
+## 🔄 Wie geht das Hinzufügen eines neuen Blogposts?
+
+1. Neue `.mdx`-Datei in `src/blogs/` anlegen (z.B. `MeinNeuerPost.mdx`)
+2. Metadaten-Export am Anfang ausfüllen
+3. Inhalt mit Markdown und React-Komponenten schreiben
+4. Bild(er) in `public/img/` ablegen und im CoverImage referenzieren
+5. Fertig! Der Post erscheint automatisch in der Übersicht und ist unter `/blogs/MeinNeuerPost` erreichbar
+
+---
+
+## 🚩 Learnings & Tipps für eigene Projekte
+
+- **MDX statt Markdown:** Für moderne, interaktive Blogposts ist MDX die beste Wahl.
+- **Klare Struktur:** Ein sauberer Ordneraufbau und konsequente Komponenten-Trennung erleichtern Wartung und Erweiterung.
+- **Metadaten nutzen:** Gute Metadaten sind Gold wert für SEO, Social Media und Navigation.
+- **Automatisierung:** Dynamisches Routing und automatisches Komponenten-Mapping sparen viel Zeit.
+- **Fehlerquellen:** Achtung bei Slugs, Imports und Build-Fehlern – gutes Error-Handling ist Pflicht!
+
+---
+
+## 🔜 Wie geht’s weiter?
+
+Im nächsten Teil zeige ich, wie ich die **Blogübersicht** gestaltet habe – mit Tag-Filter, Suche und ansprechender Vorschau für alle Beiträge. Außerdem gehe ich auf die Filter- und Suchlogik sowie die Performance-Optimierung ein.
+
+---
+
+Claude 👨‍💻

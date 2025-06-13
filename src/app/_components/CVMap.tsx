@@ -150,7 +150,7 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, [mounted]);
+  }, [mounted, handleHover, resetFlyTimeout]);
 
   if (!mounted) return null;
 

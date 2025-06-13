@@ -1,3 +1,5 @@
+import RevealBox from "@/app/_components/RevealBox";
+
 export const metadata = {
   title: "Webseite Teil 3 – About Me & Skills",
   excerpt: "In diesem Teil zeige ich, wie ich die Komponente AboutMe aufgebaut habe – inklusive interaktiver SkillCards.",
@@ -15,17 +17,17 @@ export const metadata = {
 
 # 🙋‍♂️ Webseite Teil 3 – About Me & Skills
 
-Nach dem visuellen Einstieg mit der `TitleScreen`-Komponente folgt direkt der Bereich **„Über mich“**. Diese Sektion soll Besucher:innen zeigen, **wer ich bin**, **was ich mache** und **womit ich arbeite**.
+Nach dem visuellen Einstieg mit der `TitleScreen`-Komponente folgt direkt der Bereich **„Über mich“**. Diese Sektion stellt mich als Person vor, zeigt meine beruflichen Schwerpunkte und die wichtigsten Tools, mit denen ich arbeite.
 
 ---
 
 ## 👤 `AboutMe.tsx` – Wer steckt hinter der Seite?
 
-Die Komponente `AboutMe.tsx` besteht aus drei Bereichen:
+Die Komponente `AboutMe.tsx` ist in drei Bereiche gegliedert:
 
-1. **Ein Titel** – klar und zentriert.
-2. **Ein kurzer Vorstellungstext** – wer ich bin, was ich beruflich mache und was man auf der Seite erwarten kann.
-3. **Ein Grid aus sogenannten SkillCards** – interaktive Karten, die Technologien und Tools zeigen, mit denen ich arbeite.
+1. **Ein klarer Titel** – zentriert und prägnant.
+2. **Ein kurzer Vorstellungstext** – wer ich bin, was ich beruflich mache und was Besucher:innen auf der Seite erwartet.
+3. **Ein Grid aus SkillCards** – interaktive Karten, die meine wichtigsten Technologien und Tools zeigen.
 
 ---
 
@@ -48,8 +50,7 @@ Die Komponente `AboutMe.tsx` besteht aus drei Bereichen:
 
 ## 🛠️ `SkillCard.tsx` – visuelle Übersicht meiner Tools
 
-Jede `SkillCard` ist eine kleine interaktive Kachel mit einem Bild im Hintergrund (z. B. QGIS-Logo) und einem Titel, der beim Hover eingeblendet wird.  
-Das Ganze funktioniert mit Tailwind CSS und etwas Hover-Logik:
+Jede `SkillCard` ist eine kleine, interaktive Kachel mit einem Bild (z. B. QGIS-Logo) und einem Titel, der beim Hover sichtbar wird. Das Design basiert auf Tailwind CSS und nutzt einfache Hover-Logik:
 
 ```tsx
 <div
@@ -63,13 +64,42 @@ Das Ganze funktioniert mit Tailwind CSS und etwas Hover-Logik:
 </div>
 ```
 
+<RevealBox title="Technische Details zur SkillCard und AboutMe-Section">
+Die SkillCards werden als Grid gerendert und sind vollständig responsiv. Die Daten (Bilder, Titel) können zentral gepflegt werden. Die AboutMe-Komponente ist so aufgebaut, dass sie leicht erweiterbar ist – z.B. für weitere Skills oder zusätzliche Infos.
+
+- Die SkillCard-Komponente nimmt ein Bild und einen Text als Props entgegen.
+- Das Grid-Layout passt sich automatisch an die Bildschirmgröße an (Tailwind).
+- Die Hover-Animation wird mit Tailwind-Utilities umgesetzt.
+- Die gesamte AboutMe-Section ist in einen PageWrapper eingebettet, der für ein einheitliches Layout sorgt.
+</RevealBox>
+
+---
+
+## 📊 SkillRadar – Interaktive Visualisierung meiner Fähigkeiten
+
+Der SkillRadar ist eine dynamische, interaktive Komponente, die meine wichtigsten Fähigkeiten übersichtlich als Radardiagramm darstellt. Jede Achse repräsentiert einen Skill (z. B. QGIS, Python, Statistik), der Wert zeigt meine Selbsteinschätzung in diesem Bereich.
+
+**Was macht den SkillRadar besonders?**
+
+- **Dynamisch filterbar:** Über Buttons oberhalb des Diagramms kannst du zwischen verschiedenen Kategorien umschalten (z. B. „Arbeit“, „Studium“, „Programmieren“, „Freizeit“). Das Diagramm und die Skill-Liste passen sich sofort an die gewählte Kategorie an.
+- **Responsiv:** Die Darstellung und die Schriftgrößen passen sich automatisch an die Bildschirmgröße an – so bleibt alles auch auf dem Smartphone lesbar.
+- **Interaktive Beschreibung:** Zu jeder Kategorie wird eine eigene Beschreibung angezeigt, die sich beim Umschalten animiert einblendet.
+- **Datenstruktur:** Die Skills sind als Array von Objekten definiert, mit Name, Kategorie(n) und Wert. Das macht die Komponente flexibel und leicht erweiterbar.
+- **Technik:** Für das Radardiagramm wird die Bibliothek `recharts` verwendet. Die Animationen und Übergänge (z. B. beim Wechsel der Kategorie) werden mit Framer Motion umgesetzt.
+
+<RevealBox title="Technische Details zum SkillRadar">
+- Die Skills werden als Array mit Name, Kategorie(n) und Wert gepflegt. Die Filterbuttons erzeugen ein gefiltertes Array für das Diagramm.
+- Die Komponente nutzt einen State-Hook für die aktuelle Kategorie und einen weiteren für responsive Einstellungen (z. B. Schriftgröße).
+- Das Radardiagramm wird mit `RadarChart` aus recharts gerendert. Die Achsenbeschriftungen werden je nach Bildschirmgröße automatisch gekürzt.
+- Die Kategorie-Beschreibung wird mit Framer Motion animiert eingeblendet.
+- Die gesamte Komponente ist so gebaut, dass neue Skills oder Kategorien einfach ergänzt werden können.
+</RevealBox>
+
 ---
 
 ## 🎯 Warum das so gebaut ist
 
-Ich wollte bewusst eine Kombination aus **Inhalt + Visualisierung**:  
-Etwas Text, aber auch etwas zum „Klicken“ und Entdecken – ohne gleich mit zu vielen Infos zu überfordern.  
-Die Karten sind responsiv, passen sich dem Bildschirm an und machen die wichtigsten Skills visuell erfassbar.
+Ich wollte eine Mischung aus **Inhalt und Visualisierung**: Ein bisschen Text, aber auch etwas zum Entdecken – ohne zu überladen. Die Karten sind responsiv, passen sich dem Bildschirm an und machen die wichtigsten Skills auf einen Blick sichtbar.
 
 ---
 

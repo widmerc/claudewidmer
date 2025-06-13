@@ -1,0 +1,142 @@
+import RevealBox from "@/app/_components/RevealBox";
+
+export const metadata = {
+  title: "Webseite Teil 6 – Blogübersicht, Suche & Tag-Filter",
+  excerpt: "Wie ich die Blogübersicht mit Tag-Filter, Suche, dynamischer Gruppierung und ansprechender UI umgesetzt habe. Technische Details, Komponenten, Herausforderungen und Learnings.",
+  coverImage: "/img/Webseite-6/Titelbild.png",
+  date: "2025-06-13T12:00:00.000Z",
+  author: {
+    name: "Claude Widmer",
+    picture: "/img/Webseite-6/Titelbild.png"
+  },
+  ogImage: {
+    url: "/img/Webseite-6/Titelbild.png"
+  },
+  tags: ["Webseite"]
+}
+
+# 🗂️ Webseite Teil 6 – Blogübersicht, Suche & Tag-Filter
+
+In diesem Teil zeige ich, wie ich die Blogübersicht-Seite meiner Webseite technisch und gestalterisch umgesetzt habe. Im Fokus stehen die dynamische Gruppierung nach Hashtags, die Suchfunktion, das Tag-Filtering und die User Experience. Außerdem gehe ich auf die verwendeten Komponenten, die Datenstruktur und die wichtigsten Learnings ein.
+
+---
+
+## 🧩 Komponenten-Architektur
+
+Die Blogübersicht besteht aus mehreren modularen Komponenten:
+
+- **BlogSearchAndList**: Zentrale Komponente für Suche, Tag-Filter und Listen-Rendering
+- **PostList**: Zeigt eine Liste von Blogposts zu einem Tag
+- **SectionSeparator**: Überschriften und optische Trennung
+- **FadeInOnScroll**: Animierte Einblendung aller Abschnitte
+- **BlogPostCard**: Einzelne Blogpost-Vorschau
+
+<RevealBox title="Code: Komponentenstruktur Blogübersicht">
+```tsx
+<PageWrapper>
+  <SectionSeparator text="Alle Blogs" />
+  <FadeInOnScroll>
+    <p>Introtext ...</p>
+  </FadeInOnScroll>
+  <BlogSearchAndList ... />
+</PageWrapper>
+```
+</RevealBox>
+
+---
+
+## 🔎 Suche & Tag-Filter: Funktionsweise
+
+Die Komponente `BlogSearchAndList` erhält alle verfügbaren Tags (`allTags`), eine Map von Tag zu Posts (`tagMap`), sowie optional hervorgehobene Beiträge (`featuredPosts`). Die Suche filtert die Tags live, das Tag-Filtering gruppiert die Posts nach Hashtag.
+
+- **Suche:** Filtert die Tag-Liste nach Nutzereingabe (case-insensitive)
+- **Tag-Filter:** Zeigt pro Tag alle zugehörigen Posts als Gruppe
+- **Featured:** Optional können bestimmte Tags/Posts hervorgehoben werden
+
+<RevealBox title="Code: Tag-Suche & Filter (Ausschnitt)">
+```tsx
+const filteredTags = allTags.filter(tag => tag.toLowerCase().includes(search.toLowerCase()) && tag !== featuredTag);
+...
+{filteredTags.map((tag) => (
+  <FadeInOnScroll key={tag}>
+    <h2>#{tag}</h2>
+    <PostList posts={tagMap[tag]} />
+  </FadeInOnScroll>
+))}
+```
+</RevealBox>
+
+---
+
+## 🗃️ Datenstruktur & API
+
+Die Daten für die Übersicht werden mit `getAllPosts()` aus `src/lib/api.ts` geladen. Jeder Post enthält Metadaten, Tags, Titel, Bild, etc. Die Gruppierung erfolgt in der Übersicht dynamisch nach Tags.
+
+<RevealBox title="Code: Tag-Map-Bildung">
+```ts
+const tagMap: Record<string, Post[]> = {};
+posts.forEach((post) => {
+  post.tags?.forEach((tag) => {
+    if (!tagMap[tag]) tagMap[tag] = [];
+    tagMap[tag].push(post);
+  });
+});
+```
+</RevealBox>
+
+---
+
+## 💡 UI/UX-Details & Animationen
+
+- **FadeInOnScroll:** Alle Abschnitte und Listen werden animiert eingeblendet
+- **Responsives Design:** Die Übersicht ist auf allen Geräten nutzbar
+- **Suchfeld:** Klar zentriert, mit Fokus- und Hover-Effekten
+- **Tag-Gruppen:** Übersichtlich, mit klaren Überschriften und Abstand
+- **Leere Suche:** Zeigt eine freundliche Info, wenn kein Tag gefunden wird
+
+---
+
+## 🛠️ Herausforderungen & Learnings
+
+- **Dynamische Gruppierung:** Die Tag-Map muss bei jedem neuen Post automatisch aktualisiert werden
+- **Suche:** Die Filterung muss performant und intuitiv sein
+- **Komponenten-Komposition:** Die Trennung von Suche, Tag-Filter und Listen macht die Übersicht flexibel, aber auch komplexer
+- **Datenkonsistenz:** Alle Posts müssen konsistente Metadaten und Tags haben
+- **UI-Feedback:** Klare Rückmeldung bei leerer Suche verbessert die UX
+
+---
+
+## 🌐 Ausblick: CMS & WebGIS-Integration
+
+Ein nächster, spannender Schritt wäre die Integration eines CMS (Content Management System), um Blogposts direkt über die Webseite zu erstellen und zu verwalten. Damit könnten neue Beiträge automatisch generiert und veröffentlicht werden, ohne den Code oder die Dateien manuell anfassen zu müssen. Geeignete Lösungen wären z.B.:
+
+- **Headless CMS** wie Strapi, Sanity, Contentful oder NetlifyCMS
+- **Git-basierte CMS** wie TinaCMS oder Forestry, die direkt mit dem Repository arbeiten
+- **Eigene Admin-Oberfläche**: Ein einfaches Formular, das neue MDX-Dateien erzeugt und per Git speichert
+
+Mit einer solchen Lösung könnten auch Gastbeiträge oder Teamwork einfacher werden. Die Herausforderung ist dabei, die MDX-Features (Komponenten, Metadaten) und die Sicherheit sauber zu integrieren.
+
+---
+
+Ein weiteres, großes Thema ist die Einbindung von WebGIS-Anwendungen. Beispielsweise könnten QGIS Web Client Instanzen (wie QWC2 oder QFieldCloud) direkt in die Webseite eingebettet werden, um interaktive Karten, Layer oder Analysen anzuzeigen. Das eröffnet viele Möglichkeiten:
+
+- **Interaktive Karten** in Blogposts oder eigenen Seiten
+- **Datenvisualisierung** direkt im Browser
+- **Integration von Geodiensten** (WMS, WFS, GeoJSON)
+- **Verbindung zu eigenen QGIS-Projekten**
+
+Die technische Umsetzung kann z.B. über iFrames, eigene React-Komponenten oder APIs erfolgen. Wichtig ist dabei, Performance, Sicherheit und Usability im Blick zu behalten.
+
+---
+
+## 🏁 Fazit & Ausblick
+
+Nach sechs Teilen und vielen Stunden Arbeit bin ich mit dem aktuellen Stand meiner Webseite fürs Erste sehr zufrieden. Das Projekt hat mir geholfen, viele neue Skills zu lernen – von Next.js über MDX, Animationen mit Framer Motion bis hin zu moderner Komponenten-Architektur und SEO.
+
+Ganz ehrlich: Es war oft auch ziemlich kompliziert. Gerade TypeScript ist für mich immer noch eine Herausforderung, und ich merke, dass ich da noch viel zu lernen habe. Aber genau das macht so ein Projekt wertvoll – man wächst an den Aufgaben und versteht mit jedem Schritt mehr.
+
+Für die Zukunft habe ich noch viele Ideen: Mehr Filteroptionen, bessere Performance, vielleicht ein eigenes CMS oder noch mehr interaktive Komponenten. Aber fürs Erste bin ich stolz auf das, was entstanden ist – und freue mich, wenn andere davon profitieren können.
+
+---
+
+Claude 👨‍💻

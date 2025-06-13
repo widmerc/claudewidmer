@@ -5,6 +5,7 @@ import SkillRadar from "@/app/_components/SkillRadar";
 import CV from "@/app/_components/CV";
 import { SectionSeparator } from "@/app/_components/section-separator";
 import FadeInOnScroll from "@/app/_components/FadeInOnScroll";
+import SkillCard from "@/app/_components/SkillCard";
 
 const About: React.FC = () => {
   const birthDate = new Date(2001, 5, 2); // 2. Juni 2001
@@ -76,25 +77,37 @@ const About: React.FC = () => {
           </div>
         </section>
       </FadeInOnScroll>
+      <FadeInOnScroll>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-w-4xl mx-auto my-8">
+          <SkillCard backgroundImage="/img/QGIS.png" text="QGIS" />
+          <SkillCard backgroundImage="/img/PyQGIS.png" text="QGIS Plugins" />
+          <SkillCard backgroundImage="/img/python.png" text="Python" />
+          <SkillCard backgroundImage="/img/QFieldCloud.png" text="QFieldCloud" />
+          <SkillCard backgroundImage="/img/QWC2.png" text="QGIS Web Client 2" />
+          <SkillCard backgroundImage="/img/R.png" text="R" />
+          <SkillCard backgroundImage="/img/nextjs.png" text="NextJS" />
+          <SkillCard backgroundImage="/img/React.png" text="React" />
+        </div>
+      </FadeInOnScroll>
+
 
       <FadeInOnScroll>
         <SectionSeparator text="🛠️ Meine Fähigkeiten" />
       </FadeInOnScroll>
       <FadeInOnScroll>
-        <div className="flex justify-center w-full">
-          <div className="max-w-4xl w-full">
-            <SkillRadar />
-          </div>
-        </div>
+        <SkillRadar />
       </FadeInOnScroll>
 
       <FadeInOnScroll>
-        <SectionSeparator text="Lebenslauf" />
+        <SectionSeparator text="Lebenslauf" className="mt-0" />
       </FadeInOnScroll>
       <FadeInOnScroll>
         <CV />
       </FadeInOnScroll>
-   </>
+
+
+    </>
   );
 };
 
