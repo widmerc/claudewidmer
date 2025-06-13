@@ -2,9 +2,10 @@
 import FadeInOnScroll from "@/app/_components/FadeInOnScroll";
 import { SectionSeparator } from "@/app/_components/section-separator";
 import PostList from "@/app/_components/PostList";
+import type { Post } from "@/app/interfaces/post";
 import { useState } from "react";
 
-export default function BlogSearchAndList({ allTags, tagMap, featuredPosts = [], featuredTag = "" }: { allTags: string[]; tagMap: Record<string, any[]>; featuredPosts?: any[]; featuredTag?: string }) {
+export default function BlogSearchAndList({ allTags, tagMap, featuredPosts = [], featuredTag = "" }: { allTags: string[]; tagMap: Record<string, Post[]>; featuredPosts?: Post[]; featuredTag?: string }) {
   const [search, setSearch] = useState("");
   // Filter tags for search, but exclude the featuredTag from the main list
   const filteredTags = allTags.filter(tag => tag.toLowerCase().includes(search.toLowerCase()) && tag !== featuredTag);
@@ -14,7 +15,10 @@ export default function BlogSearchAndList({ allTags, tagMap, featuredPosts = [],
         <FadeInOnScroll>
           <div className="mb-12">
             <SectionSeparator text={`Featured: ${featuredTag}`} />
-            <PostList posts={featuredPosts} showTagFilter={false} />
+            <PostList posts={featuredPosts.map(post => ({
+              ...post,
+              ogImage: typeof post.ogImage === 'object' && post.ogImage !== null ? post.ogImage.url : post.ogImage
+            }))} showTagFilter={false} />
           </div>
         </FadeInOnScroll>
       )}
@@ -44,7 +48,10 @@ export default function BlogSearchAndList({ allTags, tagMap, featuredPosts = [],
               <h2 className="text-2xl font-semibold text-gray-800 mb-4">
                 #{tag}
               </h2>
-              <PostList posts={tagMap[tag]} showTagFilter={false} />
+              <PostList posts={tagMap[tag].map(post => ({
+                ...post,
+                ogImage: typeof post.ogImage === 'object' && post.ogImage !== null ? post.ogImage.url : post.ogImage
+              }))} showTagFilter={false} />
             </div>
           </FadeInOnScroll>
         ))}

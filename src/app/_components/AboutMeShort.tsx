@@ -1,7 +1,5 @@
 import React from "react";
-import SkillCard from "@/app/_components/SkillCard";
 import PageWrapper from "@/app/_components/PageWrapper";
-import Navbar from "@/app/_components/Navbar";
 import AboutMeButton from "@/app/_components/Fancy_About_Me_Button";
 
 const AboutMe: React.FC = () => {

@@ -1,4 +1,4 @@
-import { ThemeSwitcher } from "@/app/_components/theme-switcher";
+// import { ThemeSwitcher } from "@/app/_components/theme-switcher";
 import AboutMe from "@/app/_components/AboutMeShort";
 import CV from "@/app/_components/CV";
 import { TitleScreen } from "@/app/_components/TitleScreen";

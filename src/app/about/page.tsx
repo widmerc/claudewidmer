@@ -2,7 +2,6 @@
 
 import React from "react";
 import SkillRadar from "@/app/_components/SkillRadar";
-import PageWrapper from "@/app/_components/PageWrapper";
 import CV from "@/app/_components/CV";
 import { SectionSeparator } from "@/app/_components/section-separator";
 import FadeInOnScroll from "@/app/_components/FadeInOnScroll";

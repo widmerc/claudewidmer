@@ -2,10 +2,6 @@ import { parseISO, format } from "date-fns";
 import { de } from "date-fns/locale";
 
 
-type Props = {
-  dateString: string;
-};
-
 const DateFormatter = ({ dateString }: { dateString: string }) => {
   const date = parseISO(dateString);
   return (

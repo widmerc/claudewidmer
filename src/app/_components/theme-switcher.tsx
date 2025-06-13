@@ -49,7 +49,7 @@ const Switch = () => {
   useEffect(() => {
     // Sicherstellen, dass window.updateDOM existiert
     if (typeof window !== "undefined" && window.updateDOM) {
-      updateDOM = window.updateDOM;
+      const updateDOM = window.updateDOM;
     }
 
     const handleStorageChange = (e: StorageEvent): void => {
@@ -120,13 +120,15 @@ const Switch = () => {
   );
 };
 
-const Script = memo(() => (
-  <script
-    dangerouslySetInnerHTML={{
-      __html: `(${NoFOUCScript.toString()})('${STORAGE_KEY}')`,
-    }}
-  />
-));
+const Script = memo(function Script() {
+  return (
+    <script
+      dangerouslySetInnerHTML={{
+        __html: `(${NoFOUCScript.toString()})('${STORAGE_KEY}')`,
+      }}
+    />
+  );
+});
 
 export const ThemeSwitcher = () => {
   return (

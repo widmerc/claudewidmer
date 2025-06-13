@@ -5,8 +5,6 @@ import { Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 
-import Link from 'next/link';
-import Image from 'next/image';
 import { useState } from 'react';
 import BlogPostCard from '@/app/_components/BlogPostCard';
 
@@ -97,7 +95,16 @@ export default function PostList({ posts, showTagFilter = true }: Props) {
       >
         {filteredPosts.map((post) => (
           <SwiperSlide key={post.slug} className="h-[420px] flex">
-            <BlogPostCard post={{ ...post, coverImage: post.coverImage ?? '' }} />
+            <BlogPostCard post={{
+              ...post,
+              coverImage: post.coverImage ?? '',
+              excerpt: post.excerpt ?? '',
+              author: {
+                ...post.author,
+                picture: post.author.picture ?? ''
+              },
+              ogImage: typeof post.ogImage === 'string' ? { url: post.ogImage } : post.ogImage
+            }} />
           </SwiperSlide>
         ))}
       </Swiper>

@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
 
 export default function Navbar() {
   return (
@@ -9,7 +8,7 @@ export default function Navbar() {
       id="main-header"
       className="sticky top-0 z-50 w-full backdrop-blur-lg bg-white/80 border-b border-gray-200 shadow-sm"
     >
-<nav className=" mx-auto px-6 sm:px-8 py-4 flex items-center justify-between">
+      <nav className=" mx-auto px-6 sm:px-8 py-4 flex items-center justify-between">
         <Link
           href="/"
           className="text-2xl font-extrabold tracking-tight hover:opacity-80 transition"

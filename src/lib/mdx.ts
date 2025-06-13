@@ -16,7 +16,7 @@ export type BlogPostMetadata = Metadata & {
     url: string
   }
   tags?: string[]
-  [key: string]: any // Für weitere optionale Felder
+  [key: string]: unknown 
 }
 
 export type BlogPostData = {

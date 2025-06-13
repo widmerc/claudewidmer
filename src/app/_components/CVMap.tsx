@@ -8,7 +8,8 @@ import { Map as LeafletMap } from 'leaflet';
 import { motion } from 'framer-motion';
 
 // Leaflet Icons konfigurieren
-delete (L.Icon.Default.prototype as any)._getIconUrl;
+// TypeScript-safe way to delete _getIconUrl from the prototype
+delete (L.Icon.Default.prototype as { _getIconUrl?: unknown })._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: '/leaflet/marker-icon-2x.png',
   iconUrl: '/leaflet/marker-icon.png',

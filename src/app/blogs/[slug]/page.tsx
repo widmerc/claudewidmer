@@ -19,12 +19,6 @@ export default async function BlogPage({ params }: BlogPageProps) {
   const author = metadata.author ?? "Unbekannt"
   const authorName = typeof author === "string" ? author : author?.name ?? "Unbekannt"
 
-  const formattedDate = new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(date)
-
   const blogPosts = await listBlogPosts()
   const currentIndex = blogPosts.findIndex((post) => post.slug === slug)
 
