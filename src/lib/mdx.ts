@@ -58,7 +58,7 @@ export const listBlogPosts = async (): Promise<
 > => {
   const files = await fs.readdir(path.join(process.cwd(), 'src/blogs'))
 
-  return Promise.all(
+  const posts = await Promise.all(
     files.map(async (file) => {
       const slug = file.replace(/\.mdx$/, '')
       const { metadata } = await getBlogPost(slug)
@@ -68,4 +68,16 @@ export const listBlogPosts = async (): Promise<
       }
     }),
   )
+
+  // Sortierung: zuerst nach erstem Tag (Hashtag), dann nach Datum (absteigend)
+  return posts.sort((a, b) => {
+    const tagA = (a.metadata.tags?.[0] || '').toLowerCase()
+    const tagB = (b.metadata.tags?.[0] || '').toLowerCase()
+    if (tagA < tagB) return -1
+    if (tagA > tagB) return 1
+    // Falls Tag gleich, nach Datum absteigend (neueste zuerst)
+    const dateA = new Date(a.metadata.date).getTime()
+    const dateB = new Date(b.metadata.date).getTime()
+    return  dateA - dateB
+  })
 }
