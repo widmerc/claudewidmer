@@ -1,100 +1,145 @@
+import ImageGallery from '@/app/_components/ImageGallery'
 import RevealBox from "@/app/_components/RevealBox";
+import React from 'react';
 
 export const metadata = {
-  title: 'Schulwegsicherheit automatisiert bewerten (Teil 1)',
-  excerpt: 'Wie sicher sind unsere Schulwege wirklich – und wie kann moderne Technologie helfen, das objektiv zu bewerten? In meiner neuen Blog-Serie nehme ich euch mit auf die Reise durch meine Masterarbeit über automatisierte Schulwegsicherheit in Zürich.',
-  coverImage: '/img/Blog1/Title.png',
-  description: 'Teil 1 einer Blog-Serie über die automatisierte Bewertung der Schulwegsicherheit in Zürich',
-  date: '2025-05-20T05:35:07.322Z',
-  tags: ['Masterarbeit'],
+  title: "Schulwegsicherheit automatisiert bewerten (Teil 1)",
+  excerpt: "Im ersten Teil zeige ich, wie ich YOLOv11 mit gedrehten Bounding Boxes auf Luftbilder anwende, um Fussgängerstreifen automatisiert zu erkennen – und damit den ersten Schritt zur KI-gestützten Schulwegklassifikation mache.",
+  coverImage: "/img/Blog2/Title.jpg",
+  date: "2025-06-01T12:00:00.000Z",
   author: {
-    name: 'Claude Widmer',
-    picture: '/img/Blog1/Title.png',
+    name: "Claude Widmer",
+    picture: "/img/Blog2/Title.jpg"
   },
   ogImage: {
-    url: '/img/Blog1/Title.png',
+    url: "/img/Blog2/Title.jpg"
   },
+  tags: ["Masterarbeit"]
 }
 
-# 🚸 Schulwegsicherheit automatisiert bewerten (Teil 1)
 
-Willkommen zur ersten Ausgabe meiner Blog-Serie zur Masterarbeit! Hier nehme ich dich mit durch die verschiedenen Phasen meines Projekts – von der ersten Idee bis zur finalen Umsetzung. Ziel ist es, nicht nur meinen Prozess zu dokumentieren, sondern auch Fachinteressierten, Stadtplanenden und Neugierigen spannende Einblicke zu geben.
+# 🤖 Schulwegsicherheit automatisiert bewerten (Teil 1)
 
 ---
 
-## 🏫 Thema & Motivation
+## 🛰️ KI auf Luftbildern: Fussgängerstreifen automatisch erkennen
 
-**Thema:** Automatisierte Bewertung von Schulwegsicherheit mit Computer Vision
+Nachdem ich im ersten Teil meine Motivation und den konzeptionellen Rahmen vorgestellt habe, geht es nun ans **Eigentliche**:
 
-Die Sicherheit von Schulwegen ist ein zentrales Thema – nicht nur für Zürich. Wenn Kinder ihren Schulweg alleine bewältigen, müssen sie sich in komplexen Verkehrssituationen orientieren können. Der städtische Raum sollte sie dabei bestmöglich schützen.
+> Ich habe ein erstes Modell trainiert, das **Fussgängerstreifen in Luftbildern automatisch erkennt** – auf Basis von **YOLOv11** mit **gedrehten Bounding Boxes (OBB)**.
 
-Heute existieren in vielen Städten Schulwegkarten – auch Zürich hat solche entwickelt ([mehr dazu](https://www.stadt-zuerich.ch/schulen/de/organisation/schulwegsicherheit.html)). Das Problem: Diese basieren meist auf **manuellen Einschätzungen**. Die Bewertungen sind dadurch **zeitintensiv**, **wenig skalierbar** und zum Teil **subjektiv**.
-
-Genau hier setzt meine Masterarbeit an. Ich entwickle ein **automatisiertes Framework**, das auf Basis von **Street-Level-Bildern (Mapillary)**, **OpenStreetMap-Daten** und **Computer-Vision-Technologien** wie **YOLO** (You Only Look Once) sicherheitsrelevante Merkmale automatisch erkennt. Dazu gehören u.a.:
-
-- Fussgängerstreifen
-- Verkehrsinseln
-- Ampeln
-- Schulzonen und Temporeduktionen
-- Fahrbahnbreite und Sichtverhältnisse
-- ...
-
-## ✨ Motivation
-
-![Kinder im Verkehr Illustration](https://www.tcs.ch/mam/Digital-Media/Images/Illustrations/weblication/wThumbnails/die-strasse-und-ich-fussgaengerstreifen-9514cd287b1cc43g2a3d1ddd6e5be85b.webp)
-*Foto: Illustration TCS Schweiz*
-
-Die Motivation für meine Arbeit ist dreigeteilt:
-
-1. **Gesellschaftlich:** Kinder sollen ihren Schulweg sicher und selbständig zurücklegen können. Nur wenn Wege sicher sind, ist aktive Mobilität im Alltag möglich – mit positiven Folgen für Gesundheit, Umwelt und Stadtklima.
-2. **Fachlich:** In der Forschung gibt es zwar zahlreiche Studien zu Schulwegsicherheit oder auch zur Nutzung von Street-Level Imagery in der Stadtplanung – doch die Kombination beider Ansätze wurde bislang kaum gemacht.
-3. **Technologisch:** Der Einsatz von Computer Vision in der urbanen Analyse ist ein dynamisches Feld. Die Möglichkeit, damit automatisiert Infrastrukturmerkmale zu erkennen, eröffnet ganz neue Perspektiven für datenbasierte Stadtplanung.
+**Das Ziel:**
+> **Automatisierte Erkennung von Fussgängern und anderen Merkmalen auf Luftbildern**
 
 
 ---
 
-## 🛠️ Mein Workflow: Von der Idee zur Umsetzung
 
-Die Masterarbeit folgt einem klar strukturierten Arbeitsprozess, der mehrere Phasen umfasst:
+## ❓ Was habe ich vor – was ist **Image Recognition**?
 
-1. **Datenbeschaffung**  
-   Sammlung und Aufbereitung von Mapillary-Bildern, OSM-Daten und städtischen Geodaten
+Image Recognition ist eine Art von **Artificial Intelligence (AI)**. In einfachen Worten: Sie versucht, Muster und Objekte in Bildern zu erkennen – ähnlich wie das menschliche Auge, nur automatisiert und viel schneller.
 
-<RevealBox title="Beispiel: Mapillary-Viewer">
-<div style={{ width: '100%', maxWidth: '900px', margin: '0', aspectRatio: '16/9' }}>
-  <iframe
-    src="https://www.mapillary.com/embed?map_style=Mapillary%20light&image_key=1453935251611353&x=0.5&y=0.5&style=split"
-    allowFullScreen
-    style={{ width: '100%', height: '100%', minHeight: '350px', border: 'none', borderRadius: '12px', boxShadow: '0 2px 16px rgba(0,0,0,0.12)' }}
-  ></iframe>
-</div>
-*Mapillary ist eine open-source Datenbank für strassenbasierte Bilder*
+### 🏷️ Was sind die **Inputs**?
+- **Viele verschiedene Klassifikationen:** Für ein gutes Modell braucht man oft **mindestens 1000 Bilder pro Klasse**.
+  - Ich habe zunächst nur **2 Klassen** verwendet: **Fussgänger** und **Vortrittsregeln**.
+  - *(Siehe Beispielbild unten)*
+
+  <img src="/img/Blog2/Blog1_Klassifikationen.png" alt="Klassifikationen" style={{ aspectRatio: '1/1', width: '100%', height: 'auto', maxWidth: '900px' }} />
+
+
+- **Viele Bounding Boxes:** Also Boxen, die zeigen, wo sich welches Feature befindet: Klasse, x1, x2, x3, x4, y1, y2, y3, y4 *(siehe YOLO Oriented Bounding Boxes)*
+
+  <img src="/img/Blog2/aabb_vs_obb_madmann91_github.svg" alt="Bounding Boxes" style={{ width: '100%', height: 'auto', maxWidth: '400px' }} />
+
+---
+
+### Und jetzt?
+
+Mit einer Programmiersprache – ich benutze **Python** – kann man bereits vortrainierte Modelle nutzen, um diese mit eigenen Daten weiter zu trainieren. Je komplexer das Modell, desto länger dauert das Training (tendenziell), aber auch die Ergebnisse werden besser.
+
+> **Für meine Masterarbeit verwende ich YOLOv11** – ein kostenloses Modell für Forschungszwecke. Alternativen wären z.B. FastCRN oder andere.
+
+Wie läuft das Training ab?
+
+#### Mein Setting
+Für diese Modelle braucht man einen **leistungsstarken PC** oder Cloud-Services. Mein Setup
+- **Ryzen 7900x** und **RTX4080** (CUDA für YOLO Training)
+- **Gute Internetverbindung** (über 20GB Luftbilder werden benötigt):
+- **6–7 Stunden Wartezeit**
+<img src="/img/blog2/My_Setting.jpg" alt="MySetting" style={{ maxWidth: '50%' }} />
+
+---
+
+### 🐍 Python Code – Schritt für Schritt
+
+1. **Herunterladen aller Luftbilder**, die mit den Oriented Bounding Boxes überschneiden.
+2. **Zuschneiden** der Luftbilder in 512x512px Bilder (.tif): Die Koordinaten bleiben erhalten und sind georeferenziert.
+3. **Umrechnen der Bounding Box-Koordinaten** auf relative Werte (YOLO-Standard).
+4. **Modelltraining starten:**
+   - Je mehr **Epochs** (Wiederholungen), desto besser lernt das Modell.
+   - Je mehr **Bilder pro Durchlauf**, desto schneller das Training (aber auch höhere Hardware-Anforderungen).
+   - **Komplexere Modelle** finden mehr Features (z.B. ist das Nano-Modell schlechter als das Small- oder Medium-Modell).
+5. Nach ca. **5–6 Stunden Trainingszeit** habe ich die Bounding Boxes der erkannten Features.
+6. **Umrechnung** von relativen zu absoluten Koordinaten und **Validierung der Ergebnisse**.
+7. Jetzt kann das Modell **beliebig viele Luftbilder in wenigen Millisekunden bewerten**.
+
+---
+
+### ⚙️ Python: Technisch
+
+<RevealBox title="Technische Details: YOLOv11 Training & Datenpipeline">
+
+**Trainingsdaten:**
+- Luftbilder (SWISSIMAGE, Mapillary)
+- Manuell gelabelte Bounding Boxes (OBB)
+- Zwei Klassen: Fussgänger, Vortrittsregeln
+
+**Pipeline:**
+1. Download & Preprocessing der Bilder
+2. Zuschneiden, Georeferenzierung, Label-Konvertierung
+3. Training mit YOLOv11 (Python, CUDA, RTX4080)
+4. Validierung & Visualisierung der Ergebnisse
+
+**Code-Snippet (Python):**
+```python
+# Beispiel: Training mit YOLOv11
+from yolov11 import Trainer
+trainer = Trainer(
+    data='data.yaml',
+    model='yolov11-obb.yaml',
+    epochs=100,
+    imgsz=512,
+    device='cuda:0'
+)
+trainer.train()
+```
+
+**Hardware:** Ryzen 7900x, RTX4080, 64GB RAM
+
 </RevealBox>
+---
 
-2. **Feature-Erkennung**  
-   Anwendung von Objekterkennungsalgorithmen (z. B. YOLO) auf Street-Level-Bilder zur Identifikation sicherheitsrelevanter Merkmale
+## 🏁 Resultat
 
-3. **Georeferenzierung & Netzwerkmodellierung**  
-   Zuordnung der erkannten Merkmale auf ein GIS-Netzwerk/GIS-Karte – dabei Abwägung zwischen Vektor- und Rasterdaten
+Ich habe mein trainiertes Modell jetzt für die **Region Zürich** angewendet. Hier seht ihr das Resultat als Bildergalerie. Wenn ihr zum nächsten Post wollt, könnt ihr auch auf [diesen Link](/blogs/Blog3) drücken.
+<ImageGallery folder="/img/Blog2/img_galery_result" title="" showAll={false} />
 
-4. **Klassifikation**  
-   Bewertung der Sicherheit mittels Machine Learning (z. B. Entscheidungsbäume, Random Forest oder neuronale Netze)
+---
 
-5. **Validierung**  
-   Abgleich mit offiziellen Schulwegplänen und punktueller Vor-Ort-Kontrolle ausgewählter Routen
+## 🖼️ Weitere Impressionen
 
-6. **Übertragbarkeit**  
-   Diskussion, wie sich das Framework auf andere Städte und Regionen anwenden lässt
+<ImageGallery folder="/img/Blog2/img_galery" title="" showAll={false} />
 
-7. **Visualisierung**  
-   Eine visuell schöne Darstellung der Karte und einen möglichen Routenmechanismus
+
 
 ---
 
 ## 🔭 Ausblick
 
-Die kommenden Beiträge dieser Blog-Serie werden jeweils einen dieser Schritte näher beleuchten. Ich werde über technische Herausforderungen schreiben, über ethische Fragen beim Einsatz von KI im öffentlichen Raum und auch über ganz praktische Dinge: Welche Daten waren schwer zu bekommen? Was hat gut funktioniert – und was weniger?
+Im nächsten Beitrag (Teil 3) geht es um die **Erarbeitung eines automatisierten Workflows**: Wie kann ich mein "Rezeptbuch" für die Allgemeinheit (mit Python-Erfahrung) zur Verfügung stellen?
+
+**Bleibt dran!**
 
 ---
+Claude
 
-Bleibt also dran – im nächsten Beitrag geht es um den ersten technischen Ansatz und meine ersten Experimente mit YOLO auf **SWISSIMAGE-Luftbildern** zur Erkennung sicherheitsrelevanter Merkmale aus der Vogelperspektive.

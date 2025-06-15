@@ -1,0 +1,127 @@
+import RevealBox from "@/app/_components/RevealBox";
+import ImageGallery from '@/app/_components/ImageGallery'
+
+export const metadata = {
+  title: "Depth Estimation: Tiefe aus Bildern vorhersagen (Teil 2.2)",
+  excerpt: "Im diesem Teil zeige ich, wie ich mit modernen Deep-Learning-Modellen Tiefenkarten aus Bildern berechne, visualisiere und mit Segmentierungsergebnissen kombiniere.",
+  coverImage: "/img/Blog4/Titelbild.png",
+  date: "2025-06-15T12:00:00.000Z",
+  author: {
+    name: "Claude Widmer",
+    picture: "/img/Blog4/Titelbild.png"
+  },
+  ogImage: {
+    url: "/img/Blog4/Titelbild.png"
+  },
+  tags: ["Masterarbeit"]
+}
+
+# 🏞️ Depth Estimation: Tiefe aus Bildern vorhersagen (Teil 2.1)
+
+In diesem Teil meiner Serie geht es um ein zentrales Thema der Computer Vision: **Depth Estimation** – also die Schätzung von Tiefeninformationen aus 2D-Bildern. Ziel ist es, für jedes Pixel im Bild die Entfernung zur Kamera zu bestimmen. Das eröffnet ganz neue Möglichkeiten für die Analyse von Strassenszenen, die Kombination mit Segmentierungsergebnissen und die Entwicklung von Anwendungen wie 3D-Rekonstruktion, Navigation oder automatisierte Sicherheitsbewertungen.
+
+---
+
+## 🧠 Motivation & Bedeutung
+
+Warum ist Depth Estimation so spannend? In klassischen Segmentierungsaufgaben erkennen Modelle wie YOLOv11n, welche Objekte im Bild sind und wo sie sich befinden. Aber: Sie wissen nichts über die räumliche Tiefe! Erst mit einer Tiefenkarte kann man z.B. beurteilen, wie weit ein Fussgänger von der Kamera entfernt ist, wie hoch ein Hindernis ist oder wie sich die Szene in 3D rekonstruieren lässt.
+
+**Anwendungsbeispiele:**
+- Automatisierte Analyse von Schulwegen: Wie weit sind Hindernisse entfernt? Wo gibt es Engstellen?
+- 3D-Visualisierung und Augmented Reality
+- Navigation für autonome Fahrzeuge oder Roboter
+- Kombination mit Segmentierung für noch präzisere Analysen
+
+---
+
+## 🔬 Technischer Ansatz: Von Segmentierung zu Tiefe
+
+Nach der erfolgreichen Segmentierung mit YOLOv11n (siehe letzter Blog) folgt nun die Tiefenschätzung. Ich verwende dafür das Modell **LiheYoung/depth-anything-large-hf** aus der HuggingFace-Transformers-Bibliothek. Dieses Modell basiert auf modernen Vision-Transformern und ist in der Lage, aus beliebigen RGB-Bildern hochaufgelöste Tiefenkarten zu berechnen.
+
+### 🛠️ Pipeline im Detail
+
+1. **Vorbereitung der Bilder:**
+   - Die Eingangsbilder stammen aus dem Mapillary-Datensatz und wurden bereits für die Segmentierung verwendet.
+   - Die Bilder werden als RGB geladen und ggf. auf eine einheitliche Grösse skaliert.
+
+2. **Tiefenschätzung:**
+   - Das Modell wird mit dem HuggingFace-Pipeline-Interface geladen:
+   ```python
+   from transformers import pipeline
+   pipe_v3 = pipeline("depth-estimation", model="LiheYoung/depth-anything-large-hf")
+   ```
+   - Für jedes Bild wird die Tiefenkarte berechnet und als NumPy-Array gespeichert.
+
+3. **Invertierung & Normalisierung:**
+   - Da die Roh-Tiefenwerte oft invertiert sind (niedrige Werte = weit entfernt), werden sie umgerechnet, sodass grössere Werte grössere Tiefe bedeuten.
+   - Ungültige Werte (z.B. Maskenbereiche) werden mit 9999 markiert und bei der Statistik ignoriert.
+
+4. **Visualisierung:**
+   - Die Tiefenkarten werden mit einer Colormap (z.B. plasma) eingefärbt und als PNG gespeichert.
+   - Zusätzlich werden Vergleichsbilder mit den Segmentierungsergebnissen und den Originalbildern erzeugt.
+
+5. **Statistische Auswertung:**
+   - Für alle gültigen Tiefenwerte werden Minimum, Maximum, Mittelwert, Median und Standardabweichung berechnet.
+   - Die Resultate werden für spätere Analysen gespeichert.
+
+<RevealBox title="Kompletter Python-Workflow für Depth Estimation & Vergleich">
+```python
+from tqdm import tqdm
+import os
+from PIL import Image
+import numpy as np
+import torch
+from transformers import pipeline
+
+# Modell laden
+pipe_v3 = pipeline("depth-estimation", model="LiheYoung/depth-anything-large-hf")
+
+def compute_depth(image: Image.Image) -> np.ndarray:
+    result = pipe_v3(image)
+    return result["predicted_depth"].squeeze().cpu().numpy()
+
+def invert_depth_map(depth_map: np.ndarray) -> np.ndarray:
+    depth_map = np.maximum(depth_map, 0)
+    depth_map[depth_map < 1] = 9999
+    valid_mask = depth_map != 9999
+    valid_values = depth_map[valid_mask]
+    if valid_values.size == 0:
+        return None
+    d_min = valid_values.min()
+    d_max = valid_values.max()
+    inverted = np.copy(depth_map)
+    inverted[valid_mask] = d_max - (depth_map[valid_mask] - d_min)
+    return inverted
+
+# ... weitere Funktionen zur Speicherung, Visualisierung und Statistik ...
+```
+</RevealBox>
+
+---
+
+## 📊 Visualisierung & Vergleich
+
+Ein wichtiger Teil der Arbeit ist der direkte Vergleich zwischen Originalbild, Segmentierung und Tiefenkarte. Dafür habe ich eine Pipeline entwickelt, die für jedes Bild ein Vergleichsbild mit allen drei Varianten erzeugt:
+
+- **Originalbild**
+- **Tiefenkarte (Colormap)**
+- **Segmentierungsergebnis (YOLO)**
+
+Die Resultate werden als grosse Vergleichsbilder gespeichert und können direkt in einer Galerie betrachtet werden.
+
+<ImageGallery folder="/img/Blog4/Compare_Results" title="Vergleich Segmentierung & Depth" showAll={false} />
+
+
+---
+
+## 🔜 Ausblick: Was kommt als Nächstes?
+
+Im nächsten Schritt plane ich, die Tiefeninformationen noch enger mit den Segmentierungsergebnissen zu verknüpfen. Ziel ist es, für jede erkannte Objektklasse (z.B. Fussgänger, Fahrzeuge, Strasse) die durchschnittliche Tiefe zu berechnen.
+
+**Technische Ideen für die nächsten Schritte:**
+- **Objektbasierte Tiefenstatistik:** Für jedes Segment die mittlere und maximale Tiefe berechnen
+- **Vergleich mit Ground Truth:** Validierung der Tiefenkarten mit Referenzdaten
+
+---
+
+Claude 👨‍💻

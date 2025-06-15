@@ -1,5 +1,3 @@
-import RevealBox from "@/app/_components/RevealBox";
-
 export const metadata = {
   title: "Webseite Teil 4 – Mein Lebenslauf mit interaktiver Karte",
   excerpt: "In diesem Teil zeige ich, wie ich meinen Werdegang visuell mit Leaflet und React umgesetzt habe – direkt integriert in meine Webseite.",
@@ -17,13 +15,15 @@ export const metadata = {
 
 # 🗺️ Webseite Teil 4 – Mein Lebenslauf mit interaktiver Karte
 
-Der letzte Abschnitt meiner Webseite präsentiert meinen **beruflichen Werdegang** – nicht als klassische Liste, sondern kombiniert mit einer **interaktiven Karte**. Die Komponente `CV.tsx` nutzt im Inneren `CVMap.tsx` und basiert auf **React Leaflet**.
+Der letzte Abschnitt meiner Webseite zeigt meinen **beruflichen Werdegang** – nicht nur als klassische Liste, sondern kombiniert mit einer **interaktiven Karte**.  
+Diese Komponente heisst `CV.tsx` und nutzt im Inneren `CVMap.tsx`, basierend auf **React Leaflet**.
 
 ---
 
 ## 🌍 Warum eine Karte?
 
-Da ich im GIS-Bereich arbeite, lag es nahe, meinen Lebenslauf auch **räumlich zu visualisieren**. Statt nur Textblöcke zu zeigen, werden Standorte, Bildungsorte und Arbeitserfahrungen **visuell auf der Karte platziert** – inklusive Animationen und Tooltip-Effekten.
+Da ich im GIS-Bereich arbeite, lag es nahe, meinen Lebenslauf auch **räumlich zu visualisieren**.  
+Statt nur Textblöcke zu zeigen, wollte ich Standorte, Bildungsorte und Arbeitserfahrungen **visuell auf der Karte platzieren** – inklusive Animationen und Tooltip-Effekten.
 
 ---
 
@@ -31,21 +31,13 @@ Da ich im GIS-Bereich arbeite, lag es nahe, meinen Lebenslauf auch **räumlich z
 
 Die Komponente `CVMap.tsx` nutzt:
 
-- **Leaflet via React-Leaflet**
-- Maßgeschneiderte Marker mit Farben & Animation
-- Tooltip beim Hover
-- `flyTo()` für dynamisches Zoomen
+- **Leaflet via React-Leaflet**  
+- Massgeschneiderte Marker mit Farben & Animation  
+- Tooltip beim Hover  
+- `flyTo()` für dynamisches Zoomen  
 - Eine Timeout-Funktion, die automatisch zurück zur Übersicht fliegt
-- State-Management mit React, um z. B. den aktuell „gehoverten“ Eintrag hervorzuheben
 
-<RevealBox title="Technische Details zur CVMap und Karte">
-- Die Einträge (z. B. „Universität Zürich“) werden als Array gepflegt, mit id, label, position, type, title, details, start, end.
-- Die Marker werden dynamisch aus dem Array erzeugt und mit individuellen Icons versehen.
-- Bei Hover oder Klick wird per `flyTo` auf den Marker gezoomt und ein Tooltip angezeigt. Nach einigen Sekunden springt die Karte automatisch zurück.
-- Für mobile Geräte gibt es ein Autoplay: Die Karte fliegt automatisch im Intervall von Ort zu Ort und zeigt die Tooltips an.
-- Die Kartenhöhe und der Zoom werden je nach Gerät angepasst (z. B. 300px Höhe und Zoom 19 auf Mobile).
-- Die gesamte Logik ist so gebaut, dass neue Stationen oder weitere Features einfach ergänzt werden können.
-</RevealBox>
+Der Code enthält auch ein bisschen **State-Management mit React**, um z. B. den aktuell „gehoverten“ Eintrag visuell hervorzuheben und Infos synchron anzuzeigen.
 
 ---
 
@@ -76,9 +68,11 @@ Beispiel:
 
 ## ✨ Animation & UX
 
-Sobald man mit der Maus über eine Station fährt, zoomt die Karte automatisch darauf, zeigt den Tooltip – und springt nach einigen Sekunden wieder zurück. Das bringt Bewegung rein, ohne unruhig zu wirken.
+Sobald man mit der Maus über eine Station fährt, zoomt die Karte automatisch darauf, zeigt den Tooltip – und springt nach einigen Sekunden wieder zurück.  
+Das bringt Bewegung rein, ohne unruhig zu wirken.
 
-**Technisch** besteht der Aufbau aus einem `MapContainer`, einem `TileLayer` (z. B. von CartoDB), und einem dynamischen `Marker`-Array, das mithilfe von `map()` aus den `entries` erzeugt wird. Jeder `Marker` wird mit einem eindeutigen `key`, einem `position`-Array und einem individuell gestylten `icon` versehen. Zusätzlich sind `eventHandlers` für `mouseover` und `mouseout` eingebunden – damit der Tooltip erscheint und das automatische `flyTo` ausgelöst wird. Auch habe ich eingebaut, dass nach einer gewissen Zeit die Karte wieder an ihren Ursprungsort zurückgesetzt wird.
+**Technisch** besteht der Aufbau aus einem `MapContainer`, einem `TileLayer` (z. B. von CartoDB), und einem dynamischen `Marker`-Array, das mithilfe von `map()` aus den `entries` erzeugt wird.  
+Jeder `Marker` wird mit einem eindeutigen `key`, einem `position`-Array und einem individuell gestylten `icon` versehen. Zusätzlich sind `eventHandlers` für `mouseover` und `mouseout` eingebunden – damit der Tooltip erscheint und das automatische `flyTo` ausgelöst wird. Auch habe ich eingebaut, dass nach einer gewissen Zeit die Karte wieder an ihren Ursprungsort zurückgesetzt wird.
 
 Darüber hinaus habe ich folgendes speziell für mobile Geräte umgesetzt:
 
@@ -91,6 +85,8 @@ Darüber hinaus habe ich folgendes speziell für mobile Geräte umgesetzt:
 ### 🧩 Schematischer Aufbau
 
 ```tsx
+
+
 const entries = [
   {
     id: 'edu-1',
@@ -105,8 +101,10 @@ const entries = [
   // weitere Einträge …
 ];
 
+
 <MapContainer center={[46.8, 8.3]} zoom={8} ...>
   <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
+
   {entries.map(entry => (
     <Marker
       key={entry.id}

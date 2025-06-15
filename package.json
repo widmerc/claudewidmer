@@ -34,7 +34,8 @@
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.2",
     "shiki": "^3.6.0",
-    "swiper": "^11.2.8"
+    "swiper": "^11.2.8",
+    "yet-another-react-lightbox": "^3.23.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

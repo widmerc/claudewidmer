@@ -1,0 +1,201 @@
+import RevealBox from "@/app/_components/RevealBox";
+import ImageGallery from '@/app/_components/ImageGallery'
+
+export const metadata = {
+  title: "Segmentierung mit YOLO11n und Ausblick (Teil 2.1)",
+  excerpt: "In diesem Blog beschreibe ich meinen Ansatz zur Segmentierung mit YOLO11n und gebe einen Ausblick auf die nächsten Schritte (Depth Estimation).",
+  coverImage: "/img/Blog3/Titelbild.png",
+  date: "2025-06-15T12:00:00.000Z",
+  author: {
+    name: "Claude Widmer",
+    picture: "/img/Blog3/Titelbild.png"
+  },
+  ogImage: {
+    url: "/img/Blog3/Titelbild.png"
+  },
+  tags: ["Masterarbeit"]
+}
+
+# 🧩 Segmentierung mit YOLO11n (Teil 2.1)
+
+Dieser Blogpost ist noch in Arbeit! Ich beschreibe hier meinen Ansatz zur Segmentierung von Bildern mit YOLO11n und wie ich das Modell für meine Masterarbeit angepasst habe. In den nächsten Wochen werde ich diesen Beitrag noch weiter ausbauen und mit Ergebnissen ergänzen.
+
+---
+
+## 🚦 Modell: YOLO11n mit Segmentierung
+
+Für die Segmentierungsaufgabe habe ich das Modell **yolo11n-seg_tuning_10x10_trained_on_Mapillary_vistas** verwendet. Das Modell basiert auf YOLOv11n und wurde speziell für Segmentierungsaufgaben getunt:
+
+- **Tuning:** 10x10 Epochen (also 10 Durchläufe à 10 Epochen)
+- **Training:** Anschliessend 100 Epochen auf dem Mapillary Vistas Datensatz
+- **Ziel:** Automatische Segmentierung von Objekten in Strassenbildern
+
+<RevealBox title="Was ist Segmentierung mit YOLO11n?">
+Die Segmentierung ist ein wichtiger Schritt in der Bildanalyse. Dabei wird jedem Pixel im Bild eine Klasse zugeordnet – z.B. Strasse, Fussgänger, Auto, Gebäude usw. Das Modell YOLOv11n kann nicht nur Objekte erkennen, sondern auch deren genaue Umrisse (Segmente) bestimmen. Das ist besonders nützlich für Aufgaben wie Verkehrsanalysen oder die Bewertung von Strassenbildern.
+</RevealBox>
+
+<RevealBox title="Was ist der Mapillary Vistas Datensatz?">
+
+> **Mapillary Vistas Dataset:**
+>
+> Der [Mapillary Vistas Dataset](https://www.mapillary.com/dataset/vistas) ist ein umfangreicher, weltweit aufgenommener Datensatz mit mehreren zehntausend Strassenbildern, die von Nutzern bereitgestellt wurden. Er enthält pixelgenaue Segmentierungs-Labels für zahlreiche Objektklassen (z.B. Fahrzeuge, Fußgänger, Straßenschilder, Fahrbahnmarkierungen) und wird häufig für Forschung und Entwicklung im Bereich Computer Vision, insbesondere für semantische Segmentierung und autonome Systeme, verwendet.
+
+</RevealBox>
+
+
+
+---
+
+## 📝 Aktueller Stand
+
+Ich bin aktuell noch dabei, die Ergebnisse auszuwerten und die besten Visualisierungen zu erstellen. In den nächsten Tagen werde ich hier Beispielbilder, Metriken und weitere technische Details ergänzen.
+
+<ImageGallery folder="/img/Blog3/Predicted_On_Own" title="" showAll={false} />
+
+<br />
+
+<RevealBox title="Klassen im Mapillary Vistas Datensatz">
+
+Die folgenden Klassen werden im Mapillary Vistas Datensatz für die Segmentierung verwendet:
+
+```
+animal--bird
+animal--ground-animal
+construction--barrier--ambiguous
+construction--barrier--concrete-block
+construction--barrier--curb
+construction--barrier--fence
+construction--barrier--guard-rail
+construction--barrier--other-barrier
+construction--barrier--road-median
+construction--barrier--road-side
+construction--barrier--separator
+construction--barrier--temporary
+construction--barrier--wall
+construction--flat--bike-lane
+construction--flat--crosswalk-plain
+construction--flat--curb-cut
+construction--flat--driveway
+construction--flat--parking
+construction--flat--parking-aisle
+construction--flat--pedestrian-area
+construction--flat--rail-track
+construction--flat--road
+construction--flat--road-shoulder
+construction--flat--service-lane
+construction--flat--sidewalk
+construction--flat--traffic-island
+construction--structure--bridge
+construction--structure--building
+construction--structure--garage
+construction--structure--tunnel
+human--person--individual
+human--person--person-group
+human--rider--bicyclist
+human--rider--motorcyclist
+human--rider--other-rider
+marking--continuous--dashed
+marking--continuous--solid
+marking--continuous--zigzag
+marking--discrete--ambiguous
+marking--discrete--arrow--left
+marking--discrete--arrow--other
+marking--discrete--arrow--right
+marking--discrete--arrow--split-left-or-straight
+marking--discrete--arrow--split-right-or-straight
+marking--discrete--arrow--straight
+marking--discrete--crosswalk-zebra
+marking--discrete--give-way-row
+marking--discrete--give-way-single
+marking--discrete--hatched--chevron
+marking--discrete--hatched--diagonal
+marking--discrete--other-marking
+marking--discrete--stop-line
+marking--discrete--symbol--bicycle
+marking--discrete--symbol--other
+marking--discrete--text
+marking-only--continuous--dashed
+marking-only--discrete--crosswalk-zebra
+marking-only--discrete--other-marking
+marking-only--discrete--text
+nature--mountain
+nature--sand
+nature--sky
+nature--snow
+nature--terrain
+nature--vegetation
+nature--water
+object--banner
+object--bench
+object--bike-rack
+object--catch-basin
+object--cctv-camera
+object--fire-hydrant
+object--junction-box
+object--mailbox
+object--manhole
+object--parking-meter
+object--phone-booth
+object--pothole
+object--sign--advertisement
+object--sign--ambiguous
+object--sign--back
+object--sign--information
+object--sign--other
+object--sign--store
+object--street-light
+object--support--pole
+object--support--pole-group
+object--support--traffic-sign-frame
+object--support--utility-pole
+object--traffic-cone
+object--traffic-light--cyclists
+object--traffic-light--general-horizontal
+object--traffic-light--general-single
+object--traffic-light--general-upright
+object--traffic-light--other
+object--traffic-light--pedestrians
+object--traffic-sign--ambiguous
+object--traffic-sign--back
+object--traffic-sign--direction-back
+object--traffic-sign--direction-front
+object--traffic-sign--front
+object--traffic-sign--information-parking
+object--traffic-sign--temporary-back
+object--traffic-sign--temporary-front
+object--trash-can
+object--vehicle--bicycle
+object--vehicle--boat
+object--vehicle--bus
+object--vehicle--car
+object--vehicle--caravan
+object--vehicle--motorcycle
+object--vehicle--on-rails
+object--vehicle--other-vehicle
+object--vehicle--trailer
+object--vehicle--truck
+object--vehicle--vehicle-group
+object--vehicle--wheeled-slow
+object--water-valve
+void--car-mount
+void--dynamic
+void--ego-vehicle
+void--ground
+void--static
+```
+
+Jede Klasse beschreibt eine Objekt- oder Flächenart, die im Bild segmentiert werden kann (z.B. Fahrzeuge, Personen, Fahrbahnmarkierungen, Gebäude, Natur, Verkehrszeichen usw.).
+
+</RevealBox>
+
+---
+
+## 🔜 Was kommt als Nächstes? (Depth Estimation)
+
+Im nächsten Blogpost geht es um die **Schätzung von Tiefeninformationen (Depth Estimation)** aus Bildern. Das Ziel ist es, für jedes Pixel im Bild die Entfernung zur Kamera zu bestimmen – ein wichtiger Schritt für viele Computer-Vision-Anwendungen.
+
+---
+
+Bleib dran – der Blog wird laufend ergänzt!
+
+Claude 👨‍💻
