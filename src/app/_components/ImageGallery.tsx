@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import Captions from "yet-another-react-lightbox/plugins/captions";
@@ -29,7 +28,6 @@ function isMobile() {
 export default function ImageGallery({ images, folder, title, showAll = true }: ImageGalleryProps) {
   const [galleryImages, setGalleryImages] = useState<{ src: string; alt?: string }[]>(images || []);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const [lightboxVisible, setLightboxVisible] = useState(false); // Neu: Sichtbarkeit für Animation
   const [open, setOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -48,21 +46,13 @@ export default function ImageGallery({ images, folder, title, showAll = true }: 
 
   useEffect(() => {
     if (lightboxIndex !== null) {
-      setLightboxVisible(true);
+      // entfernt: setLightboxVisible(true);
     }
   }, [lightboxIndex]);
 
   const closeLightbox = () => {
-    setLightboxVisible(false); // Erst Animation abspielen
+    // entfernt: setLightboxVisible(false);
     setTimeout(() => setLightboxIndex(null), 250); // Nach Animation entfernen
-  };
-  const showPrev = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setLightboxIndex((prev) => (prev !== null ? (prev - 1 + galleryImages.length) % galleryImages.length : null));
-  };
-  const showNext = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setLightboxIndex((prev) => (prev !== null ? (prev + 1) % galleryImages.length : null));
   };
 
   // ESC zum Schließen des Lightbox-Vollbildmodus und Scroll-Lock, sowie Pfeiltasten für Navigation
@@ -82,47 +72,6 @@ export default function ImageGallery({ images, folder, title, showAll = true }: 
     };
     // eslint-disable-next-line
   }, [lightboxIndex]);
-
-  const [zoom, setZoom] = useState(false);
-  const [zoomOrigin, setZoomOrigin] = useState<'50% 50%' | string>('50% 50%');
-
-  // ESC schaltet Zoom aus, wenn aktiv
-  React.useEffect(() => {
-    if (!zoom) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setZoom(false);
-        setZoomOrigin('50% 50%');
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [zoom]);
-
-  // Für Zoom: Mausposition im Bild merken
-  // Zoom nur durch Klick toggeln, Mausbewegung für origin nur wenn zoom aktiv
-  function handleZoomToggle(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-    e.stopPropagation();
-    if (!zoom) {
-      // Zoom wird aktiviert: Mausposition als Startpunkt setzen
-      const rect = e.currentTarget.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width) * 100;
-      const y = ((e.clientY - rect.top) / rect.height) * 100;
-      setZoomOrigin(`${x}% ${y}%`);
-      setZoom(true);
-    } else {
-      setZoom(false);
-      // transformOrigin erst nach Animation zurücksetzen
-      setTimeout(() => setZoomOrigin('50% 50%'), 700);
-    }
-  }
-  function handleMouseMove(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-    if (!zoom) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setZoomOrigin(`${x}% ${y}%`);
-  }
 
   const visibleImages = showAll ? galleryImages : galleryImages.slice(0, 1);
 
