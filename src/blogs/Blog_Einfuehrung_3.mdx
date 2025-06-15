@@ -10,4 +10,57 @@ export const metadata = {
   tags: ["Masterarbeit"]
 }
 
-# NOCH MACHEN.
+# Arbeitsplan Masterarbeit
+
+In diesem Blogbeitrag stelle ich meinen geplanten Arbeitsablauf für die Masterarbeit vor. Ziel ist es, einen strukturierten und nachvollziehbaren Prozess zu schaffen, um die verschiedenen Schritte – von der Datenerhebung bis zur Webkarten-Integration – effizient umzusetzen.
+
+**Was ist noch zu tun?**
+
+- Detaillierte Ausarbeitung der einzelnen Arbeitsschritte
+- Zeitliche Planung und Meilensteine festlegen
+- Auswahl und Testen der benötigten Tools und Methoden
+- Literaturrecherche zu Klassifizierungsmethoden und Webkarten
+- Dokumentation der Zwischenergebnisse
+
+Im Folgenden findest du eine visuelle Timeline mit den wichtigsten Schritten:
+
+<div class="timeline-container">
+
+  <div class="timeline-step">
+    <div class="timeline-number">1</div>
+    <div class="timeline-box">
+      <b>Erarbeitung eines Modells (Raster) für die Modellierung des Raumes</b><br />
+      Wo kann man durchlaufen? Erstellung eines Rasters als Grundlage für die weitere Analyse.
+    </div>
+  </div>
+
+  <div class="timeline-step">
+    <div class="timeline-number">2</div>
+    <div class="timeline-box">
+      <b>Feature-Erkennung & Geolokalisierung</b>
+      <ul>
+        <li><b>2.1:</b> YOLO Image Recognition – Was ist auf den Bildern zu sehen? Verschiedene Versionen werden getestet.</li>
+        <li><b>2.2:</b> Depth Estimation – Erstellung einer Tiefenkarte.</li>
+        <li><b>2.3:</b> Zusammenführung & Geolokalisierung der in 2.1 gefundenen Features mithilfe der Bildkoordinaten und der Tiefenkarte aus 2.2.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="timeline-step">
+    <div class="timeline-number">3</div>
+    <div class="timeline-box">
+      <b>Klassifizierung der Features auf Schulwegsicherheit</b><br />
+      Anwendung von ML-Methoden oder Bewertung anhand von Literatur.
+    </div>
+  </div>
+
+  <div class="timeline-step">
+    <div class="timeline-number">4</div>
+    <div class="timeline-box">
+      <b>Webkarten-Integration</b><br />
+      Integration der Ergebnisse in eine Webkarte (z.B. QGIS Web Client 2, ArcGIS, etc.).<br />
+      <i>Hinweis: Einsatz von Docker zur Bereitstellung der Webanwendung.</i>
+    </div>
+  </div>
+
+</div>
