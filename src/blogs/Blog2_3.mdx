@@ -1,0 +1,97 @@
+import RevealBox from "@/app/_components/RevealBox";
+import ImageGallery from '@/app/_components/ImageGallery';
+
+export const metadata = {
+  title: "Pipeline: Wie kann man verschiedene Algorithmen zusammenführen? (Teil 2.3)",
+  excerpt: "In diesem Teil zeige ich, wie man die in Teil 2.0 - 2.2 vorgestellten Methoden zu einer einzigen zusammenführt.",
+  coverImage: "/img/Blog2_2/Title.png",
+  date: "2025-06-15T12:00:00.000Z",
+  author: {
+    name: "Claude Widmer",
+    picture: "/img/Blog2_2/Title.png"
+  },
+  ogImage: {
+    url: "/img/Blog2_2/Title.png"
+  },
+  tags: ["Masterarbeit"]
+};
+
+# 🔗 Pipeline: Wie kann man verschiedene Algorithmen zusammenführen? (Teil 2.3)
+
+In diesem Teil meiner Serie geht es darum, die in den vorherigen Teilen (2.0 - 2.2) vorgestellten Methoden zu einer einzigen, effizienten Pipeline zusammenzuführen. Ziel ist es, die verschiedenen Schritte – von der Bildvorbereitung über die Segmentierung bis hin zur Tiefenschätzung – nahtlos zu integrieren und die Ergebnisse in einer strukturierten Weise zu analysieren.
+
+---
+
+## 🧩 Motivation & Zielsetzung
+
+Warum ist die Integration der Algorithmen so wichtig? Einzelne Schritte wie Segmentierung oder Tiefenschätzung liefern bereits wertvolle Informationen. Doch erst durch die Kombination dieser Schritte entsteht ein vollständiges Bild, das für weiterführende Analysen und Anwendungen genutzt werden kann.
+
+**Anwendungsbeispiele:**
+- Automatisierte Analyse von Strassenszenen
+- Entwicklung von Sicherheitsbewertungen
+- Optimierung von autonomen Navigationssystemen
+
+---
+
+## 🔬 Technischer Ansatz: Die Pipeline im Detail
+
+Die Pipeline besteht aus mehreren Schritten, die aufeinander aufbauen:
+
+1. **Datenvorbereitung:**
+   - Bilder werden aus einem zentralen DataFrame geladen und auf eine einheitliche Grösse skaliert.
+
+2. **Objektdetektion:**
+   - Mithilfe eines YOLO-Algorithmus werden Objekte im Bild erkannt und ihre Bounding Boxes extrahiert.
+
+3. **Tiefenschätzung:**
+   - Für jedes erkannte Objekt wird die Tiefe geschätzt. Dabei wird entweder der Mittelwert, Median oder der Mittelpunkt der Bounding Box verwendet, um die Entfernung zu bestimmen.
+   - Die Ergebnisse werden in Kategorien wie "nah" oder "weit" klassifiziert, anstatt exakte Zahlenwerte zu verwenden, um die Analyse zu vereinfachen.
+
+4. **Visualisierung:**
+   - Vergleichsbilder mit Originalbild, Segmentierung und Tiefenkarte werden erstellt und in einer Galerie gespeichert.
+
+<RevealBox title="Kompletter Python-Workflow für die Pipeline">
+```python
+import pandas as pd
+from transformers import pipeline
+from PIL import Image
+
+# YOLO und Depth-Modelle laden
+pipe_yolo = ...  # Beispiel für YOLO-Setup
+pipe_depth = pipeline("depth-estimation", model="LiheYoung/depth-anything-large-hf")
+
+def process_image(image_path):
+    image = Image.open(image_path)
+    # Objektdetektion
+    objects = pipe_yolo(image)
+    # Tiefenschätzung
+    depth_map = pipe_depth(image)
+    # ... weitere Schritte ...
+    return objects, depth_map
+
+# ... weitere Funktionen zur Speicherung und Visualisierung ...
+```
+</RevealBox>
+
+---
+
+## 📊 Visualisierung & Vergleich
+
+Ein zentraler Bestandteil der Pipeline ist die Visualisierung der Ergebnisse. Für jedes Bild werden Vergleichsbilder erstellt, die Originalbild, Segmentierung und Tiefenkarte nebeneinander zeigen. Diese Bilder ermöglichen eine intuitive Analyse der Resultate.
+
+<ImageGallery folder="/img/Blog2_2/Result" title="Vergleich Segmentierung & Depth" showAll={false} />
+
+---
+
+## 🔜 Ausblick: Was kommt als Nächstes?
+
+Mit dem Abschluss von Schritt 2 meiner Masterarbeit ist der nächste logische Schritt die Klassifikation. Hierbei werde ich mich intensiv mit der Literatur auseinandersetzen, um die besten Ansätze und Methoden für die Klassifikation zu identifizieren und anzuwenden.
+
+**Geplante Schritte:**
+- **Literaturrecherche:** Analyse aktueller wissenschaftlicher Arbeiten und Methoden zur Klassifikation.
+- **Modellentwicklung:** Auswahl und Training eines geeigneten Klassifikationsmodells basierend auf den Erkenntnissen aus der Literatur.
+- **Integration:** Verknüpfung der Klassifikation mit den bisherigen Ergebnissen der Pipeline.
+
+---
+
+Claude 👨‍💻

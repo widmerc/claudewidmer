@@ -1,0 +1,237 @@
+import ImageGallery from '@/app/_components/ImageGallery'
+import RevealBox from "@/app/_components/RevealBox";
+import React from 'react';
+
+export const metadata = {
+  title: "Wie arbeite ich mit Big Data? (Mapillary)",
+  excerpt: "Im diesem Teil zeige ich, wie ich mit dem Mapillary API arbeite, um die Millionen Bilder zu verarbeiten.",
+  coverImage: "/img/Blog_2_0/Titelbild.jpg",
+  date: "2025-06-13T15:30:00.000Z",
+  author: {
+    name: "Claude Widmer",
+    picture: "/img/Blog_2_0/Titelbild.jpg"
+  },
+  ogImage: {
+    url: "/img/Blog_2_0/Titelbild.jpg"
+  },
+  tags: ["Masterarbeit"]
+}
+
+
+# Wie arbeite ich mit Big Data und lade über 1 Million Bilder herunter? (Teil 2.0)
+
+---
+
+## Big Data - Wie arbeite ich damit? Im Allgemeinen.
+
+Ich benutze Multiprocessing-Tools. Anstatt dass mein Python-Code hintereinander durchgeführt wird, wird er gleichzeitig in verschiedene <i>Threads</i> geteilt. Je besser die CPU des PCs ist, desto mehr Threads können gleichzeitig gestartet werden. Zudem kann man die Algorithmen so optimieren, dass z. B. die Anzahl der Aufrufe auf eine Liste minimiert wird oder dass ein Bild nur einmal geöffnet wird, anstatt immer wieder. Bei einem Bild ist das nicht nötig, jedoch bei mehreren Millionen Bildern ist das von zentraler Bedeutung.
+
+Zusätzlich habe ich die Algorithmen so umgestellt, dass die CPU und die GPU gleichzeitig verarbeiten können. Mithilfe von NVIDIA-Grafikprozessoren können z. B. Numpy-Operationen auf der GPU durchgeführt werden. Da die GPU eine andere Architektur hat, können somit viel mehr Daten parallel verarbeitet werden.
+
+---
+
+<div className="timeline-container">
+
+  <div className="timeline-step">
+    <div className="timeline-number">1</div>
+    <div className="timeline-box">
+    <b> Data Fetching </b><br />
+    API Mapillary: Alle Bilder als HTTPS-URLs abrufen
+    </div>
+  </div>
+
+  <div className="timeline-step">
+    <div className="timeline-number">2</div>
+    <div className="timeline-box">
+    <b> Blur Detection </b><br />
+    Alle Mapillary-Daten markieren, die unscharf sind (Variance of the Laplacian)
+    </div>
+  </div>
+
+</div>
+
+## Wie kann man Mapillary-Daten abrufen?
+
+Eine API (Application Programming Interface) ermöglicht es, Daten von einem Server abzurufen. Mapillary bietet eine API, mit der man Bilder und Metadaten abfragen kann. Allerdings gibt es Einschränkungen, wie z. B. ein Limit von 100 Bildern pro Anfrage. Um dieses Bottleneck zu umgehen, habe ich mehrere API-Keys verwendet und einen Algorithmus entwickelt, der effizienter arbeitet.
+
+### Schritte zum Abrufen der Daten:
+
+1. **Grid-basierte Abfragen:**
+   - Ein grobes Raster (z. B. 1 km x 1 km) wird verwendet, um Bereiche mit Bildern zu identifizieren.
+   - Wenn Bilder gefunden werden, wird das Raster schrittweise verfeinert (z. B. 500 m x 500 m, 250 m x 250 m), bis die kleinste Einheit (10 m x 10 m) erreicht ist.
+
+2. **Parallelisierung:**
+   - Mithilfe von `ThreadPoolExecutor` werden mehrere Threads gestartet, um die Anfragen parallel auszuführen.
+   - Ein Retry-Mechanismus stellt sicher, dass fehlgeschlagene Anfragen erneut gesendet werden.
+
+3. **Speicherung der Ergebnisse:**
+   - Die abgerufenen Daten werden in einem DataFrame gespeichert und als GeoPackage-Datei exportiert.
+
+### Performance:
+
+Durch die Parallelisierung konnte die Geschwindigkeit erheblich gesteigert werden. Ein Vergleich:
+
+| Modus              | Bilder | Zeit (Sekunden) |
+|--------------------|--------|-----------------|
+| Single Processing  | 98     | 66.95           |
+| Parallel Processing| 100    | 12.33           |
+
+
+## Wie kann man unscharfe Bilder herausfiltern?
+
+<RevealBox title="Was ist die Variance of the Laplacian?">
+  Die **Variance of the Laplacian**-Methode misst die Menge an Details oder Kanten in einem Bild. Dabei wird die Laplace-Transformation angewendet, um die Kanten hervorzuheben, und die Varianz der resultierenden Matrix berechnet. Bilder mit einer niedrigen Varianz haben weniger Kanten und werden als unscharf eingestuft.
+</RevealBox>
+
+### Schritte:
+
+1. **Datenvorbereitung:**
+   - Die Bilder werden basierend auf dem zuvor erstellten DataFrame heruntergeladen (Auflösung: 1024p).
+
+2. **Berechnung der Varianz:**
+   - Für jedes Bild wird die Laplace-Transformation angewendet, um die Kanten hervorzuheben.
+   - Die Varianz der resultierenden Matrix wird berechnet. Ein niedriger Wert deutet auf ein unscharfes Bild hin.
+
+
+3. **Markierung:**
+   - Unscharfe Bilder werden im DataFrame mit einem `True/False`-Wert markiert.
+
+<ImageGallery 
+  title="Beispielbilder für unscharfe und scharfe Bilder"
+  images={[{src: '/img/Blog_2_0/Detect_Blurry_Images.png'},{ src: '/img/Blog_2_0/blurred_example.jpg', alt: 'Unscharfes Bild' }, { src: '/img/Blog_2_0/sharp_example.jpg', alt: 'Scharfes Bild' }]}
+  showAll={true}
+/>
+
+Die unscharfen Bilder werden nicht gelöscht, da sie für zukünftige Aktualisierungen oder Analysen nützlich sein könnten.
+
+## Effiziente Abfrage und Verarbeitung von Mapillary-Daten
+
+### Ziel
+Das Ziel ist es, große Mengen an Mapillary-Bilddaten (über 1.200.000 Bilder) effizient abzufragen, zu verarbeiten und mit Metadaten anzureichern. Die Ergebnisse werden als GeoPackage-Dateien (GPKG) gespeichert, um sie für weitere räumliche Analysen zu nutzen.
+
+### Allgemeine Einrichtung
+
+Verwendete Technologien und Tools:
+
+- **ThreadPoolExecutor** für parallele Ausführung
+- **Mapillary API**:
+  - `images_in_bbox()` für räumliche Abfragen
+  - `graph.mapillary.com/{image_id}` für Metadaten
+- **GeoPandas** für die Verarbeitung und Speicherung geospatialer Daten
+- **Retry-Logik** und HTTP-Session-Pooling für stabile Anfragen
+
+**Eingabe:** Bounding Box (GeoJSON oder Koordinaten)  
+**Ausgabe:** Bilder und Metadaten, gespeichert als `.json` und `.gpkg`
+
+### Finaler Ansatz
+
+Nach mehreren Iterationen und Experimenten habe ich verschiedene Ansätze ausprobiert und schließlich den effizientesten Schritt implementiert: den Metadaten-Download über die Graph API.
+
+| Schritt | Strategie                                  | Geschätzte Zeit (ca.) |
+|---------|-------------------------------------------|------------------------|
+| -       | Benchmark (Parallel Mode)                 | ~12 Sekunden für 100 Bilder |
+| 1       | Brute-Force-Grid (10m-Kacheln, gesamtes Gebiet) | Mehrere Tage (unpraktikabel) |
+| 2       | Mehrere Tokens pro Worker                 | Immer noch >24 Stunden für 900.000+ Kacheln |
+| 3       | Hierarchisches Grid (WMS-Strategie)       | ~6-9 Stunden für das gesamte Gebiet |
+| 4       | Metadaten-Download über Graph API         | ~2 Stunden 8 Minuten (tatsächlich gemessen) |
+
+### Iterativer Ansatz – Lernschritte
+
+#### Benchmark: Single vs. Parallel Processing
+
+| Modus              | Bilder | Zeit (Sekunden) |
+|--------------------|--------|-----------------|
+| Single Processing  | 98     | 66.95           |
+| Parallel Processing| 100    | 12.33           |
+
+Parallelverarbeitung war bis zu 5-mal schneller. Da die Aufgabe I/O-gebunden ist (API-Aufrufe), funktioniert Threading hier gut. Allerdings mussten Ratenlimits und Fehlerbehandlung sorgfältig verwaltet werden.
+
+#### 1) Brute-Force-Grid mit 10m-Auflösung (Verworfen)
+
+**Ansatz:**
+Ein feines Raster (10m x 10m) wurde generiert, und `images_in_bbox()` wurde für jede Zelle abgefragt.
+
+**Probleme:**
+- Häufige HTTP 429-Fehler (zu viele Anfragen)
+- Viele unnötige Abfragen in leeren Bereichen
+- API gibt maximal 100 Ergebnisse zurück, was die Entdeckung unvollständig macht
+- Extrem langsam: hätte **Tage** gedauert
+
+#### 2) Verteilte Zugriffe mit mehreren API-Tokens (Verworfen)
+
+**Ansatz:**
+Jedem Worker/Thread wurde ein separater API-Zugriffstoken zugewiesen, um den Durchsatz zu erhöhen.
+
+**Probleme:**
+- Schwieriges Token-Management
+- Ratenlimits galten weiterhin pro Token
+- Keine signifikante Leistungssteigerung
+- Immer noch unnötige Anfragen in leeren Bereichen
+
+#### 3) Hierarchisches Grid (WMS-Pyramidenstrategie)
+
+**Ansatz:**
+Inspiriert von WMS-Tiles wurde ein zoom-basiertes Rastersystem implementiert:
+
+1. Start mit großen Rastern (z. B. 1 km x 1 km)
+2. Wenn Bilddaten vorhanden: weiter unterteilen (500m, 250m, …)
+3. Stoppen, wenn keine Daten gefunden werden
+4. Für leere übergeordnete Kacheln leere `.json` generieren und Kinder überspringen
+
+**Erkenntnisse:**
+Dieser Ansatz reduzierte die Anzahl der Anfragen drastisch. Unnötige Abfragen in leeren Bereichen wurden vermieden, während in datenreichen Bereichen eine feine Auflösung erreicht wurde.
+
+#### 4) Metadaten-Download über `graph.mapillary.com`
+
+**Ansatz:**
+Nach weiterer Recherche wurde die `Tiled Dataset` API verwendet, um grundlegende Informationen wie Image-ID und Sequence-ID über ein bestimmtes Gebiet abzurufen. Dies war sehr schnell (~1 Minute). Nach der Erstellung eines `.gpkg` mit den geografischen Koordinaten konnte für jedes Bild eine Anfrage für weitere Metadaten implementiert werden.
+
+**Optimierungen:**
+
+- Retry-Logik mit `urllib3` und `HTTPAdapter`
+- Parallelisierung mit `ThreadPoolExecutor`
+- Steuerung der Anfragerate:
+
+```python
+requests_per_minute = 50000
+safety_factor = 0.9
+min_delay = 60.0 / requests_per_minute
+max_workers = max(1, int(requests_per_minute * safety_factor * min_delay))
+```
+
+**Erkenntnisse:**
+Die Steuerung der Anfragerate war entscheidend. Selbst mit über 10.000 Threads konnte der Metadaten-Download in etwas mehr als 2 Stunden abgeschlossen werden, ohne Ratenlimits zu überschreiten.
+
+**Probleme:**
+- Bei falscher Konfiguration der Ratensteuerung: sofortiger HTTP 429-Fehler
+- Einige Bild-IDs konnten auch nach Wiederholungen nicht aufgelöst werden (über Logging behandelt)
+
+### Codebeispiel
+
+```python
+from Mapillary_Fetch_Metadata import fetch_and_convert_to_gdf  
+from Mapillary_Fetch_Metadata import load_and_fetch_metadata  
+
+if __name__ == "__main__":  
+    # Define polygon-shaped bounding box  
+    example_bbox = [ ... ]  
+    
+    # Define file paths  
+    basic_output_path/full_output_path/failed_ids_path
+    # Step 1: Download basic image features and write to file  
+    gdf = fetch_and_convert_to_gdf(example_bbox, basic_output_path)  
+    # Step 2: Download full metadata per image and write enriched GPKG  
+    merged_gdf = load_and_fetch_metadata( ... )  
+```
+
+## Weitere Schritte
+
+Mit dem erstellten DataFrame, das alle relevanten Informationen enthält, können die Bilder für Klassifikationen und Tiefenschätzungen verwendet werden. Im nächsten Schritt (2.3) werde ich die verschiedenen Prozesse zu einer Pipeline zusammenführen.
+
+---
+
+**Bleibt dran!**
+
+---
+Claude
+
