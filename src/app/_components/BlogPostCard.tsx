@@ -7,7 +7,7 @@ export default function BlogPostCard({ post }: { post: Post }) {
     <Link href={`/blogs/${post.slug}`} className="block h-full w-full">
       <div className="flex flex-col h-full bg-white border-2 border-gray-300 rounded-2xl overflow-hidden hover:border-accent-1 shadow hover:shadow-lg transition-all duration-300">
         {post.coverImage && (
-          <div className="relative w-full h-64 overflow-hidden flex-shrink-0">
+          <div className="relative w-full h-48 md:h-64 overflow-hidden flex-shrink-0"> {/* Adjusted height for smaller screens */}
             <Image
               src={post.coverImage}
               alt={post.title}

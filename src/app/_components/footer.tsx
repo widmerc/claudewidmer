@@ -1,7 +1,7 @@
 export function Footer() {
   return (
     <footer className="w-full bg-white/80 backdrop-blur-lg border-t border-gray-200 shadow-sm py-8 mt-20">
-      <div className="max-w-5xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-gray-800 dark:text-white">
+      <div className="max-w-5xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-gray-800">
         <p className="text-sm font-semibold">Made with <span className="text-red-500">❤️</span> by Claude Widmer</p>
         <div className="flex gap-6 items-center">
           <a href="https://www.linkedin.com/in/claude-widmer-a93315251/" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 transition" aria-label="LinkedIn">

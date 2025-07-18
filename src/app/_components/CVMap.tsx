@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, Tooltip } from 'react-leaflet';
@@ -99,16 +99,20 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
   const mapRef = useRef<LeafletMap | null>(null);
   const markerRefs = useRef<Record<string, L.Marker>>({});
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const defaultPosition: [number, number] = [46.8, 8.3];
+  // const defaultPosition: [number, number] = [46.8, 8.3];
+  const [activeTab, setActiveTab] = useState<'education' | 'experience'>('education');
 
-  const resetFlyTimeout = () => {
+  const bounds = L.latLngBounds(entries.map(entry => entry.position));
+  const extendedBounds = bounds.pad(0.1); // Add 20% margin
+
+  const resetFlyTimeout = useCallback(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
       Object.values(markerRefs.current).forEach((marker) => marker.closeTooltip());
       setHoveredId(null);
-      mapRef.current?.flyTo(defaultPosition, 8, { duration: 4 });
+      mapRef.current?.flyToBounds(extendedBounds, { duration: 4 });
     }, 10000);
-  };
+  }, [extendedBounds, setHoveredId]);
 
   const handleHover = (id: string, position: [number, number]) => {
     if (typeof window === 'undefined') return;
@@ -131,45 +135,30 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
     if (!mounted) return;
     resetFlyTimeout();
 
-    if (typeof window !== 'undefined' && window.innerWidth < 768) {
-      let currentIndex = 0;
-      const flyInterval = setInterval(() => {
-        const next = entries[currentIndex];
-        if (next) {
-          handleHover(next.id, next.position);
-          currentIndex = (currentIndex + 1) % entries.length;
-        }
-      }, 8000);
-
-      return () => {
-        clearInterval(flyInterval);
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      };
-    }
-
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, [mounted, handleHover, resetFlyTimeout]);
+  }, [mounted, resetFlyTimeout]);
 
   if (!mounted) return null;
+
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   return (
     <div>
       <h2 className="text-xl font-small text-center text-gray-800 mb-4">
         Visuell dargestellt
       </h2>
-      <div className="w-full h-[300px] md:h-[500px] rounded overflow-hidden mb-10 z-0 shadow-lg border-2 border-gray-200 dark:border-gray-700">
+      <div className="w-full h-[25vh] md:h-[500px] rounded overflow-hidden mb-10 z-0 shadow-lg border-2 border-gray-200">
         <MapContainer
-          center={defaultPosition}
-          zoom={8}
-          dragging={false}
-          zoomControl={false}
-          scrollWheelZoom={false}
+          bounds={extendedBounds}
+          dragging={isMobile}
+          zoomControl={isMobile}
+          scrollWheelZoom={isMobile}
           doubleClickZoom={false}
           boxZoom={false}
           keyboard={false}
-          touchZoom={false}
+          touchZoom={isMobile}
           style={{ height: '100%', width: '100%' }}
           ref={(instance) => {
             if (instance) mapRef.current = instance;
@@ -214,7 +203,7 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
                 <Tooltip
                   direction="top"
                   offset={[0, -10]}
-                  className="!bg-white !text-gray-900 !rounded !px-3 !py-1 !text-sm !shadow-md dark:!bg-gray-800 dark:!text-white"
+                  className="!bg-white !text-gray-900 !rounded !px-3 !py-1 !text-sm !shadow-md"
                 >
                   {entry.label}
                 </Tooltip>
@@ -224,72 +213,172 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
         </MapContainer>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-6">
-          <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">🎓 Bildung</h2>
-          {entries.filter(e => e.type === 'education').map((entry) => (
-            <motion.div
-              key={entry.id}
-              className="p-4 rounded-lg shadow-md transition border-2 cursor-pointer border-accent-2 hover:bg-blue-50 dark:border-blue-600"
-              onMouseEnter={() => {
-                if (timeoutRef.current) clearTimeout(timeoutRef.current);
-                timeoutRef.current = setTimeout(() => {
-                  handleHover(entry.id, entry.position);
-                }, 500);
-              }} onMouseLeave={() => {
-                if (timeoutRef.current) clearTimeout(timeoutRef.current);
-                setHoveredId(null);
-              }}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              viewport={{ once: true }}
-            >
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">{entry.label}</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">{entry.title}</p>
-              {entry.start && (
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {entry.start.toLocaleDateString('de-CH', { year: 'numeric', month: 'short' })} –{' '}
-                  {entry.end
-                    ? entry.end.toLocaleDateString('de-CH', { year: 'numeric', month: 'short' })
-                    : 'Heute'}{' '}
-                  ({formatDuration(entry.start, entry.end ?? new Date())})
-                </p>
-              )}
-              <p className="text-sm mt-2 text-gray-800 dark:text-white">{entry.details}</p>
-            </motion.div>
-          ))}
-        </div>
+      {isMobile ? (
+        <div className="flex justify-center mb-4">
+          <div>
+            <div className="flex justify-center mb-0">
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1 }}
+                className={`w-full px-6 py-3 border-2 font-bold text-gray-700 rounded-t-lg transition-colors duration-600 ${activeTab === 'education' ? 'bg-accent-2 border-accent-2 text-white' : 'bg-gray-100 border-gray-300'}`}
+                onClick={() => setActiveTab('education')}
+              >
+                🎓 Bildung
+              </motion.button>
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1 }}
+                className={`w-full px-6 py-3 border-2 font-bold text-gray-700 rounded-t-lg transition-colors duration-600 ${activeTab === 'experience' ? 'bg-accent-3 border-accent-3 text-white' : 'bg-gray-200 border-gray-300'}`}
+                onClick={() => setActiveTab('experience')}
+              >
+                💼 Erfahrung
+              </motion.button>
+            </div>
 
-        <div className="space-y-6">
-          <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">💼 Erfahrung</h2>
-          {entries.filter(e => e.type === 'experience').map((entry) => (
-            <motion.div
-              key={entry.id}
-              className="p-4 rounded-lg shadow-md transition border-2 cursor-pointer border-accent-3 hover:bg-green-50 dark:border-green-600"
-              onMouseEnter={() => handleHover(entry.id, entry.position)}
-              onMouseLeave={() => setHoveredId(null)}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              viewport={{ once: true }}
-            >
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">{entry.label}</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">{entry.title}</p>
-              {entry.start && (
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {entry.start.toLocaleDateString('de-CH', { year: 'numeric', month: 'short' })} –{' '}
-                  {entry.end
-                    ? entry.end.toLocaleDateString('de-CH', { year: 'numeric', month: 'short' })
-                    : 'Heute'}{' '}
-                  ({formatDuration(entry.start, entry.end ?? new Date())})
-                </p>
+            <div className="space-y-6">
+              {activeTab === 'education' && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1 }}
+                  className="p-6 rounded-b-lg rounded-t-none shadow-md bg-[#ae96d8] text-white"
+                >
+                  {entries.filter(e => e.type === 'education').map((entry) => (
+                    <motion.div
+                      key={entry.id}
+                      initial={{ opacity: 0}}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 1 }}
+                      className="p-6 rounded-lg shadow-lg bg-white text-black mb-4 border border-gray-300 hover:shadow-xl hover:bg-gray-50 transition-all"
+                    >
+                      <h3 className="text-lg font-bold text-gray-800">{entry.label}</h3>
+                      <p className="text-sm text-gray-600">{entry.title}</p>
+                      {entry.start && (
+                        <p className="text-sm text-gray-500">
+                          {entry.start.toLocaleDateString('de-CH', { year: 'numeric', month: 'short' })} –{' '}
+                          {entry.end
+                            ? entry.end.toLocaleDateString('de-CH', { year: 'numeric', month: 'short' })
+                            : 'Heute'}{' '}
+                          ({formatDuration(entry.start, entry.end ?? new Date())})
+                        </p>
+                      )}
+                      <p className="text-sm mt-2 text-gray-800">{entry.details}</p>
+                    </motion.div>
+                  ))}
+                </motion.div>
               )}
-              <p className="text-sm mt-2 text-gray-800 dark:text-white">{entry.details}</p>
-            </motion.div>
-          ))}
+
+              {activeTab === 'experience' && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1 }}
+                  className="p-6 rounded-b-lg rounded-t-none shadow-md bg-accent-3 text-white"
+                >
+                  {entries.filter(e => e.type === 'experience').map((entry) => (
+                    <motion.div
+                      key={entry.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 1 }}
+                      className="p-6 rounded-lg shadow-lg bg-white text-black mb-4 border border-gray-300 hover:shadow-xl hover:bg-gray-50 transition-all"
+                    >
+                      <h3 className="text-lg font-bold text-gray-800">{entry.label}</h3>
+                      <p className="text-sm text-gray-600">{entry.title}</p>
+                      {entry.start && (
+                        <p className="text-sm text-gray-500">
+                          {entry.start.toLocaleDateString('de-CH', { year: 'numeric', month: 'short' })} –{' '}
+                          {entry.end
+                            ? entry.end.toLocaleDateString('de-CH', { year: 'numeric', month: 'short' })
+                            : 'Heute'}{' '}
+                          ({formatDuration(entry.start, entry.end ?? new Date())})
+                        </p>
+                      )}
+                      <p className="text-sm mt-2 text-gray-800">{entry.details}</p>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+          <div className="space-y-6">
+            <h2 className="text-xl font-semibold text-gray-800">🎓 Bildung</h2>
+            {entries.filter(e => e.type === 'education').map((entry) => (
+              <motion.div
+                key={entry.id}
+                className="p-4 rounded-lg shadow-md transition border-2 cursor-pointer border-accent-2 hover:bg-blue-50"
+                onMouseEnter={() => {
+                  if (timeoutRef.current) clearTimeout(timeoutRef.current);
+                  timeoutRef.current = setTimeout(() => {
+                    handleHover(entry.id, entry.position);
+                  }, 500);
+                }}
+                onMouseLeave={() => {
+                  if (timeoutRef.current) clearTimeout(timeoutRef.current);
+                  setHoveredId(null);
+                }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                viewport={{ once: true }}
+              >
+                <h3 className="text-lg font-semibold text-gray-800">{entry.label}</h3>
+                <p className="text-sm text-gray-600">{entry.title}</p>
+                {entry.start && (
+                  <p className="text-sm text-gray-500">
+                    {entry.start.toLocaleDateString('de-CH', { year: 'numeric', month: 'short' })} –{' '}
+                    {entry.end
+                      ? entry.end.toLocaleDateString('de-CH', { year: 'numeric', month: 'short' })
+                      : 'Heute'}{' '}
+                    ({formatDuration(entry.start, entry.end ?? new Date())})
+                  </p>
+                )}
+                <p className="text-sm mt-2 text-gray-800">{entry.details}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="space-y-6">
+            <h2 className="text-xl font-semibold text-gray-800">💼 Erfahrung</h2>
+            {entries.filter(e => e.type === 'experience').map((entry) => (
+              <motion.div
+                key={entry.id}
+                className="p-4 rounded-lg shadow-md transition border-2 cursor-pointer border-accent-3 hover:bg-green-50"
+                onMouseEnter={() => handleHover(entry.id, entry.position)}
+                onMouseLeave={() => setHoveredId(null)}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                viewport={{ once: true }}
+              >
+                <h3 className="text-lg font-semibold text-gray-800">{entry.label}</h3>
+                <p className="text-sm text-gray-600">{entry.title}</p>
+                {entry.start && (
+                  <p className="text-sm text-gray-500">
+                    {entry.start.toLocaleDateString('de-CH', { year: 'numeric', month: 'short' })} –{' '}
+                    {entry.end
+                      ? entry.end.toLocaleDateString('de-CH', { year: 'numeric', month: 'short' })
+                      : 'Heute'}{' '}
+                    ({formatDuration(entry.start, entry.end ?? new Date())})
+                  </p>
+                )}
+                <p className="text-sm mt-2 text-gray-800">{entry.details}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

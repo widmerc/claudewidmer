@@ -64,7 +64,7 @@ export function TitleScreen() {
         }}
       />
       {/* Overlay */}
-      <div className="absolute top-0 left-0 w-full h-full bg-black/50 dark:bg-black/60" />
+      <div className="absolute top-0 left-0 w-full h-full bg-black/50" />
 
       {/* Inhalt */}
       <div className="relative z-10 flex flex-col items-center justify-center h-full text-white text-center px-6">

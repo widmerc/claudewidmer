@@ -18,9 +18,9 @@ const rawSkills = [
   { subject: { short: 'QGIS', long: 'QGIS' }, value: 90, category: ['Arbeit'] },
   { subject: { short: 'PyQGIS', long: 'PyQGIS' }, value: 85, category: ['Arbeit', 'Studium', 'Programmieren'] },
   { subject: { short: 'API', long: 'Geodaten (API)' }, value: 70, category: ['Arbeit'] },
-  { subject: { short: 'PostGIS', long: 'PostGIS (SQL)' }, value: 75, category: ['Studium'] },
+  { subject: { short: 'PostGIS', long: 'PostGIS' }, value: 75, category: ['Studium'] },
   { subject: { short: 'Interlis', long: 'Interlis' }, value: 80, category: ['Arbeit'] },
-  { subject: { short: 'ArcGIS', long: 'ArcGIS Pro' }, value: 60, category: ['Arbeit', 'Studium'] },
+  { subject: { short: 'ArcGIS', long: 'ArcGIS' }, value: 60, category: ['Arbeit', 'Studium'] },
   { subject: { short: 'R', long: 'R' }, value: 80, category: ['Studium', 'Programmieren'] },
   { subject: { short: 'Python', long: 'Python' }, value: 75, category: ['Arbeit', 'Studium', 'Programmieren'] },
   { subject: { short: 'React', long: 'React' }, value: 50, category: ['Freizeit', 'Programmieren'] },
@@ -29,15 +29,15 @@ const rawSkills = [
   { subject: { short: 'TS', long: 'Typescript' }, value: 50, category: ['Freizeit', 'Programmieren'] },
   { subject: { short: 'CV', long: 'Computer Vision' }, value: 60, category: ['Studium'] },
   { subject: { short: 'Statistik', long: 'Statistik' }, value: 65, category: ['Arbeit', 'Studium'] },
-  { subject: { short: 'Karto', long: 'Kartographie' }, value: 85, category: ['Arbeit', 'Studium'] },
-  { subject: { short: 'Analysen', long: 'Räumliche Analysen' }, value: 90, category: ['Arbeit', 'Studium'] },
+  { subject: { short: 'Kartographie', long: 'Kartographie' }, value: 85, category: ['Arbeit', 'Studium'] },
+  { subject: { short: 'Analysen', long: 'Analysen' }, value: 90, category: ['Arbeit', 'Studium'] },
   { subject: { short: 'MKA', long: 'Multikriterienanalyse' }, value: 85, category: ['Arbeit', 'Studium'] },
   { subject: { short: 'Geomedia', long: 'Geomedia' }, value: 40, category: ['Arbeit'] },
-  { subject: { short: 'Planung', long: 'Raumplanung' }, value: 70, category: ['Arbeit'] },
+  { subject: { short: 'Raumplanung', long: 'Raumplanung' }, value: 70, category: ['Arbeit'] },
   { subject: { short: 'Webdev', long: 'Webentwicklung' }, value: 60, category: ['Freizeit'] },
-  { subject: { short: 'Klavier', long: 'Klavierspielen' }, value: 60, category: ['Freizeit'] },
+  { subject: { short: 'Klavier', long: 'Klavier' }, value: 60, category: ['Freizeit'] },
   { subject: { short: 'Schwimmen', long: 'Schwimmen' }, value: 75, category: ['Freizeit'] },
-  { subject: { short: 'PC-Bau', long: 'Computer Zusammenbauen' }, value: 70, category: ['Freizeit'] }
+  { subject: { short: 'PC-Bau', long: 'PC-Bau' }, value: 70, category: ['Freizeit'] }
 ];
 const categories = ['Gesamt', 'Arbeit', 'Studium', 'Programmieren', 'Freizeit'] as const;
 
@@ -78,7 +78,7 @@ export default function SkillSpiderChart() {
   const [selectedCategory, setSelectedCategory] = useState<(typeof categories)[number]>('Gesamt');
   const { fontSize, outerRadius } = useResponsiveChartSettings();
 
-  // const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
 
   const filteredSkills =
     selectedCategory === 'Gesamt'
@@ -93,7 +93,9 @@ export default function SkillSpiderChart() {
   return (
     <PageWrapper >
 
-      <div className="w-full max-w-6xl mx-auto p-2">
+      <div className="w-full max-w-6xl mx-auto p-2 sm:p-1">
+                  <p className="text-xs text-gray-500 mb-2 text-center">Anklicken für eine detaillierte Ansicht der Fähigkeiten</p>
+
         <div className="flex justify-center gap-2 mb-6 flex-wrap">
           {categories.map((cat) => (
             <button
@@ -103,7 +105,7 @@ export default function SkillSpiderChart() {
                 ${
                   selectedCategory === cat
                     ? 'bg-accent-1 text-white border-accent-1'
-                    : 'bg-white text-gray-700 border-accent-3 dark:border-accent-3'
+                    : 'bg-white text-gray-700 border-accent-3'
                 }`}
             >
               {cat}
@@ -111,10 +113,10 @@ export default function SkillSpiderChart() {
           ))}
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-6">
-<div className="w-full lg:w-2/3 h-[300px] sm:h-[400px] md:h-[500px] flex items-start">
+        <div className="flex flex-col lg:flex-row gap-4">
+<div className="w-full lg:w-2/3 h-[250px] sm:h-[300px] md:h-[400px] flex items-start">
   <ResponsiveContainer width="100%" height="100%">
-              <RadarChart cx="50%" cy="40%" outerRadius={outerRadius} data={chartData} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+              <RadarChart cx="50%" cy="50%" outerRadius={outerRadius} data={chartData} margin={isMobile ? { top: -70, right: 0, bottom: -70, left: 0 } : { top: -10, right: 0, bottom: -10, left: 0 }}>
                 <PolarGrid />
                 <PolarAngleAxis dataKey="subject" tick={{ fill: 'currentColor', fontSize }} />
                 <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: 'currentColor', fontSize }} />
@@ -146,6 +148,16 @@ export default function SkillSpiderChart() {
 </AnimatePresence>
           </div>
         </div>
+
+        <div className="mt-6 text-xs text-gray-500 text-center">
+  <p>Abkürzungen:</p>
+  <p>
+    {rawSkills
+      .filter((skill) => skill.subject.short !== skill.subject.long)
+      .map((skill) => `${skill.subject.short} / ${skill.subject.long}`)
+      .join(' | ')}
+  </p>
+</div>
       </div>
     </PageWrapper>
   );

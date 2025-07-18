@@ -34,6 +34,7 @@ type Props = {
 };
 
 export default function PostList({ posts, showTagFilter = true }: Props) {
+//  const swiperRef = useRef<SwiperType | null>(null);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   // SSR-sicher: uniqueId erst auf dem Client generieren
   const [uniqueId, setUniqueId] = useState('');
@@ -71,35 +72,61 @@ export default function PostList({ posts, showTagFilter = true }: Props) {
               onClick={() => setSelectedTag(tag === selectedTag ? null : tag)}
               className={`px-3 py-1 rounded-full text-sm transition ${
                 selectedTag === tag
-                  ? 'bg-accent-1 text-white'
-                  : 'bg-gray-200 text-gray-700 dark:text-gray-300'
+                  ? 'bg-accent-3 text-white'
+                  : 'bg-gray-200 text-gray-700'
               }`}
             >
               #{tag}
             </button>
           ))}
-          </div>
-        )}
+        </div>
+      )}
 
-        {/* Navigation Buttons */}
-        <div className="absolute -left-6 top-1/2 z-10">
-          <button
-            className={`swiper-prev bg-white text-gray-800 border rounded-full w-12 h-12 shadow hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-accent-1 hover:font-bold border-2 text-2xl font-semibold transition flex items-center justify-center`}
-            id={uniqueId ? `swiper-prev-${uniqueId}` : undefined}
-            disabled={!uniqueId}
+      {/* Navigation Buttons */}
+      <div className="absolute left-4 top-1/2 z-10">
+        <button
+          className={`swiper-prev bg-white text-gray-700 border rounded-full w-12 h-12 shadow hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-accent-3 hover:font-bold border-2 text-2xl font-semibold transition flex items-center justify-center`}
+          id={uniqueId ? `swiper-prev-${uniqueId}` : undefined}
+          disabled={!uniqueId}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="3"
+            stroke="currentColor"
+            className="w-6 h-6"
           >
-            &#x2039;
-          </button>
-        </div>
-        <div className="absolute -right-7 top-1/2 z-10">
-          <button
-            className={`swiper-next bg-white text-gray-800 border rounded-full w-12 h-12 shadow hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-accent-1 hover:font-bold border-2 text-2xl font-semibold transition flex items-center justify-center`}
-            id={uniqueId ? `swiper-next-${uniqueId}` : undefined}
-            disabled={!uniqueId}
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </button>
+      </div>
+      <div className="absolute right-4 top-1/2 z-10">
+        <button
+          className={`swiper-prev bg-white text-gray-700 border rounded-full w-12 h-12 shadow hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-accent-3 hover:font-bold border-2 text-2xl font-semibold transition flex items-center justify-center`}
+          id={uniqueId ? `swiper-next-${uniqueId}` : undefined}
+          disabled={!uniqueId}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="3"
+            stroke="currentColor"
+            className="w-6 h-6"
           >
-            &#x203a;
-          </button>
-        </div>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </button>
+      </div>
 
       {/* Swiper */}
       <AnimatePresence mode="wait">
@@ -121,12 +148,13 @@ export default function PostList({ posts, showTagFilter = true }: Props) {
               loop={false}
               spaceBetween={30}
               speed={800}
+              pagination={{ clickable: true }} // Enable bullet pagination
               breakpoints={{
-                0: { slidesPerView: 1 },
-                640: { slidesPerView: 1.2 },
-                768: { slidesPerView: 1.5 },
-                1024: { slidesPerView: 2 },
-                1280: { slidesPerView: 2.5 },
+                0: { slidesPerView: 1.5, spaceBetween: 10 }, // Reduced space for smaller screens
+                640: { slidesPerView: 1.5, spaceBetween: 15 },
+                768: { slidesPerView: 3.5, spaceBetween: 20 },
+                1024: { slidesPerView: 3.5, spaceBetween: 30 },
+                1280: { slidesPerView: 4.5, spaceBetween: 20 },
               }}
             >
               {filteredPosts.map((post) => (
@@ -147,6 +175,8 @@ export default function PostList({ posts, showTagFilter = true }: Props) {
           </motion.div>
         )}
       </AnimatePresence>
+
+     
     </div>
   );
 }

@@ -32,7 +32,7 @@ export default function HorizontalPostSlider({ posts, tag }: Props) {
       <div className="absolute -left-5 top-1/2 z-10">
         <button
           id={`prev-${tag}`}
-          className="bg-white text-gray-800 border rounded-full w-10 h-10 shadow hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+          className="bg-white text-gray-800 border rounded-full w-10 h-10 shadow hover:bg-gray-100 transition"
         >
           ‹
         </button>
@@ -40,7 +40,7 @@ export default function HorizontalPostSlider({ posts, tag }: Props) {
       <div className="absolute -right-5 top-1/2 z-10">
         <button
           id={`next-${tag}`}
-          className="bg-white text-gray-800 border rounded-full w-10 h-10 shadow hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+          className="bg-white text-gray-800 border rounded-full w-10 h-10 shadow hover:bg-gray-100 transition"
         >
           ›
         </button>
@@ -66,7 +66,7 @@ export default function HorizontalPostSlider({ posts, tag }: Props) {
         {posts.map((post) => (
           <SwiperSlide key={post.slug} className="h-[420px] flex">
             <Link href={`/blogs/${post.slug}`} className="block h-full w-full">
-              <div className="flex flex-col h-full bg-white border-4 border-gray-200 rounded-xl overflow-hidden hover:border-accent-1 shadow hover:shadow-lg transition-all duration-300">
+              <div className="flex flex-col h-full bg-white border-4 border-gray-200 rounded-xl overflow-hidden hover:border-accent-3 shadow hover:shadow-lg transition-all duration-300">
                 {post.coverImage && (
                   <Image
                     src={post.coverImage}

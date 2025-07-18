@@ -37,7 +37,7 @@ export default function BlogSearchAndList({ allTags, tagMap, featuredPosts = [],
             placeholder="Hashtag suchen..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="px-4 py-2 border-2 border-gray-300 rounded-lg w-full max-w-xs text-gray-800 bg-white focus:outline-none transition-colors duration-200 hover:border-accent-1 hover:ring-accent-1"
+            className="px-4 py-2 border-2 border-gray-300 rounded-lg w-full max-w-xs text-gray-800 bg-white focus:outline-none transition-colors duration-200 hover:border-accent-3 hover:ring-accent-3"
           />
         </div>
       </FadeInOnScroll>

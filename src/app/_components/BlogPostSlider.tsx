@@ -26,7 +26,7 @@ export default async function BlogPostSlider() {
         <div className="flex justify-center mt-6">
           <a
             href="/blog_overview"
-            className="inline-block px-6 py-1 rounded-full border-2 border-accent-1 text-accent-1 font-extrabold text-lg tracking-wide bg-white shadow-md hover:bg-accent-1 hover:text-white hover:shadow-lg transition-all duration-200"
+            className="inline-block px-6 py-1 rounded-full border-2 border-accent-3 text-accent-3 font-extrabold text-lg tracking-wide bg-white shadow-md hover:bg-accent-3 hover:text-white hover:shadow-lg transition-all duration-200"
             style={{ fontFamily: 'Montserrat, Inter, Arial, sans-serif' }}
           >
             Alle Blogposts ansehen

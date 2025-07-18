@@ -18,11 +18,11 @@ const About: React.FC = () => {
   return (
     <>
       <FadeInOnScroll>
-        <SectionSeparator text="👋 Über mich" />
+        <SectionSeparator text="Über mich" />
       </FadeInOnScroll>
 
       <FadeInOnScroll>
-        <section className="max-w-3xl mx-auto text-center mb-6">
+        <section className="max-w-3xl mx-auto text-center mb-6 px-4">
           <p className="text-md text-gray-700 leading-relaxed mb-4">
             Ich bin {age} Jahre alt, begeistere mich für Geoinformatik, räumliche Datenanalyse und moderne Webtechnologien.
             Mit Erfahrung aus Studium, Beruf und Freizeit entwickle ich datengetriebene Lösungen mit GIS, Python, R und Webtechnologien.
@@ -37,7 +37,7 @@ const About: React.FC = () => {
               rel="noopener noreferrer"
             >
               <svg
-                className="w-6 h-6 text-gray-800 dark:text-white"
+                className="w-6 h-6 text-gray-800"
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -57,12 +57,12 @@ const About: React.FC = () => {
             {/* GitHub */}
             <a
               href="https://github.com/claudewidmer"
-              className="mx-3 text-black hover:text-gray-800 dark:hover:text-white duration-200 transition-colors"
+              className="mx-3 text-black hover:text-gray-800 duration-200 transition-colors"
               target="_blank"
               rel="noopener noreferrer"
             >
               <svg
-                className="w-6 h-6 text-gray-800 dark:text-white"
+                className="w-6 h-6 text-gray-800"
                 fill="currentColor"
                 viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg"
@@ -93,7 +93,7 @@ const About: React.FC = () => {
 
 
       <FadeInOnScroll>
-        <SectionSeparator text="🛠️ Meine Fähigkeiten" />
+        <SectionSeparator text="Meine Fähigkeiten" />
       </FadeInOnScroll>
       <FadeInOnScroll>
         <SkillRadar />
@@ -104,9 +104,19 @@ const About: React.FC = () => {
       </FadeInOnScroll>
       <FadeInOnScroll>
         <CV />
+        <SectionSeparator text="Neugierig?" className="mt-0" />
+        <p className="text-center text-gray-700 mt-4">
+          Wenn du mehr über meine Projekte erfahren möchtest, kannst du auch gerne meine Blogs durchstöbern.
+        </p>
+        <div className="flex justify-center mt-4">
+          <a
+            href="/blog_overview"
+            className="px-6 py-2 bg-accent-3 text-white font-bold rounded-lg shadow-md hover:bg-accent-3 transition-colors"
+          >
+            Zu den Blogs
+          </a>
+        </div>
       </FadeInOnScroll>
-
-
     </>
   );
 };

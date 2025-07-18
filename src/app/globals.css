@@ -157,3 +157,13 @@ div.prose {
   }
 }
 
+html {
+  font-size: 16px; /* Standardgröße */
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 12px; /* Kleinere Schriftgröße für mobile Geräte */
+  }
+}
+

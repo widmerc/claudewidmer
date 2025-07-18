@@ -69,12 +69,12 @@ export default async function BlogPage({ params }: BlogPageProps) {
         <Container>
           <PageWrapper className="text-left">
             <FadeInOnScroll>
-              <h1 className="text-3xl font-bold mb-4 text-gray-800 dark:text-white mt-8">
+              <h1 className="text-3xl font-bold mb-4 text-gray-800 mt-8">
                 {title}
               </h1>
             </FadeInOnScroll>
             <FadeInOnScroll>
-              <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
+              <p className="text-sm text-gray-600 mb-6">
                 {new Date(date).toLocaleDateString("de-CH", {
                   day: "2-digit",
                   month: "2-digit",
@@ -108,9 +108,9 @@ export default async function BlogPage({ params }: BlogPageProps) {
                     {prev && prev.slug !== slug ? (
                       <a
                         href={`/blogs/${prev.slug}`}
-                        className="group flex-1 sm:flex-none sm:w-1/2 p-4 border rounded-2xl shadow hover:shadow-md transition bg-white dark:bg-zinc-900 border-accent-3 hover:bg-accent-3/10 dark:hover:bg-accent-3/20 no-underline"
+                        className="group flex-1 sm:flex-none sm:w-1/2 p-4 border rounded-2xl shadow hover:shadow-md transition bg-white border-accent-3 hover:bg-accent-3/10  no-underline"
                       >
-                        <span className="block font-semibold text-accent-3 dark:text-accent-3 mb-2">← {prev.metadata.title}</span>
+                        <span className="block font-semibold text-accent-3 mb-2">← {prev.metadata.title}</span>
                       </a>
                     ) : (
                       <div className="hidden sm:block sm:w-1/2" />
@@ -118,9 +118,9 @@ export default async function BlogPage({ params }: BlogPageProps) {
                     {next && next.slug !== slug ? (
                       <a
                         href={`/blogs/${next.slug}`}
-                        className="group flex-1 sm:flex-none sm:w-1/2 p-4 border rounded-2xl shadow hover:shadow-md transition bg-white dark:bg-zinc-900 border-accent-3 hover:bg-accent-3/10 dark:hover:bg-accent-3/20 text-right no-underline"
+                        className="group flex-1 sm:flex-none sm:w-1/2 p-4 border rounded-2xl shadow hover:shadow-md transition bg-white border-accent-3 hover:bg-accent-3/10 text-right no-underline"
                       >
-                        <span className="block font-semibold text-accent-3 dark:text-accent-3 mb-2">{next.metadata.title} →</span>
+                        <span className="block font-semibold text-accent-3 mb-2">{next.metadata.title} →</span>
                       </a>
                     ) : (
                       <div className="hidden sm:block sm:w-1/2" />

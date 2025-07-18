@@ -9,7 +9,7 @@ const SkillCard: React.FC<SkillCardProps> = ({ backgroundImage, text }) => {
   return (
 <div
   className="relative flex flex-col items-center justify-center bg-cover bg-center 
-             px-4 sm:p-3 md:p-4 rounded-md border-4 border-accent-1 group 
+             px-4 sm:p-3 md:p-4 rounded-md border-4 border-accent-3 group 
              w-50 sm:w-46 md:w-50 h-20 sm:h-24 md:h-28 mx-auto"
   style={{ backgroundImage: `url(${backgroundImage})` }}
 >

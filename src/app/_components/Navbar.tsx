@@ -15,7 +15,7 @@ export default function Navbar() {
         >
           Claude Widmer
         </Link>
-        <div className="flex gap-12 items-center text-lg font-semibold text-gray-800 dark:text-white">
+        <div className="flex gap-12 items-center text-lg font-semibold text-gray-800">
           <Link href="/" className="hover:text-accent-500 transition">
             Home
         </Link>
