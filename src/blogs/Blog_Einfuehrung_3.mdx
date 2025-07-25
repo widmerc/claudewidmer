@@ -14,7 +14,6 @@ export const metadata = {
 
 In diesem Blogbeitrag stelle ich meinen geplanten Arbeitsablauf für die Masterarbeit vor.
 
-
 Im Folgenden findest du einen visuellen Arbeitsplan mit den wichtigsten Schritten:
 <div className="timeline-legend">
   <b>Legende:</b><br />
@@ -70,3 +69,187 @@ Im Folgenden findest du einen visuellen Arbeitsplan mit den wichtigsten Schritte
 
 </div>
 
+
+<hr />
+
+# Arbeitsplan Masterarbeit (Detailansicht)
+
+<div className="multi-stage">
+
+  {/* 1 – Rastermodell */}
+  <div className="main-stage">
+    <div className="main-title">1. Erarbeitung eines Modells (Raster)</div>
+    <div className="main-input">
+      <>
+        <strong>Input:</strong>
+        <ul>
+          <li>Bounding Box von Zürich</li>
+        </ul>
+      </>
+    </div>
+
+    <div className="sub-steps">
+      <div className="sub-box">
+        <div className="sub-title">1.1 Raster-Erstellung</div>
+        <div className="sub-detail">
+          <>
+            <strong>Input:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+        <div className="sub-detail">
+          <>
+            <strong>Algorithmus:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+        <div className="sub-detail">
+          <>
+            <strong>Output:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+      </div>
+    </div>
+
+    <div className="main-output">
+      <>
+        <strong>Output:</strong>
+        <ul><li>wird ergänzt</li></ul>
+      </>
+    </div>
+  </div>
+
+  {/* 2 – Feature-Erkennung & Geolokalisierung */}
+  <div className="main-stage">
+    <div className="main-title">2. Feature-Erkennung & Geolokalisierung</div>
+    <div className="main-input">
+      <>
+        <strong>Input:</strong>
+        <ul>
+          <li>Bounding Box von Zürich</li>
+          <li>Mapillary API Token(s)</li>
+          <li>Stammverzeichnis (z. B. <code>ROOT_PATH = ./</code>)</li>
+        </ul>
+      </>
+    </div>
+
+    <div className="sub-steps">
+
+      <div className="sub-box">
+        <div className="sub-title">2.0 Mapillary Data Retrieval</div>
+                
+        <div className="sub-detail">
+          <>
+          <img src="/img/Blog_Einfuehrung_3/2_0_Image.png" alt="Blog Einführung 3 - Bild 2.0" style={{ width: '100%', height: 'auto', maxWidth: '400px' }} />
+          </>
+        </div>
+        <div className="sub-detail">
+          <>
+            <strong>Input:</strong>
+            <ul>
+              <li><code>Bounding Box</code> von Zürich</li>
+              <li><code>GPKG_PATH = ./data/images_bbox_fullmeta.gpkg</code></li>
+              <li>Spalte <code>thumb_1024_url</code> mit 1024p-URLs</li>
+              <li><code>LAPLACIAN_THRESHOLD</code>: Threshold für die Bildunschärfen-Erkennung (100)</li>
+            </ul>
+          </>
+        </div>
+        <div className="sub-detail">
+          <>
+            <strong>Algorithmus:</strong>
+            <ul>
+              <li><strong>Laden von Geodaten:</strong> Das Notebook lädt Geodaten und Metadaten über die Mapillary API herunter (über 1,2 Millionen Bilder) und bereitet sie für die Analyse vor.</li>
+              <li><strong>Erkennung von unscharfen Bildern:</strong> Es überprüft die Bildqualität, um unscharfe Bilder zu identifizieren via Laplacian Methode (mit einem Threshold).</li>
+              <li><strong>Zuordnung der Ergebnisse:</strong> Die Ergebnisse der Unschärfeprüfung werden den Bildern zugeordnet.</li>
+              <li><strong>Speichern der Daten:</strong> Die aktualisierten Geodaten werden in einer neuen GeoPackage-Datei gespeichert.</li>
+            </ul>
+          </>
+        </div>
+        <div className="sub-detail">
+          <>
+            <strong>Output:</strong>
+            <ul>
+              <li><strong> Geopackage </strong> mit allen Metadaten von den 1.2 Millionen Bildern und die Information, ob das Bild unscharf ist.</li>
+            </ul>
+          </>
+        </div>
+      </div>
+
+      <div className="sub-box">
+        <div className="sub-title">2.1 YOLO Image Recognition</div>
+        <div className="sub-detail">
+          <>
+            <strong>Input:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+        <div className="sub-detail">
+          <>
+            <strong>Algorithmus:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+        <div className="sub-detail">
+          <>
+            <strong>Output:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+      </div>
+
+      <div className="sub-box">
+        <div className="sub-title">2.2 Depth Estimation</div>
+        <div className="sub-detail">
+          <>
+            <strong>Input:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+        <div className="sub-detail">
+          <>
+            <strong>Algorithmus:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+        <div className="sub-detail">
+          <>
+            <strong>Output:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+      </div>
+
+      <div className="sub-box">
+        <div className="sub-title">2.3 Zusammenführung & Geolokalisierung</div>
+        <div className="sub-detail">
+          <>
+            <strong>Input:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+        <div className="sub-detail">
+          <>
+            <strong>Algorithmus:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+        <div className="sub-detail">
+          <>
+            <strong>Output:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+      </div>
+
+    </div>
+
+    <div className="main-output">
+      <>
+        <strong>Output:</strong>
+        <ul><li>wird ergänzt</li></ul>
+      </>
+    </div>
+  </div>
+
+</div>
