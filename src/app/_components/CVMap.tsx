@@ -114,19 +114,6 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
     }, 10000);
   }, [extendedBounds, setHoveredId]);
 
-  const handleHover = (id: string, position: [number, number]) => {
-    if (typeof window === 'undefined') return;
-    Object.values(markerRefs.current).forEach((marker) => marker.closeTooltip());
-    setHoveredId(id);
-
-    const isMobile = window.innerWidth < 768;
-    const zoomLevel = isMobile ? 16 : 18;
-
-    mapRef.current?.flyTo(position, zoomLevel, { duration: 2 });
-    markerRefs.current[id]?.openTooltip();
-    resetFlyTimeout();
-  };
-
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -140,9 +127,67 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
     };
   }, [mounted, resetFlyTimeout]);
 
-  if (!mounted) return null;
-
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+useEffect(() => {
+  if (!mounted || isMobile) return;
+
+  const runTour = async () => {
+    const sequence: ('education' | 'experience')[] = ['education', 'experience'];
+
+    while (true) {
+      for (const type of sequence) {
+        setActiveTab(type);
+
+        // ⏱ Warten, bis Marker sichtbar/renderbar sind
+        await new Promise(r => setTimeout(r, 300));
+
+        const filtered = entries.filter(e => e.type === type).reverse();
+
+        for (const entry of filtered) {
+          // ✅ 1. Box sofort hervorheben
+          const boxElement = document.getElementById(entry.id);
+          if (boxElement) {
+            boxElement.classList.add(type === 'education' ? 'bg-purple-50' : 'bg-green-50');
+            setTimeout(() => {
+              boxElement.classList.remove(type === 'education' ? 'bg-purple-50' : 'bg-green-50');
+            }, 10000);
+          }
+
+          // ✅ 2. FlyTo (4s)
+          mapRef.current?.flyTo(entry.position, 16, { duration: 4 });
+          await new Promise(r => setTimeout(r, 4000));
+
+          // ✅ 3. Tooltip öffnen
+          markerRefs.current[entry.id]?.openTooltip();
+
+          // ✅ 4. Tooltip sichtbar lassen (5s)
+          await new Promise(r => setTimeout(r, 5000));
+          markerRefs.current[entry.id]?.closeTooltip();
+
+          // ✅ 5. Kurze Pause (1s)
+          await new Promise(r => setTimeout(r, 1000));
+        }
+
+        // ✅ 6. Pause zwischen Bildung & Erfahrung
+        await new Promise(r => setTimeout(r, 5000));
+      }
+
+      // ✅ 7. Zurück zur Startübersicht
+      setActiveTab('education');
+      await new Promise(r => setTimeout(r, 300)); // Wieder Marker laden lassen
+      mapRef.current?.flyToBounds(extendedBounds, { duration: 4 });
+      await new Promise(r => setTimeout(r, 5000));
+    }
+  };
+
+  runTour();
+}, [mounted, isMobile, extendedBounds]);
+
+
+
+
+
+  if (!mounted) return null;
 
   return (
     <div>
@@ -169,16 +214,17 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
             url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
           />
 
-          {entries.map((entry) => {
+          {entries.filter(e => !isMobile || e.type === activeTab).map((entry) => {
             const color = entry.type === 'education' ? '#ae96d8' : '#9fc35e';
             const size = hoveredId === entry.id ? 20 : 14;
+            const hoverClass = entry.type === 'education' ? 'hover:bg-purple-50' : 'hover:bg-green-50';
 
             return (
               <Marker
                 key={entry.id}
                 position={entry.position}
                 icon={new L.DivIcon({
-                  className: 'custom-icon',
+                  className: `custom-icon ${hoverClass}`,
                   html: `<div style="background-color: ${color}; width: ${size}px; height: ${size}px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 6px ${color};"></div>`,
                   iconSize: [size, size],
                   iconAnchor: [size / 2, size / 2],
@@ -204,8 +250,19 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
                   direction="top"
                   offset={[0, -10]}
                   className="!bg-white !text-gray-900 !rounded !px-3 !py-1 !text-sm !shadow-md"
+                  permanent={hoveredId === entry.id}
                 >
-                  {entry.label}
+                  <div>
+                    <p className="font-bold">{entry.title}</p>
+                    {entry.start && (
+                      <p>
+                        {entry.start.toLocaleDateString('de-CH', { year: 'numeric', month: 'short' })} –{' '}
+                        {entry.end
+                          ? entry.end.toLocaleDateString('de-CH', { year: 'numeric', month: 'short' })
+                          : 'Heute'}
+                      </p>
+                    )}
+                  </div>
                 </Tooltip>
               </Marker>
             );
@@ -251,7 +308,8 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
                   {entries.filter(e => e.type === 'education').map((entry) => (
                     <motion.div
                       key={entry.id}
-                      initial={{ opacity: 0}}
+                      id={entry.id}
+                      initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 1 }}
@@ -285,6 +343,7 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
                   {entries.filter(e => e.type === 'experience').map((entry) => (
                     <motion.div
                       key={entry.id}
+                      id={entry.id}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
@@ -317,17 +376,8 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
             {entries.filter(e => e.type === 'education').map((entry) => (
               <motion.div
                 key={entry.id}
-                className="p-4 rounded-lg shadow-md transition border-2 cursor-pointer border-accent-2 hover:bg-blue-50"
-                onMouseEnter={() => {
-                  if (timeoutRef.current) clearTimeout(timeoutRef.current);
-                  timeoutRef.current = setTimeout(() => {
-                    handleHover(entry.id, entry.position);
-                  }, 500);
-                }}
-                onMouseLeave={() => {
-                  if (timeoutRef.current) clearTimeout(timeoutRef.current);
-                  setHoveredId(null);
-                }}
+                id={entry.id} 
+                className="p-4 rounded-lg shadow-md transition border-2 cursor-pointer border-accent-2 hover:bg-purple-50"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
@@ -354,9 +404,8 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
             {entries.filter(e => e.type === 'experience').map((entry) => (
               <motion.div
                 key={entry.id}
+                id={entry.id}
                 className="p-4 rounded-lg shadow-md transition border-2 cursor-pointer border-accent-3 hover:bg-green-50"
-                onMouseEnter={() => handleHover(entry.id, entry.position)}
-                onMouseLeave={() => setHoveredId(null)}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
