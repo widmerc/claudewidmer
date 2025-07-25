@@ -13,11 +13,11 @@ interface FadeInOnScrollProps {
 const FadeInOnScroll: React.FC<FadeInOnScrollProps> = ({
   children,
   delay = 0,
-  duration = 5000,
-  yOffset = 200,
+  duration = 1000,
+  yOffset = 100,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: false, margin: "-20px" });
+  const inView = useInView(ref, { once: false, margin: "20px" });
   const lastY = React.useRef<number>(0);
   const [scrollDirection, setScrollDirection] = React.useState<'down' | 'up'>('down');
 
