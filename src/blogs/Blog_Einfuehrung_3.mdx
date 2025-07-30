@@ -176,49 +176,116 @@ Im Folgenden findest du einen visuellen Arbeitsplan mit den wichtigsten Schritte
         </div>
       </div>
 
-      <div className="sub-box">
-        <div className="sub-title">2.1 YOLO Image Recognition</div>
-        <div className="sub-detail">
+<div className="sub-box">
+  <div className="sub-title">2.1 YOLO Image Recognition Training</div>
+          <div className="sub-detail">
           <>
-            <strong>Input:</strong>
-            <ul><li>wird ergänzt</li></ul>
+          <img src="/img/Blog_Einfuehrung_3/2_1_Image.png" alt="Blog Einführung 3 - Bild 2.1" style={{ width: '100%', height: 'auto', maxWidth: '400px' }} />
           </>
         </div>
-        <div className="sub-detail">
-          <>
-            <strong>Algorithmus:</strong>
-            <ul><li>wird ergänzt</li></ul>
-          </>
-        </div>
-        <div className="sub-detail">
-          <>
-            <strong>Output:</strong>
-            <ul><li>wird ergänzt</li></ul>
-          </>
-        </div>
-      </div>
+  <div className="sub-detail">
+    <>
+      <strong>Input:</strong>
+      <ul>
+        <li>Mapillary Segmentation and Object Detection Dataset</li>
+        <li>YOLO-kompatible Labeldateien (YOLOv8 Format)</li>
+      </ul>
+    </>
+  </div>
+  <div className="sub-detail">
+    <>
+      <strong>Algorithmus:</strong>
+      <ul>
+        <li>Laden von Trainings- und Validierungsdaten aus YOLO-kompatiblen Pfaden</li>
+        <li>Verwendung eines YOLOv8-Medium-Modells (<code>yolo11m-seg.pt</code>) mit vortrainierten Gewichten</li>
+        <li>Durchführung eines Segmentierungs- und Objekterkennungs-Trainings mit Mixed Precision (AMP)</li>
+        <li>Anwendung von Transfer Learning und Feinjustierung über 100+ Epochen mit Early Stopping</li>
+        <li>Optimizer automatisch gewählt (AdamW) mit automatischer Lernratenanpassung</li>
+        <li>Evaluation nach jeder Epoche mit mAP, Precision und Recall</li>
+        <li>Training und Vergleich unterschiedlicher Modellgrössen (n, s, m, l)</li>
+        <li>Über 12 Stunden Trainingszeit für das Medium-Modell, insgesamt über 48 Stunden zur Modellevaluierung (RTX 4080, 64 GB RAM)</li>
+      </ul>
+    </>
+  </div>
+  <div className="sub-detail">
+    <>
+      <strong>Output:</strong>
+      <ul>
+        <li>Trainiertes YOLO-Modell (<code>best.pt</code>)</li>
+        <li>Evaluationsmetriken (Precision, Recall, mAP50, mAP50-95)</li>
+        <li>Trainingsplots und Ergebnisvisualisierungen</li>
+      </ul>
+    </>
+  </div>
+<div className="sub-detail">
+  <>
+    <strong>Probleme:</strong>
+    <ul>
+      <li>Aufgrund des sehr grossen Datensatzes (über 18'000 Bilder) konnte nicht der gesamte Umfang für das Training genutzt werden.</li>
+      <li>Die verfügbare Rechenleistung (GPU/VRAM) war limitiert, was zu kleineren Batchgrössen und kürzeren Trainingszeiten führte.</li>
+      <li>Dadurch litt insbesondere der <strong>Recall</strong> (Erkennungsrate), da das Modell viele Objekte nicht zuverlässig detektierte.</li>
+      <li>Zusätzlich erschwerten die grosse Klassenvielfalt und unbalancierte Verteilung die Generalisierung.</li>
+    </ul>
+  </>
+</div>
+</div>
 
-      <div className="sub-box">
-        <div className="sub-title">2.2 Depth Estimation</div>
-        <div className="sub-detail">
-          <>
-            <strong>Input:</strong>
-            <ul><li>wird ergänzt</li></ul>
-          </>
-        </div>
-        <div className="sub-detail">
-          <>
-            <strong>Algorithmus:</strong>
-            <ul><li>wird ergänzt</li></ul>
-          </>
-        </div>
-        <div className="sub-detail">
-          <>
-            <strong>Output:</strong>
-            <ul><li>wird ergänzt</li></ul>
-          </>
-        </div>
-      </div>
+<div className="sub-box">
+  <div className="sub-title">2.2 Depth Estimation Processing</div>
+  <div className="sub-detail">
+    <>
+    <img src="/img/Blog_Einfuehrung_3/2_2_Image.png" alt="Blog Einführung 3 - Bild 2.2" style={{ width: '100%', height: 'auto', maxWidth: '400px' }} />
+    </>
+  </div>
+  <div className="sub-detail">
+    <>
+      <strong>Input:</strong>
+      <ul>
+        <li>Die 1.2 Millionen Bilder vom Schritt 2.0</li>
+        <li>Pfadliste aller validen Bilder (vorvalidiert via PIL)</li>
+      </ul>
+    </>
+  </div>
+  <div className="sub-detail">
+    <>
+      <strong>Algorithmus:</strong>
+      <ul>
+        <li>Scannen aller .jpg-Dateien im Datensatzordner</li>
+        <li>Parallelvalidierung mittels PIL, um defekte Bilder zu filtern</li>
+        <li>Reduktion der Bildauflösung (50 %) zur Performance-Optimierung</li>
+        <li>Batchweise Tiefenschätzung mittels <code>depth-anything</code> Pipeline (HuggingFace)</li>
+        <li>Optionales Invertieren der Tiefenwerte für GIS-Konsistenz</li>
+        <li>Export der Tiefendaten als .npz (komprimiert, float16)</li>
+        <li>Optional: Export von Tiefenbildern und Histogrammen zur visuellen Kontrolle</li>
+        <li>Speicherbereinigung und GPU-Freigabe nach jeder Batch für stabile Laufzeit</li>
+      </ul>
+    </>
+  </div>
+  <div className="sub-detail">
+    <>
+      <strong>Output:</strong>
+      <ul>
+        <li>Tiefenkarten im .npz-Format (komprimiert, float16)</li>
+        <li>Optional: Visualisierungen der Tiefenbilder (.png)</li>
+        <li>Optional: Histogramme der Tiefenverteilung pro Bild</li>
+        <li>Gespeichert im Unterordner <code>depth_processed/</code></li>
+      </ul>
+    </>
+  </div>
+  <div className="sub-detail">
+    <>
+      <strong>Probleme:</strong>
+      <ul>
+        <li>Volle Auflösung führte zu Out-of-Memory-Fehlern → Downscaling nötig</li>
+        <li>Einige Bilder konnten trotz vorheriger Validierung nicht verarbeitet werden (Pipeline-Fehler)</li>
+        <li>Speicherfreigabe und Garbage Collection war nötig, um GPU-Nutzung stabil zu halten</li>
+        <li>Laufzeit von über 12 Stunden für alle Bilder (RTX 4080, 64 GB RAM, 128er Batch-Grösse)</li>
+        <li>Hohe Modellqualität, aber keine Echtzeitverarbeitung möglich</li>
+      </ul>
+    </>
+  </div>
+</div>
+
 
       <div className="sub-box">
         <div className="sub-title">2.3 Zusammenführung & Geolokalisierung</div>
