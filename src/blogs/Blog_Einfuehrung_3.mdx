@@ -1,7 +1,7 @@
 export const metadata = {
-  title: "Arbeitsplan Masterarbeit (Einführung)",
+  title: "Arbeitsplan Masterarbeit (Stand August)",
   excerpt: "Mein Plan für die Organisation der Masterarbeit",
-  coverImage: "/img/Blog_Einfuehrung_3/Titelbild.png",
+  coverImage: "/img/Blog_Einfuehrung_3/Titelbild.jpg",
   date: "2025-05-22T12:00:00.000Z",
   author: {
     name: "Claude Widmer",
@@ -15,20 +15,13 @@ export const metadata = {
 In diesem Blogbeitrag stelle ich meinen geplanten Arbeitsablauf für die Masterarbeit vor.
 
 Im Folgenden findest du einen visuellen Arbeitsplan mit den wichtigsten Schritten:
-<div className="timeline-legend">
-  <b>Legende:</b><br />
-  <span></span> 🟢: Erstes Modell erstellt<br />
-  <span></span> 🟡: Modell in Erarbeitung<br />
-  <span></span> 🟠: Noch nicht begonnen
-</div>
-
 
 <div className="timeline-container">
 
   <div className="timeline-step">
     <div className="timeline-number">1</div>
     <div className="timeline-box">
-      <b>Erarbeitung eines Modells (Raster) für die Modellierung des Raumes 🟢 </b><br />
+      <b>Erarbeitung eines Modells (Raster) für die Modellierung des Raumes</b><br />
       Wo kann man durchlaufen? Erstellung eines Rasters als Grundlage für die weitere Analyse.
     </div>
   </div>
@@ -38,14 +31,11 @@ Im Folgenden findest du einen visuellen Arbeitsplan mit den wichtigsten Schritte
     <div className="timeline-box">
       <b>Feature-Erkennung & Geolokalisierung</b>
       <ul>
-
-        <li><b>2.0:</b> Mapillary Data Retrieval - Wie kann man über eine Million Bilder vom Mapillary herunterladen und verarbeiten? 🟠 -> 🟢</li>
-
-        <li><b>2.1:</b> YOLO Image Recognition – Was ist auf den Bildern zu sehen? Verschiedene Versionen werden getestet.🟢</li>
-
-        <li><b>2.2:</b> Depth Estimation – Erstellung einer Tiefenkarte.🟡 -> 🟢</li>
-
-        <li><b>2.3:</b> Zusammenführung & Geolokalisierung der in 2.1 gefundenen Features mithilfe der Bildkoordinaten und der Tiefenkarte aus 2.2. 🟠 -> 🟢</li>
+        <li><b>2.0:</b> Mapillary Data Retrieval – Download und Metadaten-Erfassung der Bildkacheln.</li>
+        <li><b>2.1:</b> YOLO Image Recognition Training – Training und Evaluation der Modelle.</li>
+        <li><b>2.2:</b> Depth Estimation – Berechnung von Tiefenkarten und Ableitung von Distanzklassen.</li>
+        <li><b>2.3:</b> YOLO Object Detection Processing – Inferenz auf validen Bildern und Zusammenführen der Ergebnisse.</li>
+        <li><b>2.4:</b> Object Geolocation – Projektion der Detektionen in LV95 mittels Kamerawinkel & FOV-Offset.</li>
       </ul>
     </div>
   </div>
@@ -53,22 +43,25 @@ Im Folgenden findest du einen visuellen Arbeitsplan mit den wichtigsten Schritte
   <div className="timeline-step">
     <div className="timeline-number">3</div>
     <div className="timeline-box">
-      <b>Klassifizierung der Features auf Schulwegsicherheit🟠</b><br />
-      Anwendung von ML-Methoden oder Bewertung anhand von Literatur.
+      <b>Klassifikation der Schulwegsicherheit</b><br />
+      <ul>
+        <li><b>3.1:</b> Bewertung der Sicherheit von Schulwegen anhand der in Schritt&nbsp;2 gewonnenen Objektdaten mit Machine-Learning-Techniken.</li>
+        <li><b>3.2:</b> Ergänzende Klassifikation durch regelbasierte Parameter (definierte Kriterien zur Einschätzung der Sicherheit).</li>
+      </ul>
+      Ziel ist es, die erkannten Objekte systematisch in Bezug auf ihre Relevanz für die
+      Schulwegsicherheit auszuwerten und daraus eine nachvollziehbare Einschätzung abzuleiten.
     </div>
   </div>
 
   <div className="timeline-step">
     <div className="timeline-number">4</div>
     <div className="timeline-box">
-      <b>Webkarten-Integration🟠 -> 🟡 (Serverseitig fertig)</b><br />
-      Integration der Ergebnisse in eine Webkarte (z.B. QGIS Web Client 2, ArcGIS, etc.).<br />
-      <i>Hinweis: Einsatz von Docker zur Bereitstellung der Webanwendung.🟡 -> 🟢</i>
+      <b>Webkarten-Integration</b><br />
+      Aufbau einer interaktiven Karte zur Visualisierung der Resultate 
+      (Objektdetektionen, Geolokalisierung, Sicherheitsklassifikation).
     </div>
   </div>
-
 </div>
-
 
 <hr />
 
@@ -345,6 +338,123 @@ Im Folgenden findest du einen visuellen Arbeitsplan mit den wichtigsten Schritte
     </div>
   </div>
 
+<div className="sub-box">
+  <div className="sub-title">2.4 Object Geolocation</div>
+
+  <div className="sub-detail">
+    <img 
+      src="/img/Blog_Einfuehrung_3/2_4_Image.jpg" 
+      alt="Objekt-Geolokalisierung: von Bild-Detektion zu LV95-Koordinaten" 
+      style={{ width: '100%', height: 'auto', maxWidth: '400px' }} 
+    />
+  </div>
+
+  <div className="sub-detail">
+    <strong>Input:</strong>
+    <ul>
+      <li>YOLO-Detektionen als <code>.parquet</code> (BBox, Klasse, Konfidenz, z_class)</li>
+      <li>Mapillary GPKG mit Kameraposition und Metadaten (z. B. <code>id</code>, <code>is_pano</code>, <code>computed_compass_angle</code>, <code>computed_geometry</code>)</li>
+      <li>Parameter: Bildbreite (<code>image_width</code>) und Sichtfeld (<code>fov</code>)</li>
+    </ul>
+  </div>
+
+  <div className="sub-detail">
+    <strong>Algorithmus (ohne OSM):</strong>
+    <ul>
+      <li>
+        Join YOLO ↔ Mapillary:
+        <ul>
+          <li>Match über <code>image_id</code> (YOLO) und <code>id</code> (Mapillary); Filtere irrelevante Labels und sehr ferne z-Klassen.</li>
+          <li>Erzeuge Geometrie aus <code>computed_geometry</code> (WGS84) und projiziere nach LV95 (<code>EPSG:2056</code>).</li>
+        </ul>
+      </li>
+      <li>
+        Winkel- und Distanz-Adjustierung pro Objekt:
+        <ul>
+          <li>Bestimme BBox-Zentrum (<code>cx</code>) und berechne Blickrichtungs-Offset: <code>((cx / image_width) − 0.5) * fov</code>.</li>
+          <li>Finaler Azimut = <code>computed_compass_angle + Offset</code>.</li>
+          <li>Verschiebe den Kamera-Punkt entlang dieses Winkels um eine z-klassenabhängige Distanz (z. B. <b>very near: 5 m</b>, <b>near: 7.5 m</b>, <b>medium: 20 m</b>).</li>
+        </ul>
+      </li>
+      <li>Parallelisierung in Chunks, Schreiben als <code>.parquet</code> (LV95-Punkte mit <code>x_adj</code>/<code>y_adj</code>).</li>
+    </ul>
+  </div>
+
+  <div className="sub-detail">
+    <strong>Output:</strong>
+    <ul>
+      <li><code>joined_dataset.parquet</code> – verknüpfte Rohdaten (Kamerapositionen)</li>
+      <li><code>adjusted_dataset.parquet</code> – geolokalisierte Objektpunkte (LV95) mit Adjustierung</li>
+    </ul>
+  </div>
+
+  <div className="sub-detail">
+    <strong>Herausforderungen:</strong>
+    <ul>
+      <li>Approximative Distanzen aus z-Klassen → Positionsfehler abhängig von FOV und BBox-Lage</li>
+      <li>Unterschiedliche Bildtypen (Panorama vs. Nicht-Panorama)</li>
+      <li>Performance bei sehr grossen Datensätzen → Multiprocessing, Parquet einsetzen</li>
+    </ul>
+  </div>
+</div>
+
+
+
+
+
+<div className="sub-box">
+  <div className="sub-title">2.5 YOLO Objekterkennung auf SWISSIMAGE Orthofotos</div>
+  <div className="sub-detail">
+    <img 
+      src="/img/Blog_Einfuehrung_3/2_5_Image.jpg" 
+      alt="Blog Einführung 3 - Bild 2.5" 
+      style={{ width: '100%', height: 'auto', maxWidth: '400px' }} 
+    />
+  </div>
+
+  <div className="sub-detail">
+    <strong>Input:</strong>
+    <ul>
+      <li>SWISSIMAGE Orthofotos von Zürich (170 km² ≈ 120'000 px × 140'000 px)</li>
+      <li>8'000 manuell digitalisierte Trainingsfeatures für das YOLO-Modell</li>
+      <li>OSM-Daten für Tramlinien und Tramnetz im Kanton Zürich</li>
+    </ul>
+  </div>
+
+  <div className="sub-detail">
+    <strong>Algorithmus:</strong>
+    <ul>
+      <li>
+        Entwicklung von vier YOLO-Modellen:
+        <ul>
+          <li>Modell 1: YOLOv11L – 100 Epochs – Klassen: 30er-Zone, Auto, Fussgängerstreifen, Pfeilmarkierung, Schule, Tram, Vortritt und Zug</li>
+          <li>Modell 2: YOLOv11X – 70 Epochs – Fokus Tram im Kanton Zürich</li>
+          <li>Modell 3: YOLOv11X – 100 Epochs – Fokus Strassenmarkierungen in Luzern</li>
+          <li>Modell 4: YOLOv11L – 100 Epochs – Fokus Tram in der Stadt Bern (mit OSM-Daten)</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <div className="sub-detail">
+    <strong>Output:</strong>
+    <ul>
+      <li>YOLO-Ergebnisse als <code>.gpkg</code>-Dateien</li>
+    </ul>
+  </div>
+
+  <div className="sub-detail">
+    <strong>Herausforderungen:</strong>
+    <ul>
+      <li>YOLO-Training dauerte über 6 Stunden</li>
+      <li>Interferenzzeit aller vier Modelle inkl. Zusammenführung: mehr als 11.5 Stunden</li>
+      <li>Hohe RAM/GPU-Auslastung – viel Ausprobieren nötig für optimale Batchgrösse, Bildgrösse und Modellwahl</li>
+      <li>Allgemeine Big-Data-Probleme (alles wurde lokal auf dem PC berechnet)</li>
+    </ul>
+  </div>
+</div>
+
+
 
   </div>
     <div className="main-output">
@@ -375,9 +485,166 @@ Im Folgenden findest du einen visuellen Arbeitsplan mit den wichtigsten Schritte
           <li>Speicherfreigabe und Garbage Collection mussten explizit eingebaut werden, um GPU-Laufzeit zu stabilisieren.</li>
           <li>Join von Geometrien auf über 1 Million Objekte erforderte Konvertierung von GPKG zu Parquet und Einsatz von Polars für Performance.</li>
         </ul>
-        <p><i>Fazit:</i> Die Datenverarbeitung in Phase 2 war technisch erfolgreich, aber extrem zeit- und ressourcenintensiv. Für produktive Anwendungen müsste massiv skaliert oder auf vorverarbeitete Daten zurückgegriffen werden.</p>
+        <p><i>Fazit:</i> Die Datenverarbeitung in Phase 2 war technisch erfolgreich, aber extrem zeit- und ressourcenintensiv. Ich bin sehr froh, hat es geklappt.</p>
+      </>
+    </div>
+  </div>
+
+
+<div className="main-stage">
+    <div className="main-title">3. Klassifikation der Schulwegsicherheit</div>
+    <div className="main-input">
+      <>
+        <strong>Input:</strong>
+        <ul>
+          <li>...</li>
+        </ul>
+      </>
+    </div>
+
+    <div className="sub-steps">
+      <div className="sub-box">
+        <div className="sub-title">3.1 </div>
+        <div className="sub-detail">
+          <>
+            <strong>Input:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+        <div className="sub-detail">
+          <>
+            <strong>Algorithmus:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+        <div className="sub-detail">
+          <>
+            <strong>Output:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+      </div>
+
+      <div className="sub-box">
+        <div className="sub-title">3.2 </div>
+        <div className="sub-detail">
+          <>
+            <strong>Input:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+        <div className="sub-detail">
+          <>
+            <strong>Algorithmus:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+        <div className="sub-detail">
+          <>
+            <strong>Output:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+      </div>
+
+      <div className="sub-box">
+        <div className="sub-title">3.3 </div>
+        <div className="sub-detail">
+          <>
+            <strong>Input:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+        <div className="sub-detail">
+          <>
+            <strong>Algorithmus:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+        <div className="sub-detail">
+          <>
+            <strong>Output:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+      </div>
+
+    </div>
+
+    <div className="main-output">
+      <>
+        <strong>Output:</strong>
+        <ul><li>wird ergänzt</li></ul>
+      </>
+    </div>
+  </div>
+
+
+<div className="main-stage">
+    <div className="main-title">4. Visualisierung</div>
+    <div className="main-input">
+      <>
+        <strong>Input:</strong>
+        <ul>
+          <li>...</li>
+        </ul>
+      </>
+    </div>
+
+    <div className="sub-steps">
+      <div className="sub-box">
+        <div className="sub-title">4.1 QGIS Web Client</div>
+        <div className="sub-detail">
+          <>
+            <strong>Input:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+        <div className="sub-detail">
+          <>
+            <strong>Algorithmus:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+        <div className="sub-detail">
+          <>
+            <strong>Output:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+      </div>
+
+      <div className="sub-box">
+        <div className="sub-title">4.3 Website</div>
+        <div className="sub-detail">
+          <>
+            <strong>Input:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+        <div className="sub-detail">
+          <>
+            <strong>Algorithmus:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+        <div className="sub-detail">
+          <>
+            <strong>Output:</strong>
+            <ul><li>wird ergänzt</li></ul>
+          </>
+        </div>
+      </div>
+
+    </div>
+
+    <div className="main-output">
+      <>
+        <strong>Output:</strong>
+        <ul><li>wird ergänzt</li></ul>
       </>
     </div>
   </div>
 
 </div>
+

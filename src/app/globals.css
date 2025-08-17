@@ -196,15 +196,13 @@ html {
 }
 
 .sub-steps {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   gap: 1.5rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr)); /* max 3 pro Reihe */
 }
 
 .sub-box {
-  flex: 1;
-  min-width: 220px;
-  background: white;
+  background: #fff;
   border-radius: 8px;
   padding: 1rem 1.2rem;
   box-shadow: 0 1px 4px rgba(0,0,0,0.06);
@@ -222,3 +220,13 @@ html {
   margin: 0.2rem 0;
 }
 
+/* Breakpoints für 3/2/1 Spalten */
+@media (max-width: 1200px) {
+  .sub-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 900px) {
+  .sub-steps { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .sub-steps { grid-template-columns: 1fr; }
+}
