@@ -15,7 +15,7 @@ export const metadata = {
   tags: ["Webseite"]
 }
 
-# 📝 Webseite Teil 5 – Dynamische Blogpost-Sektion
+# Webseite Teil 5 – Dynamische Blogpost-Sektion
 
 Im fünften Teil meiner Serie zeige ich im Detail, wie die Blogpost-Sektion meiner Webseite funktioniert. Ziel war es, Markdown-Dateien als Blogposts zu rendern, Slugs automatisch zu verarbeiten, Metadaten auszulesen und für jeden Beitrag eine ansprechende Vorschau zu generieren – alles modular, performant und einfach erweiterbar.
 
@@ -49,7 +49,7 @@ export default async function BlogPostPage({ params }) {
 
 ---
 
-## 📁 Projektstruktur & Ordneraufbau
+## Projektstruktur & Ordneraufbau
 
 Die gesamte Blog-Logik ist in einer klaren, modularen Struktur organisiert:
 
@@ -61,7 +61,7 @@ Die gesamte Blog-Logik ist in einer klaren, modularen Struktur organisiert:
 
 ---
 
-## 🗂️ Projektstruktur als Tree-View
+## Projektstruktur als Tree-View
 
 Hier die aktuelle Ordnerstruktur meines Projekts als Übersicht (gekürzt):
 
@@ -119,7 +119,7 @@ claudewidmer/
 
 ---
 
-## 🗂️ Wie funktioniert das dynamische Routing?
+## Wie funktioniert das dynamische Routing?
 
 Jeder Blogpost liegt als `.mdx`-Datei im Verzeichnis `src/blogs/`. Die Datei `src/app/blogs/[slug]/page.tsx` nutzt das Next.js Dynamic Routing: Der `[slug]`-Parameter wird automatisch aus dem Dateinamen generiert. Beispiel: `Webseite-1.mdx` ist unter `/blogs/Webseite-1` erreichbar.
 
@@ -150,7 +150,7 @@ So wird für jede URL wie `/blogs/Webseite-1` automatisch der richtige Blogpost 
 
 ---
 
-## 🏷️ Beispiel: Metadaten-Export in MDX
+## Beispiel: Metadaten-Export in MDX
 
 Jeder Blogpost beginnt mit einem Metadaten-Export. Diese Daten werden für SEO, OpenGraph, Navigation und Vorschau genutzt.
 
@@ -173,7 +173,7 @@ export const metadata = {
 
 ---
 
-## 📄 MDX vs. Markdown: Rendering, Komponenten & Probleme
+## MDX vs. Markdown: Rendering, Komponenten & Probleme
 
 Ursprünglich habe ich versucht, reine `.md`-Dateien für Blogposts zu nutzen. Das Markdown-Parsing erfolgte mit `remark` und `rehype`. Das Problem: In klassischen Markdown-Dateien kann kein JavaScript ausgeführt und keine React-Komponenten eingebunden werden. Das bedeutet:
 
@@ -201,7 +201,7 @@ MDX ist also viel flexibler und moderner für Webseiten mit React/Next.js.
 </RevealBox>
 ---
 
-## 🛠️ Technische Details: MDX-Rendering & Komponenten-Mapping
+## Technische Details: MDX-Rendering & Komponenten-Mapping
 
 Das MDX-Rendering erfolgt mit `@next/mdx` und eigenen Komponenten-Mappings. In `mdx-components.tsx` werden alle Standard-Elemente (h1-h6, p, ul, li, img, etc.) automatisch mit `FadeInOnScroll` umhüllt – so werden alle Abschnitte animiert. Codeblöcke (`pre`) sind davon ausgenommen und werden mit `rehype-pretty-code` für Syntax-Highlighting gestylt.
 <RevealBox title="Automatisches Komponenten-Mapping in MDX">
@@ -225,7 +225,7 @@ Das sorgt für ein konsistentes, modernes Look & Feel in allen Blogposts.
 </RevealBox>
 ---
 
-## ⚡ Performance, SEO & Favicon
+## Performance, SEO & Favicon
 
 - **Statische Generierung:** Alle Blogposts werden bei Build-Time generiert (SSG), was für schnelle Ladezeiten sorgt.
 - **SEO:** Die Metadaten werden für Title, Description und Keywords genutzt. OpenGraph- und Twitter-Meta-Tags werden automatisch gesetzt.
@@ -234,7 +234,7 @@ Das sorgt für ein konsistentes, modernes Look & Feel in allen Blogposts.
 
 ---
 
-## 🧩 Komponenten im Detail
+## Komponenten im Detail
 
 - **`CoverImage`**: Zeigt das Titelbild eines Blogposts, ist optional verlinkt.
 - **`FadeInOnScroll`**: Animiert Abschnitte beim Scrollen mit Framer Motion.
@@ -247,7 +247,7 @@ Jede Komponente ist so gebaut, dass sie wiederverwendbar und leicht anpassbar is
 
 ---
 
-## 🔄 Wie geht das Hinzufügen eines neuen Blogposts?
+## Wie geht das Hinzufügen eines neuen Blogposts?
 
 1. Neue `.mdx`-Datei in `src/blogs/` anlegen (z.B. `MeinNeuerPost.mdx`)
 2. Metadaten-Export am Anfang ausfüllen
@@ -257,7 +257,7 @@ Jede Komponente ist so gebaut, dass sie wiederverwendbar und leicht anpassbar is
 
 ---
 
-## 🔜 Wie geht’s weiter?
+## Wie geht’s weiter?
 
 Im nächsten Teil zeige ich, wie ich die **Blogübersicht** gestaltet habe – mit Tag-Filter, Suche und ansprechender Vorschau für alle Beiträge. Ausserdem gehe ich auf die Filter- und Suchlogik sowie die Performance-Optimierung ein.
 

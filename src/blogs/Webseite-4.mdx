@@ -13,21 +13,21 @@ export const metadata = {
   tags: ["Webseite"]
 }
 
-# 🗺️ Webseite Teil 4 – Mein Lebenslauf mit interaktiver Karte
+# Webseite Teil 4 – Mein Lebenslauf mit interaktiver Karte
 
 Der letzte Abschnitt meiner Webseite zeigt meinen **beruflichen Werdegang** – nicht nur als klassische Liste, sondern kombiniert mit einer **interaktiven Karte**.  
 Diese Komponente heisst `CV.tsx` und nutzt im Inneren `CVMap.tsx`, basierend auf **React Leaflet**.
 
 ---
 
-## 🌍 Warum eine Karte?
+## Warum eine Karte?
 
 Da ich im GIS-Bereich arbeite, lag es nahe, meinen Lebenslauf auch **räumlich zu visualisieren**.  
 Statt nur Textblöcke zu zeigen, wollte ich Standorte, Bildungsorte und Arbeitserfahrungen **visuell auf der Karte platzieren** – inklusive Animationen und Tooltip-Effekten.
 
 ---
 
-## ⚙️ Was steckt dahinter?
+## Was steckt dahinter?
 
 Die Komponente `CVMap.tsx` nutzt:
 
@@ -41,7 +41,7 @@ Der Code enthält auch ein bisschen **State-Management mit React**, um z. B. d
 
 ---
 
-## 🧩 Aufbau der Karte
+## Aufbau der Karte
 
 Jeder Eintrag (z. B. „Universität Zürich“) hat:
 
@@ -66,7 +66,7 @@ Beispiel:
 
 ---
 
-## ✨ Animation & UX
+## Animation & UX
 
 Sobald man mit der Maus über eine Station fährt, zoomt die Karte automatisch darauf, zeigt den Tooltip – und springt nach einigen Sekunden wieder zurück.  
 Das bringt Bewegung rein, ohne unruhig zu wirken.
@@ -82,7 +82,7 @@ Darüber hinaus habe ich folgendes speziell für mobile Geräte umgesetzt:
 
 ---
 
-### 🧩 Schematischer Aufbau
+### Schematischer Aufbau
 
 ```tsx
 
@@ -123,7 +123,7 @@ const entries = [
 
 ---
 
-## 🔜 Wie geht’s weiter?
+## Wie geht’s weiter?
 
 Im nächsten Teil geht es um die dynamische **Blogpost-Sektion (`BlogpostSection.tsx`)** – wie Markdown-Dateien gerendert, Slugs verarbeitet und Vorschauen generiert werden.
 

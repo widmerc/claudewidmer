@@ -21,7 +21,7 @@ In diesem Teil zeige ich, wie ich die Blogübersicht-Seite meiner Webseite techn
 
 ---
 
-## 🧩 Komponenten-Architektur
+## Komponenten-Architektur
 
 Die Blogübersicht besteht aus mehreren modularen Komponenten:
 
@@ -49,7 +49,7 @@ Diese Übersicht macht es einfach, die Komponenten zu erweitern oder neu zu komb
 
 ---
 
-## 🔎 Suche & Tag-Filter: Funktionsweise
+## Suche & Tag-Filter: Funktionsweise
 
 Die Komponente `BlogSearchAndList` erhält alle verfügbaren Tags (`allTags`), eine Map von Tag zu Posts (`tagMap`), sowie optional hervorgehobene Beiträge (`featuredPosts`). Die Suche filtert die Tags live, das Tag-Filtering gruppiert die Posts nach Hashtag.
 
@@ -76,7 +76,7 @@ So kannst du die Filter- und Suchlogik leicht anpassen oder erweitern.
 
 ---
 
-## 🗃️ Datenstruktur & API
+## Datenstruktur & API
 
 Die Daten für die Übersicht werden mit `getAllPosts()` aus `src/lib/api.ts` geladen. Jeder Post enthält Metadaten, Tags, Titel, Bild, etc. Die Gruppierung erfolgt in der Übersicht dynamisch nach Tags.
 
@@ -98,7 +98,7 @@ Diese Information wird dann als Map an die Übersichtskomponente übergeben und 
 
 ---
 
-## ⏱️ Lesezeit (Reading Time)
+## ⏱Lesezeit (Reading Time)
 
 <RevealBox title="Wie wird die Lesezeit berechnet?">
 Die ungefähre Lesezeit für einen Blogpost wird automatisch berechnet. Gezählt werden alle Wörter im Beitrag. Zusätzlich wird für jedes Bild (egal ob Markdown oder `<img />`) eine halbe Minute extra gerechnet.
@@ -115,7 +115,7 @@ Die berechnete Lesezeit wird dann im Blogpost angezeigt, damit du als Leser:in s
 
 ---
 
-## 💡 UI/UX-Details & Animationen
+## UI/UX-Details & Animationen
 
 - **FadeInOnScroll:** Alle Abschnitte und Listen werden animiert eingeblendet
 - **Responsives Design:** Die Übersicht ist auf allen Geräten nutzbar
@@ -125,7 +125,7 @@ Die berechnete Lesezeit wird dann im Blogpost angezeigt, damit du als Leser:in s
 
 ---
 
-## 🛠️ Herausforderungen & Learnings
+## Herausforderungen & Learnings
 
 - **Dynamische Gruppierung:** Die Tag-Map muss bei jedem neuen Post automatisch aktualisiert werden
 - **Suche:** Die Filterung muss performant und intuitiv sein
@@ -135,7 +135,7 @@ Die berechnete Lesezeit wird dann im Blogpost angezeigt, damit du als Leser:in s
 
 ---
 
-## 🌐 Ausblick: CMS & WebGIS-Integration
+## Ausblick: CMS & WebGIS-Integration
 
 Ein nächster, spannender Schritt wäre die Integration eines CMS (Content Management System), um Blogposts direkt über die Webseite zu erstellen und zu verwalten. Damit könnten neue Beiträge automatisch generiert und veröffentlicht werden, ohne den Code oder die Dateien manuell anfassen zu müssen. Geeignete Lösungen wären z.B.:
 
@@ -158,7 +158,7 @@ Die technische Umsetzung kann z.B. über iFrames, eigene React-Komponenten oder 
 
 ---
 
-## 🏁 Fazit & Ausblick
+## Fazit & Ausblick
 
 Nach sechs Teilen und vielen Stunden Arbeit bin ich mit dem aktuellen Stand meiner Webseite fürs Erste sehr zufrieden. Das Projekt hat mir geholfen, viele neue Skills zu lernen – von Next.js über MDX, Animationen mit Framer Motion bis hin zu moderner Komponenten-Architektur und SEO.
 
