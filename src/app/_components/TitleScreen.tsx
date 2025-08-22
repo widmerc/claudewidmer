@@ -26,18 +26,31 @@ export function TitleScreen() {
   const [availableHeight, setAvailableHeight] = useState<number | null>(null);
 
   // Höhe dynamisch berechnen basierend auf dem Header
-  useEffect(() => {
-    const updateHeight = () => {
-      const header = document.getElementById("main-header");
-      const headerHeight = header?.offsetHeight || 0;
-      const viewportHeight = window.innerHeight;
-      setAvailableHeight(viewportHeight - headerHeight);
-    };
+useEffect(() => {
+  const updateHeight = () => {
+    const header = document.getElementById("main-header");
+    const headerHeight = header?.offsetHeight || 0;
 
-    updateHeight();
-    window.addEventListener("resize", updateHeight);
-    return () => window.removeEventListener("resize", updateHeight);
-  }, []);
+    // visualViewport ist in Safari/iOS zuverlässiger als innerHeight
+    const vv = window.visualViewport;
+    const viewportHeight = vv?.height ?? window.innerHeight;
+
+    setAvailableHeight(viewportHeight - headerHeight);
+  };
+
+  updateHeight();
+
+  const vv = window.visualViewport;
+  vv?.addEventListener("resize", updateHeight);
+  vv?.addEventListener("scroll", updateHeight); // URL-Bar Ein-/Ausfahren
+  window.addEventListener("orientationchange", updateHeight);
+
+  return () => {
+    vv?.removeEventListener("resize", updateHeight);
+    vv?.removeEventListener("scroll", updateHeight);
+    window.removeEventListener("orientationchange", updateHeight);
+  };
+}, []);
 
   // SkillCard rotieren
   useEffect(() => {
@@ -52,7 +65,7 @@ export function TitleScreen() {
   return (
     <section
       className="relative w-full overflow-hidden"
-      style={{ height: availableHeight ? `${availableHeight}px` : "100vh" }}
+      style={{ height: availableHeight ? `${availableHeight}px` : "100dvh" }}
     >
       {/* Hintergrundbild */}
       <div
