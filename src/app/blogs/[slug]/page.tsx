@@ -23,6 +23,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
   const tags = metadata.tags ?? []
   const author = metadata.author ?? "Unbekannt"
   const authorName = typeof author === "string" ? author : author?.name ?? "Unbekannt"
+  const readingTimeMin = Math.max(1, Math.round(((metadata.wordCount || 0) / 200)))
 
   const blogPosts = await listBlogPosts()
   const currentIndex = blogPosts.findIndex((post) => post.slug === slug)
@@ -89,12 +90,41 @@ export default async function BlogPage({ params }: BlogPageProps) {
     },
   }
 
+  const breadcrumbData = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: `${siteUrl}/`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Blogs',
+        item: `${siteUrl}/blog_overview`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: title,
+        item: url,
+      },
+    ],
+  }
+
   return (
     <>
       <Favicon name={title} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }}
       />
       <main>
         <Container>
@@ -110,8 +140,8 @@ export default async function BlogPage({ params }: BlogPageProps) {
                   day: "2-digit",
                   month: "2-digit",
                   year: "numeric",
-                })} {" "}
-                · von {authorName}
+                })}
+                {" "}· von {authorName} · {readingTimeMin} Min Lesezeit
               </p>
             </FadeInOnScroll>
             {metadata.coverImage && (
