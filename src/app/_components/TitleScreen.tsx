@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import SkillCard from './SkillCard';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -61,20 +62,30 @@ useEffect(() => {
   }, []);
 
   const currentSkill = skills[index];
+  // Versuche bevorzugt WebP zu laden, falle auf PNG zurück, falls 404
+  const [bgSrc, setBgSrc] = useState('/img/background.webp');
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/img/background.webp', { method: 'HEAD' })
+      .then(r => { if (!r.ok && !cancelled) setBgSrc('/img/background.png'); })
+      .catch(() => { if (!cancelled) setBgSrc('/img/background.png'); });
+    return () => { cancelled = true; };
+  }, []);
 
   return (
     <section
       className="relative w-full overflow-hidden"
       style={{ height: availableHeight ? `${availableHeight}px` : "100dvh" }}
     >
-      {/* Hintergrundbild */}
-      <div
-        className="absolute top-0 left-0 w-full h-full bg-cover bg-center"
-        style={{
-          backgroundImage: "url(/img/background.png)",
-          backgroundPosition: "center",
-          backgroundSize: "cover",
-        }}
+      {/* Hintergrundbild optimiert mit next/image für bessere LCP & automatische WebP-Auslieferung */}
+      <Image
+        src={bgSrc}
+        alt="Abstrakter Hintergrund"
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover"
+        placeholder="empty"
       />
       {/* Overlay */}
       <div className="absolute top-0 left-0 w-full h-full bg-black/50" />
