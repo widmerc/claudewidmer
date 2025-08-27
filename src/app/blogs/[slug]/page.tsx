@@ -77,6 +77,16 @@ export default async function BlogPage({ params }: BlogPageProps) {
     mainEntityOfPage: url,
     image: metadata.coverImage ? [`${siteUrl}${metadata.coverImage}`] : undefined,
     keywords: tags.join(', '),
+    articleSection: tags[0] || undefined,
+    wordCount: metadata.wordCount,
+    publisher: {
+      '@type': 'Organization',
+      name: 'claudewidmer.ch',
+      logo: {
+        '@type': 'ImageObject',
+        url: `${siteUrl}/favicon/android-chrome-192x192.png`,
+      },
+    },
   }
 
   return (

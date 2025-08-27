@@ -8,6 +8,7 @@ export type BlogPostMetadata = Metadata & {
   description?: string
   coverImage?: string
   date: string | Date
+  updatedDate?: string | Date
   author?: {
     name: string
     picture?: string
@@ -16,6 +17,7 @@ export type BlogPostMetadata = Metadata & {
     url: string
   }
   tags?: string[]
+  wordCount?: number
   [key: string]: unknown 
 }
 
@@ -28,6 +30,19 @@ export type BlogPostData = {
 export const getBlogPost = async (slug: string): Promise<BlogPostData> => {
   const post = await import(`@/blogs/${slug}.mdx`)
   const data = post.metadata
+  // Rohinhalt für wordCount einlesen
+  let wordCount: number | undefined = undefined
+  try {
+    const fullPath = path.join(process.cwd(), 'src', 'blogs', `${slug}.mdx`)
+    const raw = await fs.readFile(fullPath, 'utf8')
+    const cleaned = raw.replace(/export const metadata = {[\s\S]*?}\s*/, '')
+    const words = cleaned
+      .replace(/<!--.*?-->/g, ' ')
+      .replace(/`{1,3}[\s\S]*?`{1,3}/g, ' ') // Code inline & fenced
+      .replace(/<[^>]+>/g, ' ') // rudimentär HTML entfernen
+      .match(/\b\w+\b/g)
+    wordCount = words ? words.length : 0
+  } catch {}
 
   if (!data.title) {
     throw new Error(`Missing required metadata field 'title' in: ${slug}`)
@@ -37,6 +52,7 @@ export const getBlogPost = async (slug: string): Promise<BlogPostData> => {
     ...data,
     date: data.date ? new Date(data.date) : undefined,
     updatedDate: data.updatedDate ? new Date(data.updatedDate) : undefined,
+  wordCount,
   }
 
   return {
