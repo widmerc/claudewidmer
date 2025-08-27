@@ -55,7 +55,7 @@ useEffect(() => {
   // SkillCard rotieren
   useEffect(() => {
     const interval = setInterval(() => {
-      setIndex(prev => getRandomSkill(prev));
+      setIndex(prev => getRandomSkill(prev)); 
     }, 6000);
     return () => clearInterval(interval);
   }, []);

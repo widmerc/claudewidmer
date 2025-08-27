@@ -85,7 +85,7 @@ export default function PostList({ posts, showTagFilter = true }: Props) {
       {/* Navigation Buttons */}
       <div className="absolute left-4 top-1/2 z-10">
         <button
-          className={`swiper-prev bg-white text-gray-700 border rounded-full w-12 h-12 shadow hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-accent-3 hover:font-bold border-2 text-2xl font-semibold transition flex items-center justify-center`}
+          className={`swiper-prev bg-white text-gray-700 border rounded-full w-12 h-12 shadow hover:bg-gray-100 hover:border-accent-3 hover:font-bold border-2 text-2xl font-semibold transition flex items-center justify-center`}
           id={uniqueId ? `swiper-prev-${uniqueId}` : undefined}
           disabled={!uniqueId}
         >
@@ -107,7 +107,7 @@ export default function PostList({ posts, showTagFilter = true }: Props) {
       </div>
       <div className="absolute right-4 top-1/2 z-10">
         <button
-          className={`swiper-prev bg-white text-gray-700 border rounded-full w-12 h-12 shadow hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-accent-3 hover:font-bold border-2 text-2xl font-semibold transition flex items-center justify-center`}
+          className={`swiper-prev bg-white text-gray-700 border rounded-full w-12 h-12 shadow hover:bg-gray-100 hover:border-accent-3 hover:font-bold border-2 text-2xl font-semibold transition flex items-center justify-center`}
           id={uniqueId ? `swiper-next-${uniqueId}` : undefined}
           disabled={!uniqueId}
         >

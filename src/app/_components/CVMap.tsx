@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, Tooltip } from 'react-leaflet';
@@ -41,6 +41,36 @@ const formatDuration = (start: Date, end: Date = new Date()) => {
   return [yearStr, monthStr].filter(Boolean).join(', ');
 };
 
+// Langen Text nach maxZeichen umbrechen (word-wrap) für Tooltip
+const wrapText = (text: string, max: number) => {
+  const words = text.split(' ');
+  const lines: string[] = [];
+  let current = '';
+  for (const w of words) {
+    if ((current + (current ? ' ' : '') + w).length > max) {
+      if (current) lines.push(current);
+      // Falls einzelnes Wort länger als max -> hart umbrechen
+      if (w.length > max) {
+        for (let i = 0; i < w.length; i += max) {
+          const slice = w.slice(i, i + max);
+          if (slice.length === max) {
+            lines.push(slice);
+          } else {
+            current = slice; // Rest in current weiterführen
+          }
+        }
+        if (w.length % max === 0) current = '';
+      } else {
+        current = w;
+      }
+    } else {
+      current = current ? current + ' ' + w : w;
+    }
+  }
+  if (current) lines.push(current);
+  return lines;
+};
+
 const entries: Entry[] = [
   {
     id: 'edu-1',
@@ -52,10 +82,11 @@ const entries: Entry[] = [
     start: new Date(2023, 7),
     end: null,
   },
+
   {
     id: 'edu-2',
     label: 'Universität Zürich – BSc Geografie',
-    position: [47.39651977104244, 8.54938501828369],
+    position: [47.39751977104, 8.54838501828],
     type: 'education',
     title: 'Bachelor of Science - BS, Geografie, Datenanalyse in den Naturwissenschaften',
     details: 'GitHub, GIS, R, Python, ArcGIS-Produkte, Geodaten, Räumliche Analyse, Quantum GIS, Kartografie, SQL',
@@ -98,94 +129,53 @@ export default function CVMap({ hoveredId, setHoveredId }: CVMapProps) {
   const [mounted, setMounted] = useState(false);
   const mapRef = useRef<LeafletMap | null>(null);
   const markerRefs = useRef<Record<string, L.Marker>>({});
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  // const defaultPosition: [number, number] = [46.8, 8.3];
+  const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState<'education' | 'experience'>('education');
-
-  const bounds = L.latLngBounds(entries.map(entry => entry.position));
-  const extendedBounds = bounds.pad(0.1); // Add 20% margin
-
-  const resetFlyTimeout = useCallback(() => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => {
-      Object.values(markerRefs.current).forEach((marker) => marker.closeTooltip());
-      setHoveredId(null);
-      mapRef.current?.flyToBounds(extendedBounds, { duration: 4 });
-    }, 10000);
-  }, [extendedBounds, setHoveredId]);
+  // Bounds nur einmal berechnen, sonst überschreibt react-leaflet Animationen mit fitBounds bei jedem Render
+  const bounds = useMemo(() => L.latLngBounds(entries.map(entry => entry.position)).pad(0.1), []);
+  const initialCenter = useMemo(() => bounds.getCenter(), [bounds]);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (!mounted) return;
-    resetFlyTimeout();
-
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-  }, [mounted, resetFlyTimeout]);
+  // Optional: kein automatisches fitBounds damit flyTo Animation deutlicher ist
 
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-useEffect(() => {
-  if (!mounted || isMobile) return;
 
-  const runTour = async () => {
-    const sequence: ('education' | 'experience')[] = ['education', 'experience'];
-
-    while (true) {
-      for (const type of sequence) {
-        setActiveTab(type);
-
-        // ⏱ Warten, bis Marker sichtbar/renderbar sind
-        await new Promise(r => setTimeout(r, 300));
-
-        const filtered = entries.filter(e => e.type === type).reverse();
-
-        for (const entry of filtered) {
-          // ✅ 1. Box sofort hervorheben
-          const boxElement = document.getElementById(entry.id);
-          if (boxElement) {
-            boxElement.classList.add(type === 'education' ? 'bg-purple-50' : 'bg-green-50');
-            setTimeout(() => {
-              boxElement.classList.remove(type === 'education' ? 'bg-purple-50' : 'bg-green-50');
-            }, 10000);
-          }
-
-          // ✅ 2. FlyTo (4s)
-          mapRef.current?.flyTo(entry.position, 16, { duration: 4 });
-          await new Promise(r => setTimeout(r, 4000));
-
-          // ✅ 3. Tooltip öffnen
-          markerRefs.current[entry.id]?.openTooltip();
-
-          // ✅ 4. Tooltip sichtbar lassen (5s)
-          await new Promise(r => setTimeout(r, 5000));
-          markerRefs.current[entry.id]?.closeTooltip();
-
-          // ✅ 5. Kurze Pause (1s)
-          await new Promise(r => setTimeout(r, 1000));
-        }
-
-        // ✅ 6. Pause zwischen Bildung & Erfahrung
-        await new Promise(r => setTimeout(r, 5000));
-      }
-
-      // ✅ 7. Zurück zur Startübersicht
-      setActiveTab('education');
-      await new Promise(r => setTimeout(r, 300)); // Wieder Marker laden lassen
-      mapRef.current?.flyToBounds(extendedBounds, { duration: 4 });
-      await new Promise(r => setTimeout(r, 5000));
+  const focusEntry = useCallback(async (entry: Entry) => {
+    if (!mapRef.current || !mapLoaded) return;
+    if (isMobile && activeTab !== entry.type) {
+      setActiveTab(entry.type);
+      await new Promise(r => setTimeout(r, 40));
     }
-  };
+    setHoveredId(entry.id);
+    // Alle Tooltips schließen
+    Object.values(markerRefs.current).forEach(m => m.closeTooltip());
+    try {
+      const currentZoom = mapRef.current.getZoom();
+      const targetZoom = 16;
+      if (currentZoom === targetZoom) {
+        mapRef.current.flyTo(entry.position, targetZoom, { duration: 1.2 });
+      } else {
+        mapRef.current.flyTo(entry.position, targetZoom, { duration: 1.2 });
+      }
+    } catch {}
+    setTimeout(() => { markerRefs.current[entry.id]?.openTooltip(); }, 1250);
 
-  runTour();
-}, [mounted, isMobile, extendedBounds]);
+    // Reset-Timer neu setzen
+    if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+    resetTimerRef.current = setTimeout(() => {
+      // Tooltip schließen & Auswahl zurücksetzen
+      markerRefs.current[entry.id]?.closeTooltip();
+      setHoveredId(null);
+      try { mapRef.current?.flyToBounds(bounds, { duration: 1.2 }); } catch {}
+    }, 10000);
+  }, [activeTab, isMobile, mapLoaded, setHoveredId, bounds]);
 
-
-
-
+  // Aufräumen bei Unmount
+  useEffect(() => () => { if (resetTimerRef.current) clearTimeout(resetTimerRef.current); }, []);
 
   if (!mounted) return null;
 
@@ -194,9 +184,10 @@ useEffect(() => {
       <h2 className="text-xl font-small text-center text-gray-800 mb-4">
         Visuell dargestellt
       </h2>
-      <div className="w-full h-[25vh] md:h-[500px] rounded overflow-hidden mb-10 z-0 shadow-lg border-2 border-gray-200">
+  <div className="w-full h-[25vh] md:h-[500px] rounded overflow-hidden mb-4 relative z-0 shadow-lg border-2 border-gray-200">
         <MapContainer
-          bounds={extendedBounds}
+          center={initialCenter}
+          zoom={7}
           dragging={isMobile}
           zoomControl={isMobile}
           scrollWheelZoom={isMobile}
@@ -205,9 +196,8 @@ useEffect(() => {
           keyboard={false}
           touchZoom={isMobile}
           style={{ height: '100%', width: '100%' }}
-          ref={(instance) => {
-            if (instance) mapRef.current = instance;
-          }}
+          whenReady={() => { setMapLoaded(true); }}
+          ref={(r) => { if (r) mapRef.current = r; }}
         >
           <TileLayer
             attribution='&copy; <a href="https://carto.com/">CARTO</a>'
@@ -234,16 +224,9 @@ useEffect(() => {
                   if (ref) markerRefs.current[entry.id] = ref;
                 }}
                 eventHandlers={{
-                  mouseover: () => {
-                    Object.values(markerRefs.current).forEach((marker) => marker.closeTooltip());
-                    setHoveredId(entry.id);
-                    markerRefs.current[entry.id]?.openTooltip();
-                    resetFlyTimeout();
-                  },
-                  mouseout: () => {
-                    setHoveredId(null);
-                    markerRefs.current[entry.id]?.closeTooltip();
-                  },
+                  click: () => focusEntry(entry),
+                  mouseover: () => setHoveredId(entry.id),
+                  mouseout: () => { if (hoveredId === entry.id) setHoveredId(null); }
                 }}
               >
                 <Tooltip
@@ -253,7 +236,14 @@ useEffect(() => {
                   permanent={hoveredId === entry.id}
                 >
                   <div>
-                    <p className="font-bold">{entry.title}</p>
+                    <p className="font-bold">
+                      {wrapText(entry.title, 50).map((line, i, arr) => (
+                        <span key={i}>
+                          {line}
+                          {i < arr.length - 1 && <br />}
+                        </span>
+                      ))}
+                    </p>
                     {entry.start && (
                       <p>
                         {entry.start.toLocaleDateString('de-CH', { year: 'numeric', month: 'short' })} –{' '}
@@ -269,6 +259,9 @@ useEffect(() => {
           })}
         </MapContainer>
       </div>
+      <p className="text-center text-sm text-gray-500 mb-10">
+        Tipp: Klicke auf einen Eintrag (oder Marker) – die Karte zoomt dorthin und zeigt Details.
+      </p>
 
       {isMobile ? (
         <div className="flex justify-center mb-4">
@@ -313,7 +306,8 @@ useEffect(() => {
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 1 }}
-                      className="p-6 rounded-lg shadow-lg bg-white text-black mb-4 border border-gray-300 hover:shadow-xl hover:bg-gray-50 transition-all"
+                      onClick={() => focusEntry(entry)}
+                      className={`p-6 rounded-lg shadow-lg bg-white text-black mb-4 border border-gray-300 hover:shadow-xl transition-all cursor-pointer ${hoveredId === entry.id ? (entry.type === 'education' ? 'bg-purple-50' : 'bg-green-50') : 'hover:bg-gray-50'}`}
                     >
                       <h3 className="text-lg font-bold text-gray-800">{entry.label}</h3>
                       <p className="text-sm text-gray-600">{entry.title}</p>
@@ -348,7 +342,8 @@ useEffect(() => {
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 1 }}
-                      className="p-6 rounded-lg shadow-lg bg-white text-black mb-4 border border-gray-300 hover:shadow-xl hover:bg-gray-50 transition-all"
+                      onClick={() => focusEntry(entry)}
+                      className={`p-6 rounded-lg shadow-lg bg-white text-black mb-4 border border-gray-300 hover:shadow-xl transition-all cursor-pointer ${hoveredId === entry.id ? (entry.type === 'education' ? 'bg-purple-50' : 'bg-green-50') : 'hover:bg-gray-50'}`}
                     >
                       <h3 className="text-lg font-bold text-gray-800">{entry.label}</h3>
                       <p className="text-sm text-gray-600">{entry.title}</p>
@@ -377,10 +372,11 @@ useEffect(() => {
               <motion.div
                 key={entry.id}
                 id={entry.id} 
-                className="p-4 rounded-lg shadow-md transition border-2 cursor-pointer border-accent-2 hover:bg-purple-50"
+                onClick={() => focusEntry(entry)}
+                className={`p-4 rounded-lg shadow-md transition border-2 cursor-pointer border-accent-2 ${hoveredId === entry.id ? 'bg-purple-50' : 'hover:bg-purple-50'}`}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
+                transition={{ duration: 1 }}
                 viewport={{ once: true }}
               >
                 <h3 className="text-lg font-semibold text-gray-800">{entry.label}</h3>
@@ -405,7 +401,8 @@ useEffect(() => {
               <motion.div
                 key={entry.id}
                 id={entry.id}
-                className="p-4 rounded-lg shadow-md transition border-2 cursor-pointer border-accent-3 hover:bg-green-50"
+                onClick={() => focusEntry(entry)}
+                className={`p-4 rounded-lg shadow-md transition border-2 cursor-pointer border-accent-3 ${hoveredId === entry.id ? 'bg-green-50' : 'hover:bg-green-50'}`}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}

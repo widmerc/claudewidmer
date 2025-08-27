@@ -2,7 +2,7 @@ export const metadata = {
   title: "Arbeitsplan Masterarbeit (Stand August)",
   excerpt: "Mein Plan für die Organisation der Masterarbeit",
   coverImage: "/img/Blog_Einfuehrung_3/Titelbild.jpg",
-  date: "2025-08-20T12:00:00.000Z",
+  date: "2025-05-21T12:00:00.000Z",
   author: {
     name: "Claude Widmer",
     picture: "/img/Blog1_2/0.jpg"
@@ -16,90 +16,144 @@ In diesem Blogbeitrag stelle ich meinen geplanten Arbeitsablauf für die Mastera
 
 Im Folgenden findest du einen visuellen Arbeitsplan mit den wichtigsten Schritten:
 
-<div className="timeline-container">
-
-  <div className="timeline-step">
-    <div className="timeline-number">1</div>
-    <div className="timeline-box">
-      <b>Erarbeitung eines Modells (Raster) für die Modellierung des Raumes</b><br />
-      Wo kann man durchlaufen? Erstellung eines Rasters als Grundlage für die weitere Analyse.
-    </div>
-  </div>
-
-  <div className="timeline-step">
-    <div className="timeline-number">2</div>
-    <div className="timeline-box">
-      <b>Feature-Erkennung & Geolokalisierung</b>
-      <ul>
-        <li><b>2.0:</b> Mapillary Data Retrieval – Download und Metadaten-Erfassung der Bildkacheln.</li>
-        <li><b>2.1:</b> YOLO Image Recognition Training – Training und Evaluation der Modelle.</li>
-        <li><b>2.2:</b> Depth Estimation – Berechnung von Tiefenkarten und Ableitung von Distanzklassen.</li>
-        <li><b>2.3:</b> YOLO Object Detection Processing – Inferenz auf validen Bildern und Zusammenführen der Ergebnisse.</li>
-        <li><b>2.4:</b> Object Geolocation – Projektion der Detektionen in LV95 mittels Kamerawinkel & FOV-Offset.</li>
-      </ul>
-    </div>
-  </div>
-
-  <div className="timeline-step">
-    <div className="timeline-number">3</div>
-    <div className="timeline-box">
-      <b>Klassifikation der Schulwegsicherheit</b><br />
-      <ul>
-        <li><b>3.1:</b> Bewertung der Sicherheit von Schulwegen anhand der in Schritt&nbsp;2 gewonnenen Objektdaten mit Machine-Learning-Techniken.</li>
-        <li><b>3.2:</b> Ergänzende Klassifikation durch regelbasierte Parameter (definierte Kriterien zur Einschätzung der Sicherheit).</li>
-      </ul>
-      Ziel ist es, die erkannten Objekte systematisch in Bezug auf ihre Relevanz für die
-      Schulwegsicherheit auszuwerten und daraus eine nachvollziehbare Einschätzung abzuleiten.
-    </div>
-  </div>
-
-  <div className="timeline-step">
-    <div className="timeline-number">4</div>
-    <div className="timeline-box">
-      <b>Webkarten-Integration</b><br />
-      Aufbau einer interaktiven Karte zur Visualisierung der Resultate 
-      (Objektdetektionen, Geolokalisierung, Sicherheitsklassifikation).
-    </div>
-  </div>
-</div>
-
-<hr />
-
-# Arbeitsplan Masterarbeit (Detailansicht)
+import Image from 'next/image'
 
 <div className="multi-stage">
 
-  {/* 1 – Rastermodell */}
+  {/* 1 – Vektormodell */}
   <div className="main-stage">
-    <div className="main-title">1. Erarbeitung eines Modells (Raster)</div>
+    <div className="main-title">1. Erarbeitung eines Modells (Vektor)</div>
     <div className="main-input">
       <>
         <strong>Input:</strong>
         <ul>
           <li>Bounding Box von Zürich</li>
+          <li>Netzwerk von Zürich</li>
+          <li>OSM Zugriff</li>
         </ul>
       </>
     </div>
 
+    
+    <div className="main-output">
+  <>
+    <strong>Output:</strong>
+    <ul>
+      <li>Vollstaendig bereinigtes und harmonisiertes Fusswegnetz von Zürich</li>
+      <li>Knoten- und Kantenstruktur (Graph-Modell) mit konsistenten IDs</li>
+      <li>Dokumentierte Attribute pro Segment (Laenge, Zugang, Quelle, Klassifikation)</li>
+    </ul>
+    <strong>Herausforderungen:</strong>
+    <ul>
+      <li>Unterschiedliche Datenqualitaet und Abdeckung zwischen OSM und OGD-Zürich</li>
+      <li>Topologische Konsistenz: Lücken, Ueberschneidungen und Duplikate sauber bereinigen</li>
+      <li>Automatisierte Abgrenzung von irrelevanten Segmenten (z. B. kurze Artefakte, private Wege)</li>
+      <li>Skalierbarkeit bei grossen Datenmengen und effiziente Geoprocessing-Workflows</li>
+    </ul>
+  </>
+</div>
+
     <div className="sub-steps">
       <div className="sub-box">
-        <div className="sub-title">1.1 Raster-Erstellung</div>
+        <div className="sub-title">1.1 OSM-Netzwerkaufbereitung</div>
+            <div className="sub-detail">
+      <>
+      <Image src="/img/Blog_Einfuehrung_3/1_1_Image.jpg" alt="Blog Einführung 3 - Bild 2.3" style={{ width: '100%', height: 'auto', maxWidth: '800px' }} width={400} height={250} />
+      </>
+    </div>
         <div className="sub-detail">
           <>
             <strong>Input:</strong>
-            <ul><li>wird ergänzt</li></ul>
+            <ul>              <li><code>Bounding Box</code> von Zürich (LV95)</li>
+              <li>Geofabrik/OSM Fussweg-Daten (Ways & Nodes)</li>
+              <li><code>EPSG:2056</code> Ziel-Koordinatensystem</li></ul>
           </>
         </div>
         <div className="sub-detail">
           <>
             <strong>Algorithmus:</strong>
-            <ul><li>wird ergänzt</li></ul>
+            <ul>              <li>Download des aktuellen OSM-Extrakts und Filtern auf fussrelevante <code>highway</code>-Typen (footway, path, steps, living_street, service mit Fusszugang)</li>
+              <li>Transformation in <code>EPSG:2056</code> und Zuschnitt auf die Bounding Box</li>
+              <li>Aufteilen multiliner Geometrien; Normalisierung von Richtungen</li></ul>
           </>
         </div>
         <div className="sub-detail">
           <>
             <strong>Output:</strong>
-            <ul><li>wird ergänzt</li></ul>
+            <ul>              <li>Bereinigtes, auf Zürich zugeschnittenes Liniennetz (GPKG)</li>
+              <li>Konsistente Attribute: <code>highway</code>, <code>surface</code>, <code>foot</code>, <code>name</code></li></ul>
+          </>
+        </div>
+      </div>
+
+      <div className="sub-box">
+        <div className="sub-title">1.2 Integration Stadt Zürich & OSM</div>
+            <div className="sub-detail">
+      <>
+      <Image src="/img/Blog_Einfuehrung_3/1_2_Image.jpg" alt="Blog Einführung 3 - Bild 2.3" style={{ width: '100%', height: 'auto', maxWidth: '800px' }} width={400} height={250} />
+      </>
+    </div>
+        <div className="sub-detail">
+          <>
+            <strong>Input:</strong>
+            <ul>              <li>OGD-Stadt Zürich Fussweg-/Trottoir-Layer</li>
+              <li>OSM-Liniennetz aus 1.1 </li>
+              <li><code>Snap-Toleranz</code> (z. B. 0.5–1.0 m)</li></ul>
+          </>
+        </div>
+        <div className="sub-detail">
+          <>
+            <strong>Algorithmus:</strong>
+            <ul>              <li>Beide Datensätze nach <code>EPSG:2056</code> transformieren</li>
+              <li>Vereinheitlichung der Attribute (Feldmapping) und Verschneiden/Union der Layer</li>
+              <li>Schliessen kleiner Lücken & Höhlen (&lt; 10 m²) und Liniensnap an Knoten im Toleranzradius</li>
+              <li>Aufloesen von Duplikaten, <code>dissolve</code> nach relevanten Attributen</li></ul>
+          </>
+        </div>
+        <div className="sub-detail">
+          <>
+            <strong>Output:</strong>
+            <ul>              <li>Zusammengeführtes, topologisch sauberes Fusswegnetz</li>
+              <li>Dokumentierte Feldliste (Datenkatalog) und Herkunftskennzeichen pro Segment</li></ul>
+          </>
+        </div>
+      </div>
+
+      <div className="sub-box">
+        <div className="sub-title">1.3 Graph-Erstellung & Qualitätsprüfung</div>
+            <div className="sub-detail">
+      <>
+      <Image
+        src="/img/Blog_Einfuehrung_3/1_3_Image.jpg"
+        alt="Blog Einführung 3 - Bild 2.3"
+        width={400}
+        height={250}
+        style={{ width: '100%', height: 'auto', maxWidth: '800px' }}
+      />
+      </>
+    </div>
+        <div className="sub-detail">
+          <>
+            <strong>Input:</strong>
+            <ul>              <li>Bereinigtes Liniennetz aus 1.2</li>
+              <li>Schwellwerte für Längen-/Qualitaetsfilter</li></ul>
+          </>
+        </div>
+        <div className="sub-detail">
+          <>
+            <strong>Algorithmus:</strong>
+            <ul>              <li>Erzeugung eines ungerichteten Graphen (Knoten=Endpunkte, Kanten=Liniensegmente)</li>
+              <li>Berechnung von Kantenlaenge</li>
+              <li>Entfernung sehr kurzer Artefaktkanten (Projekt-spezifischer Schwellwert von 20m)</li>
+              <li>Prüfung zusammenhaengender Komponenten; Sicherstellen globaler Erreichbarkeit</li>
+              <li>Export der Graph-Struktur (Knoten/Kanten) inkl. eindeutiger IDs</li></ul>
+          </>
+        </div>
+        <div className="sub-detail">
+          <>
+            <strong>Output:</strong>
+            <ul>              <li>Routbares Fusswegnetz mit Attributen (Länge)</li>
+              <li>Knoten-/Kantentabellen (GPKG) als Basis für 2.x Erkennung & 3.x Analysen</li></ul>
           </>
         </div>
       </div>
@@ -108,9 +162,21 @@ Im Folgenden findest du einen visuellen Arbeitsplan mit den wichtigsten Schritte
     <div className="main-output">
       <>
         <strong>Output:</strong>
-        <ul><li>wird ergänzt</li></ul>
+        <ul>
+          <li>Vollstaendig bereinigtes und harmonisiertes Fusswegnetz von Zürich</li>
+          <li>Knoten- und Kantenstruktur (Graph-Modell) mit konsistenten IDs</li>
+          <li>Dokumentierte Attribute pro Segment (Laenge, Zugang, Quelle, Klassifikation)</li>
+        </ul>
+        <strong>Herausforderungen:</strong>
+        <ul>
+          <li>Unterschiedliche Datenqualitaet und Abdeckung zwischen OSM und OGD-Zürich</li>
+          <li>Topologische Konsistenz: Lücken, Ueberschneidungen und Duplikate sauber bereinigen</li>
+          <li>Automatisierte Abgrenzung von irrelevanten Segmenten (z. B. kurze Artefakte, private Wege)</li>
+          <li>Skalierbarkeit bei grossen Datenmengen und effiziente Geoprocessing-Workflows</li>
+        </ul>
       </>
     </div>
+
   </div>
 
   {/* 2 – Feature-Erkennung & Geolokalisierung */}
@@ -127,6 +193,25 @@ Im Folgenden findest du einen visuellen Arbeitsplan mit den wichtigsten Schritte
       </>
     </div>
 
+    
+    <div className="main-output">
+      <>
+        <strong>Output:</strong>
+        <ul>
+          <li>Vollständig bereinigtes und harmonisiertes Fusswegnetz von Zürich</li>
+          <li>Knoten- und Kantenstruktur (Graph-Modell) mit konsistenten IDs</li>
+          <li>Dokumentierte Attribute pro Segment (Länge, Zugang, Quelle, Klassifikation)</li>
+        </ul>
+        <strong>Herausforderungen:</strong>
+        <ul>
+          <li>Unterschiedliche Datenqualität und Abdeckung zwischen OSM und OGD-Zürich</li>
+          <li>Topologische Konsistenz: Lücken, Überschneidungen und Duplikate sauber bereinigen</li>
+          <li>Automatisierte Abgrenzung von irrelevanten Segmenten (z. B. kurze Artefakte, private Wege)</li>
+          <li>Skalierbarkeit bei grossen Datenmengen und effiziente Geoprocessing-Workflows</li>
+        </ul>
+      </>
+    </div>
+
     <div className="sub-steps">
 
       <div className="sub-box">
@@ -134,7 +219,7 @@ Im Folgenden findest du einen visuellen Arbeitsplan mit den wichtigsten Schritte
                 
         <div className="sub-detail">
           <>
-          <img src="/img/Blog_Einfuehrung_3/2_0_Image.png" alt="Blog Einführung 3 - Bild 2.0" style={{ width: '100%', height: 'auto', maxWidth: '400px' }} />
+          <Image src="/img/Blog_Einfuehrung_3/2_0_Image.png" alt="Blog Einführung 3 - Bild 2.0" style={{ width: '100%', height: 'auto', maxWidth: '800px' }} width={400} height={250} />
           </>
         </div>
         <div className="sub-detail">
@@ -173,7 +258,7 @@ Im Folgenden findest du einen visuellen Arbeitsplan mit den wichtigsten Schritte
   <div className="sub-title">2.1 YOLO Image Recognition Training</div>
           <div className="sub-detail">
           <>
-          <img src="/img/Blog_Einfuehrung_3/2_1_Image.png" alt="Blog Einführung 3 - Bild 2.1" style={{ width: '100%', height: 'auto', maxWidth: '400px' }} />
+          <Image src="/img/Blog_Einfuehrung_3/2_1_Image.png" alt="Blog Einführung 3 - Bild 2.1" style={{ width: '100%', height: 'auto', maxWidth: '800px' }} width={400} height={250} />
           </>
         </div>
   <div className="sub-detail">
@@ -212,7 +297,7 @@ Im Folgenden findest du einen visuellen Arbeitsplan mit den wichtigsten Schritte
   </div>
 <div className="sub-detail">
       <>
-        <strong>Probleme:</strong>
+        <strong>Herausforderungen:</strong>
         <ul>
           <li>Aufgrund des sehr grossen Datensatzes (über 18'000 Bilder) konnte nicht der gesamte Umfang für das Training genutzt werden.</li>
           <li>Die verfügbare Rechenleistung (GPU/VRAM) war limitiert, was zu kleineren Batchgrössen und kürzeren Trainingszeiten führte.</li>
@@ -227,7 +312,7 @@ Im Folgenden findest du einen visuellen Arbeitsplan mit den wichtigsten Schritte
     <div className="sub-title">2.2 Depth Estimation Processing</div>
     <div className="sub-detail">
       <>
-      <img src="/img/Blog_Einfuehrung_3/2_2_Image.png" alt="Blog Einführung 3 - Bild 2.2" style={{ width: '100%', height: 'auto', maxWidth: '400px' }} />
+      <Image src="/img/Blog_Einfuehrung_3/2_2_Image.png" alt="Blog Einführung 3 - Bild 2.2" style={{ width: '100%', height: 'auto', maxWidth: '800px' }} width={400} height={250} />
       </>
     </div>
     <div className="sub-detail">
@@ -267,7 +352,7 @@ Im Folgenden findest du einen visuellen Arbeitsplan mit den wichtigsten Schritte
     </div>
     <div className="sub-detail">
       <>
-        <strong>Probleme:</strong>
+        <strong>Herausforderungen:</strong>
         <ul>
           <li>Volle Auflösung führte zu Out-of-Memory-Fehlern → Downscaling nötig</li>
           <li>Einige Bilder konnten trotz vorheriger Validierung nicht verarbeitet werden (Pipeline-Fehler)</li>
@@ -284,7 +369,7 @@ Im Folgenden findest du einen visuellen Arbeitsplan mit den wichtigsten Schritte
     <div className="sub-title">2.3 YOLO Object Detection Processing</div>
     <div className="sub-detail">
       <>
-      <img src="/img/Blog_Einfuehrung_3/2_3_Image.jpg" alt="Blog Einführung 3 - Bild 2.3" style={{ width: '100%', height: 'auto', maxWidth: '400px' }} />
+      <Image src="/img/Blog_Einfuehrung_3/2_3_Image.jpg" alt="Blog Einführung 3 - Bild 2.3" style={{ width: '100%', height: 'auto', maxWidth: '800px' }} width={400} height={250} />
       </>
     </div>
     <div className="sub-detail">
@@ -326,7 +411,7 @@ Im Folgenden findest du einen visuellen Arbeitsplan mit den wichtigsten Schritte
     </div>
     <div className="sub-detail">
       <>
-        <strong>Probleme:</strong>
+        <strong>Herausforderungen:</strong>
         <ul>
           <li>Inferenzzeit über 30 Stunden bei 1.2 Mio Bildern → kein Echtzeitbetrieb</li>
           <li>Fehlerhafte oder fehlende <code>.npz</code>-Dateien mussten manuell gefiltert werden</li>
@@ -342,11 +427,9 @@ Im Folgenden findest du einen visuellen Arbeitsplan mit den wichtigsten Schritte
   <div className="sub-title">2.4 Object Geolocation</div>
 
   <div className="sub-detail">
-    <img 
-      src="/img/Blog_Einfuehrung_3/2_4_Image.jpg" 
+    <Image src="/img/Blog_Einfuehrung_3/2_4_Image.jpg" 
       alt="Objekt-Geolokalisierung: von Bild-Detektion zu LV95-Koordinaten" 
-      style={{ width: '100%', height: 'auto', maxWidth: '400px' }} 
-    />
+      style={{ width: '100%', height: 'auto', maxWidth: '800px' }} width={400} height={250} />
   </div>
 
   <div className="sub-detail">
@@ -405,11 +488,9 @@ Im Folgenden findest du einen visuellen Arbeitsplan mit den wichtigsten Schritte
 <div className="sub-box">
   <div className="sub-title">2.5 YOLO Objekterkennung auf SWISSIMAGE Orthofotos</div>
   <div className="sub-detail">
-    <img 
-      src="/img/Blog_Einfuehrung_3/2_5_Image.jpg" 
+    <Image src="/img/Blog_Einfuehrung_3/2_5_Image.jpg" 
       alt="Blog Einführung 3 - Bild 2.5" 
-      style={{ width: '100%', height: 'auto', maxWidth: '400px' }} 
-    />
+      style={{ width: '100%', height: 'auto', maxWidth: '800px' }} width={400} height={250} />
   </div>
 
   <div className="sub-detail">
@@ -502,6 +583,25 @@ Im Folgenden findest du einen visuellen Arbeitsplan mit den wichtigsten Schritte
       </>
     </div>
 
+    
+    <div className="main-output">
+      <>
+        <strong>Output:</strong>
+        <ul>
+          <li>Vollständig bereinigtes und harmonisiertes Fusswegnetz von Zürich</li>
+          <li>Knoten- und Kantenstruktur (Graph-Modell) mit konsistenten IDs</li>
+          <li>Dokumentierte Attribute pro Segment (Länge, Zugang, Quelle, Klassifikation)</li>
+        </ul>
+        <strong>Herausforderungen:</strong>
+        <ul>
+          <li>Unterschiedliche Datenqualität und Abdeckung zwischen OSM und OGD-Zürich</li>
+          <li>Topologische Konsistenz: Lücken, Überschneidungen und Duplikate sauber bereinigen</li>
+          <li>Automatisierte Abgrenzung von irrelevanten Segmenten (z. B. kurze Artefakte, private Wege)</li>
+          <li>Skalierbarkeit bei grossen Datenmengen und effiziente Geoprocessing-Workflows</li>
+        </ul>
+      </>
+    </div>
+
     <div className="sub-steps">
       <div className="sub-box">
         <div className="sub-title">3.1 </div>
@@ -587,6 +687,25 @@ Im Folgenden findest du einen visuellen Arbeitsplan mit den wichtigsten Schritte
         <strong>Input:</strong>
         <ul>
           <li>...</li>
+        </ul>
+      </>
+    </div>
+
+    
+    <div className="main-output">
+      <>
+        <strong>Output:</strong>
+        <ul>
+          <li>Vollständig bereinigtes und harmonisiertes Fusswegnetz von Zürich</li>
+          <li>Knoten- und Kantenstruktur (Graph-Modell) mit konsistenten IDs</li>
+          <li>Dokumentierte Attribute pro Segment (Länge, Zugang, Quelle, Klassifikation)</li>
+        </ul>
+        <strong>Herausforderungen:</strong>
+        <ul>
+          <li>Unterschiedliche Datenqualität und Abdeckung zwischen OSM und OGD-Zürich</li>
+          <li>Topologische Konsistenz: Lücken, Überschneidungen und Duplikate sauber bereinigen</li>
+          <li>Automatisierte Abgrenzung von irrelevanten Segmenten (z. B. kurze Artefakte, private Wege)</li>
+          <li>Skalierbarkeit bei grossen Datenmengen und effiziente Geoprocessing-Workflows</li>
         </ul>
       </>
     </div>

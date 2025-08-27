@@ -62,9 +62,30 @@ export default async function BlogPage({ params }: BlogPageProps) {
     ) || null;
   }
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.claudewidmer.ch'
+  const url = `${siteUrl}/blogs/${slug}`
+  const datePublishedISO = date.toISOString()
+  const dateModifiedISO = metadata.updatedDate ? new Date(metadata.updatedDate as Date).toISOString() : datePublishedISO
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: title,
+    description: metadata.description || metadata.excerpt || '',
+    author: [{ '@type': 'Person', name: authorName }],
+    datePublished: datePublishedISO,
+    dateModified: dateModifiedISO,
+    mainEntityOfPage: url,
+    image: metadata.coverImage ? [`${siteUrl}${metadata.coverImage}`] : undefined,
+    keywords: tags.join(', '),
+  }
+
   return (
     <>
       <Favicon name={title} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <main>
         <Container>
           <PageWrapper className="text-left">
@@ -146,15 +167,38 @@ export async function generateStaticParams() {
 
 export const dynamicParams = false
 
-export async function generateMetadata({
-  params,
-}: BlogPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: BlogPageProps): Promise<Metadata> {
   const { slug } = await params
   const { metadata } = await getBlogPost(slug)
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.claudewidmer.ch'
+  const url = `${siteUrl}/blogs/${slug}`
+  const title = metadata.title
+  const description = metadata.description || metadata.excerpt || ''
+  const tags = metadata.tags || []
+  const datePublished = metadata.date ? new Date(metadata.date).toISOString() : undefined
+
   return {
-    title: metadata.title,
-    description: metadata.description,
-    keywords: metadata.tags,
+    title,
+    description,
+    keywords: tags,
+    alternates: { canonical: url },
+    openGraph: {
+      type: 'article',
+      url,
+      title,
+      description,
+      tags,
+      publishedTime: datePublished,
+      images: metadata.coverImage ? [{ url: `${siteUrl}${metadata.coverImage}`, alt: title }] : undefined,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: metadata.coverImage ? [`${siteUrl}${metadata.coverImage}`] : undefined,
+    },
+    authors: metadata.author ? (typeof metadata.author === 'string' ? [{ name: metadata.author }] : [{ name: metadata.author.name }]) : undefined,
+    robots: { index: true, follow: true },
   }
 }

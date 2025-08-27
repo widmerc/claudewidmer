@@ -105,17 +105,21 @@ const About: React.FC = () => {
       <FadeInOnScroll>
         <CV />
         <SectionSeparator text="Neugierig?" className="mt-0" />
-        <p className="text-center text-gray-700 mt-4">
-          Wenn du mehr über meine Projekte erfahren möchtest, kannst du auch gerne meine Blogs durchstöbern.
-        </p>
-        <div className="flex justify-center mt-4">
-          <a
-            href="/blog_overview"
-            className="px-6 py-2 bg-accent-3 text-white font-bold rounded-lg shadow-md hover:bg-accent-3 transition-colors"
-          >
-            Zu den Blogs
-          </a>
-        </div>
+      </FadeInOnScroll>
+      <FadeInOnScroll>
+        <section className="max-w-3xl mx-auto text-center mt-4 px-4 mb-12">
+          <p className="text-gray-700">
+            Wenn du mehr über meine Projekte erfahren möchtest, kannst du auch gerne meine Blogs durchstöbern.
+          </p>
+          <div className="flex justify-center mt-4">
+            <a
+              href="/blog_overview"
+              className="px-6 py-2 bg-accent-3 text-white font-bold rounded-lg shadow-md hover:bg-accent-3 transition-colors"
+            >
+              Zu den Blogs
+            </a>
+          </div>
+        </section>
       </FadeInOnScroll>
     </>
   );
