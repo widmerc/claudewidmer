@@ -69,7 +69,11 @@ export default function RootLayout({
         <meta name='viewport' content='width=device-width,initial-scale=1' />
         {/* Title is handled by Next.js metadata; static <title> kept as fallback */}
         <title>Claude Widmer – Geoinformatik & Web-GIS</title>
-        <link rel='icon' href='favicon/favicon.ico' />
+  {/* Favicon Pfad absolut, damit keine 404 unter verschachtelten Routen (/blogs/...) */}
+  <link rel='icon' href='/favicon/favicon.ico' />
+  {/* Preload LCP Hero Image (WebP + PNG fallback) */}
+  <link rel="preload" as="image" href="/img/background.webp" />
+  <link rel="preload" as="image" href="/img/background.png" media="(not all)" />
         {/* Structured Data: WebSite + Organization + Person */}
         <script
           type='application/ld+json'

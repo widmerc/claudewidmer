@@ -3,7 +3,17 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import SkillCard from './SkillCard';
-import { AnimatePresence, motion } from 'framer-motion';
+import dynamic from 'next/dynamic';
+
+// Framer Motion dynamisch (reduziert initial JS)
+const MotionPresence = dynamic(async () => {
+  const mod = await import('framer-motion');
+  return { default: ({ children }: { children: React.ReactNode }) => <mod.AnimatePresence mode="wait">{children}</mod.AnimatePresence> };
+}, { ssr: false });
+const MotionDiv = dynamic(async () => {
+  const mod = await import('framer-motion');
+  return { default: mod.motion.div };
+}, { ssr: false });
 
 const skills = [
   { backgroundImage: "/img/QGIS.png", text: "QGIS" },
@@ -24,41 +34,24 @@ function getRandomSkill(excludeIndex: number) {
 
 export function TitleScreen() {
   const [index, setIndex] = useState(0);
-  const [availableHeight, setAvailableHeight] = useState<number | null>(null);
-
-  // Höhe dynamisch berechnen basierend auf dem Header
-useEffect(() => {
-  const updateHeight = () => {
-    const header = document.getElementById("main-header");
-    const headerHeight = header?.offsetHeight || 0;
-
-    // visualViewport ist in Safari/iOS zuverlässiger als innerHeight
-    const vv = window.visualViewport;
-    const viewportHeight = vv?.height ?? window.innerHeight;
-
-    setAvailableHeight(viewportHeight - headerHeight);
-  };
-
-  updateHeight();
-
-  const vv = window.visualViewport;
-  vv?.addEventListener("resize", updateHeight);
-  vv?.addEventListener("scroll", updateHeight); // URL-Bar Ein-/Ausfahren
-  window.addEventListener("orientationchange", updateHeight);
-
-  return () => {
-    vv?.removeEventListener("resize", updateHeight);
-    vv?.removeEventListener("scroll", updateHeight);
-    window.removeEventListener("orientationchange", updateHeight);
-  };
-}, []);
-
-  // SkillCard rotieren
+  // Rotation erst nach Idle für bessere LCP
   useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex(prev => getRandomSkill(prev)); 
-    }, 6000);
-    return () => clearInterval(interval);
+    const start = () => {
+      const interval = setInterval(() => {
+        setIndex(prev => getRandomSkill(prev));
+      }, 6000);
+      return () => clearInterval(interval);
+    };
+    // Safe feature detection with typed fallback
+    const w = window as typeof window & {
+      requestIdleCallback?: (cb: () => void) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    if (typeof w.requestIdleCallback === 'function') {
+      const id = w.requestIdleCallback(() => start());
+      return () => w.cancelIdleCallback?.(id);
+    }
+    return start();
   }, []);
 
   const currentSkill = skills[index];
@@ -73,10 +66,7 @@ useEffect(() => {
   }, []);
 
   return (
-    <section
-      className="relative w-full overflow-hidden"
-      style={{ height: availableHeight ? `${availableHeight}px` : "100dvh" }}
-    >
+    <section className="relative w-full overflow-hidden min-h-screen flex flex-col justify-center items-center">
       {/* Hintergrundbild optimiert mit next/image für bessere LCP & automatische WebP-Auslieferung */}
       <Image
         src={bgSrc}
@@ -91,7 +81,7 @@ useEffect(() => {
       <div className="absolute top-0 left-0 w-full h-full bg-black/50" />
 
       {/* Inhalt */}
-      <div className="relative z-10 flex flex-col items-center justify-center h-full text-white text-center px-6">
+  <div className="relative z-10 flex flex-col items-center text-white text-center px-6">
         <h1 className="text-5xl md:text-7xl font-extrabold leading-tight drop-shadow-xl">
           Claude Widmer
         </h1>
@@ -104,8 +94,8 @@ useEffect(() => {
 
         {/* SkillCard mit Animation */}
         <div className="mt-4 w-64 h-40 relative">
-          <AnimatePresence mode="wait">
-            <motion.div
+          <MotionPresence>
+            <MotionDiv
               key={currentSkill.text}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -113,25 +103,18 @@ useEffect(() => {
               transition={{ duration: 1, ease: "easeInOut" }}
               className="absolute w-full h-full"
             >
-              <SkillCard
-                backgroundImage={currentSkill.backgroundImage}
-                text={currentSkill.text}
-              />
-            </motion.div>
-          </AnimatePresence>
+              <SkillCard backgroundImage={currentSkill.backgroundImage} text={currentSkill.text} />
+            </MotionDiv>
+          </MotionPresence>
         </div>
       </div>
 
       {/* Scroll Hinweis mit Framer Motion */}
       <div className="absolute bottom-12 left-0 right-0 flex justify-center z-10">
-        <motion.div
+        <MotionDiv
           className="flex flex-col items-center text-white/80 cursor-pointer"
           animate={{ y: [0, -10, 0] }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -147,7 +130,7 @@ useEffect(() => {
             <path d="M12 19l-7-7h14z" />
           </svg>
           <span className="text-m mt-2 mb-4">Scroll down</span>
-        </motion.div>
+        </MotionDiv>
       </div>
     </section>
   );
