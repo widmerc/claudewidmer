@@ -17,6 +17,7 @@ In diesem Blogbeitrag stelle ich meinen geplanten Arbeitsablauf für die Mastera
 Im Folgenden findest du einen visuellen Arbeitsplan mit den wichtigsten Schritten:
 
 import Image from 'next/image'
+import RevealBox from "@/app/_components/RevealBox";
 
 <div className="multi-stage">
 
@@ -573,111 +574,287 @@ import Image from 'next/image'
 
 
 <div className="main-stage">
-    <div className="main-title">3. Klassifikation der Schulwegsicherheit</div>
-    <div className="main-input">
-      <>
-        <strong>Input:</strong>
-        <ul>
-          <li>...</li>
-        </ul>
-      </>
+  <div className="main-title">3. Klassifikation der Schulwegsicherheit</div>
+
+  <div className="main-input">
+    <div>
+      Ziel dieses Schritts ist es, aus den vorbereiteten Daten (YOLO-Detektionen auf Orthofotos und Street-Level-Fotos,
+      Ground-Truth aus Zürich sowie Netzwerkdaten) Sicherheitsbewertungen für einzelne Strassen- und Wegsegmente zu
+      berechnen. Diese Bewertungen werden auf zwei Arten erstellt:
     </div>
-
-    
-    <div className="main-output">
-      <>
-        <strong>Output:</strong>
-        <ul>
-          <li>Vollständig bereinigtes und harmonisiertes Fusswegnetz von Zürich</li>
-          <li>Knoten- und Kantenstruktur (Graph-Modell) mit konsistenten IDs</li>
-          <li>Dokumentierte Attribute pro Segment (Länge, Zugang, Quelle, Klassifikation)</li>
-        </ul>
-        <strong>Herausforderungen:</strong>
-        <ul>
-          <li>Unterschiedliche Datenqualität und Abdeckung zwischen OSM und OGD-Zürich</li>
-          <li>Topologische Konsistenz: Lücken, Überschneidungen und Duplikate sauber bereinigen</li>
-          <li>Automatisierte Abgrenzung von irrelevanten Segmenten (z. B. kurze Artefakte, private Wege)</li>
-          <li>Skalierbarkeit bei grossen Datenmengen und effiziente Geoprocessing-Workflows</li>
-        </ul>
-      </>
-    </div>
-
-    <div className="sub-steps">
-      <div className="sub-box">
-        <div className="sub-title">3.1 </div>
-        <div className="sub-detail">
-          <>
-            <strong>Input:</strong>
-            <ul><li>wird ergänzt</li></ul>
-          </>
-        </div>
-        <div className="sub-detail">
-          <>
-            <strong>Algorithmus:</strong>
-            <ul><li>wird ergänzt</li></ul>
-          </>
-        </div>
-        <div className="sub-detail">
-          <>
-            <strong>Output:</strong>
-            <ul><li>wird ergänzt</li></ul>
-          </>
-        </div>
-      </div>
-
-      <div className="sub-box">
-        <div className="sub-title">3.2 </div>
-        <div className="sub-detail">
-          <>
-            <strong>Input:</strong>
-            <ul><li>wird ergänzt</li></ul>
-          </>
-        </div>
-        <div className="sub-detail">
-          <>
-            <strong>Algorithmus:</strong>
-            <ul><li>wird ergänzt</li></ul>
-          </>
-        </div>
-        <div className="sub-detail">
-          <>
-            <strong>Output:</strong>
-            <ul><li>wird ergänzt</li></ul>
-          </>
-        </div>
-      </div>
-
-      <div className="sub-box">
-        <div className="sub-title">3.3 </div>
-        <div className="sub-detail">
-          <>
-            <strong>Input:</strong>
-            <ul><li>wird ergänzt</li></ul>
-          </>
-        </div>
-        <div className="sub-detail">
-          <>
-            <strong>Algorithmus:</strong>
-            <ul><li>wird ergänzt</li></ul>
-          </>
-        </div>
-        <div className="sub-detail">
-          <>
-            <strong>Output:</strong>
-            <ul><li>wird ergänzt</li></ul>
-          </>
-        </div>
-      </div>
-
-    </div>
-
-    <div className="main-output">
-      <>
-        <strong>Output:</strong>
-        <ul><li>wird ergänzt</li></ul>
-      </>
+    <ul>
+      <li><b>Machine Learning</b> – das Modell lernt aus den echten Bewertungen der Stadtpolizei Zürich.</li>
+      <li><b>Regelbasiert</b> – ein einfaches Punktesystem mit Abzügen und Boni.</li>
+    </ul>
+    <div>
+      Am Ende lassen sich mit diesen Bewertungen sichere Routen berechnen. Dafür wird eine Kostenfunktion genutzt,
+      die Länge und Sicherheit kombiniert. Zusätzlich wurde ein einfaches API erstellt, das auf Basis von Start- und
+      Zielpunkten die Route mit den genutzten Kanten zurückgibt.
     </div>
   </div>
+
+  <div className="sub-steps">
+    <div className="sub-box">
+      <div className="sub-title">3.1 Datenabgleich SWISSIMAGE (YOLO-Polygone)</div>
+
+      <div className="sub-detail">
+        <Image src="/img/Blog_Einfuehrung_3/3_1_Image.jpg"
+          alt="SWISSIMAGE: von YOLO-Polygonen zu Anteilen je Strassen-Segment"
+          style={{ width: '100%', height: 'auto', maxWidth: '800px' }} width={400} height={250} />
+      </div>
+
+      <div className="sub-detail">
+        <strong>Input:</strong>
+        <ul>
+          <li>Strassennetz (Kanten/Segmente)</li>
+          <li>YOLO-Detektionen auf SWISSIMAGE-Orthofotos als <b>Polygone</b> (z. B. 30er-Zonen, Velowege, Tramgleise, Markierungen)</li>
+          <li>Parameter: Buffer je Klasse</li>
+        </ul>
+      </div>
+
+      <div className="sub-detail">
+        <strong>Algorithmus:</strong>
+        <ul>
+          <li>Polygone bereinigen und je Klasse pufferen</li>
+          <li>Overlay mit Kanten → Coverage je Klasse (Längenanteil)</li>
+          <li>Pivot zu Feature-Spalten; fehlende Werte = 0</li>
+        </ul>
+      </div>
+
+      <div className="sub-detail">
+        <strong>Output:</strong>
+        <ul>
+          <li>`edges_poly.parquet` – Kanten mit Klassenanteilen (0–1) und `länge_m`</li>
+        </ul>
+      </div>
+
+      <div className="sub-detail">
+        <strong>Bildvorschlag:</strong>
+        <ul>
+          <li>Orthofoto-Hintergrund, farbige YOLO-Polygone (z. B. 30er-Zone grün, Tramgleis violett)</li>
+          <li>Strassensegmente mit Popups „Anteil 30er-Zone = 0.6“</li>
+          <li>Kleine Legende der Klassenfarben</li>
+        </ul>
+      </div>
+    </div>
+
+    <div className="sub-box">
+      <div className="sub-title">3.2 Datenabgleich Street-Level (YOLO-Punkte)</div>
+
+      <div className="sub-detail">
+        <Image src="/img/Blog_Einfuehrung_3/3_2_Image.jpg"
+          alt="Street-Level: YOLO-Punkte zu Heatmaps und Zonal-Statistik je Segment"
+          style={{ width: '100%', height: 'auto', maxWidth: '800px' }} width={400} height={250} />
+      </div>
+
+      <div className="sub-detail">
+        <strong>Input:</strong>
+        <ul>
+          <li>YOLO-Detektionen auf Street-Level-Fotos als <b>Punkte</b> (Autos, Busse, Velos, Fussgänger ...)</li>
+          <li>Raster-Parameter: Pixelgrösse, Radius, `min_conf`</li>
+        </ul>
+      </div>
+
+      <div className="sub-detail">
+        <strong>Algorithmus:</strong>
+        <ul>
+          <li>Qualitätsfilter (Nachbarn/Effort)</li>
+          <li>Heatmaps je Objektgruppe (Perzentil + Glättung)</li>
+          <li>Zonal-Statistik entlang Kanten → `rast_*` je Gruppe</li>
+        </ul>
+      </div>
+
+      <div className="sub-detail">
+        <strong>Output:</strong>
+        <ul>
+          <li>GeoTIFF-Heatmaps</li>
+          <li>`edges_raster.parquet` – Kanten mit `rast_*`</li>
+        </ul>
+      </div>
+
+      <div className="sub-detail">
+        <strong>Bildvorschlag:</strong>
+        <ul>
+          <li>Heatmap „Autos“ als halbtransparente Fläche</li>
+          <li>Strassensegmente mit Tooltip „rast_car = 0.82“</li>
+          <li>Beispiel-Street-Level-Foto (klein) als Einblendung</li>
+        </ul>
+      </div>
+    </div>
+
+    <div className="sub-box">
+      <div className="sub-title">3.3 Klassifikation mit ML (inkl. Monte Carlo)</div>
+
+      <div className="sub-detail">
+        <Image src="/img/Blog_Einfuehrung_3/3_3_Image.jpg"
+          alt="ML-Klassifikation: Features → Safety-Score mit Monte-Carlo-Unsicherheit"
+          style={{ width: '100%', height: 'auto', maxWidth: '800px' }} width={400} height={250} />
+      </div>
+
+      <div className="sub-detail">
+        <strong>Input:</strong>
+        <ul>
+          <li>Features aus 3.1 und 3.2 (Klassenanteile, `rast_*`, Länge)</li>
+          <li>Ground-Truth der Stadtpolizei Zürich (Übergänge mit Schwierigkeit)</li>
+        </ul>
+      </div>
+
+      <div className="sub-detail">
+        <strong>Algorithmus:</strong>
+        <ul>
+          <li>Preprocessing (Imputation, One-Hot wo nötig, ggf. Klassengewichte)</li>
+          <li>Modelle: z. B. RandomForest / HistGradientBoosting, 5-Fold CV</li>
+          <li>Vorhersage: `prob_unsafe` → `safety_score = 1 - Risiko`</li>
+          <li><b>Monte Carlo:</b> Modell mehrfach mit kleinen Zufallsvariationen laufen lassen → p05/p95 als Unsicherheitsintervall</li>
+        </ul>
+      </div>
+
+      <div className="sub-detail">
+        <strong>Output:</strong>
+        <ul>
+          <li>`edges_with_safety_ml.parquet` – `safety_score`, `prob_unsafe`, `mc_p05`, `mc_p95`</li>
+        </ul>
+      </div>
+
+      <div className="sub-detail">
+        <strong>Bildvorschlag:</strong>
+        <ul>
+          <li>Kartenansicht mit Segmentfärbung nach `safety_score`</li>
+          <li>Kleines Histogramm/Violinplot der Monte-Carlo-Verteilung für ein Beispielsegment</li>
+          <li>Legende: sicher ↔ unsicher</li>
+        </ul>
+      </div>
+    </div>
+
+    <div className="sub-box">
+      <div className="sub-title">3.4 Klassifikation regelbasiert (Punktabzug)</div>
+
+      <div className="sub-detail">
+        <Image src="/img/Blog_Einfuehrung_3/3_4_Image.jpg"
+          alt="Regelbasiertes Scoring: Abzüge/Bonis aus YOLO-Polygonen und Heatmaps"
+          style={{ width: '100%', height: 'auto', maxWidth: '800px' }} width={400} height={250} />
+      </div>
+
+      <div className="sub-detail">
+        <strong>Input:</strong>
+        <ul>
+          <li>Features aus 3.1 und 3.2</li>
+          <li>Einfache Gewichte und Schwellwerte (Regelset)</li>
+          <li>Übergangs-Flag/Kreuzungslogik (markiert, Ampel, Insel)</li>
+        </ul>
+      </div>
+
+      <div className="sub-detail">
+        <strong>Algorithmus:</strong>
+        <ul>
+          <li>Startscore = 1.0</li>
+          <li>Abzüge: z. B. `rast_car` hoch −0.25, Tram/Bus −0.10, *kein* markierter Übergang −0.30</li>
+          <li>Bonis: 30er-Zone +0.10, Veloweg +0.08, Zebrastreifen +0.15, Ampel +0.25</li>
+          <li>Clipping/Normalisierung → `safety_score_rule ∈ [0,1]`</li>
+        </ul>
+      </div>
+
+      <div className="sub-detail">
+        <strong>Output:</strong>
+        <ul>
+          <li>`edges_with_safety_rule.parquet` – `safety_score_rule` + Kategorie</li>
+        </ul>
+      </div>
+
+      <div className="sub-detail">
+        <strong>Bildvorschlag:</strong>
+        <ul>
+          <li>Zwei nebeneinander: Karte „ML“ vs. „Regeln“ für dasselbe Gebiet</li>
+          <li>Ein Segment mit Overlay der Faktoren (Badges: 30er-Zone +0.10, kein Zebrastreifen −0.30 …)</li>
+          <li>Minilegende der Punkteabzüge/Bonis</li>
+        </ul>
+      </div>
+    </div>
+
+    <div className="sub-box">
+      <div className="sub-title">3.5 Routing mit Kostenfunktion & API</div>
+
+      <div className="sub-detail">
+        <Image src="/img/Blog_Einfuehrung_3/3_5_Image.jpg"
+          alt="Routing: Kosten = Alpha*Länge + Beta*(1-Safety); API mit Start- und Zielpunkt"
+          style={{ width: '100%', height: 'auto', maxWidth: '800px' }} width={400} height={250} />
+      </div>
+
+      <div className="sub-detail">
+        <strong>Input:</strong>
+        <ul>
+          <li>Kanten + `safety_score` (ML) und/oder `safety_score_rule`</li>
+          <li>Start- und Zielpunkt (API-Request)</li>
+          <li>Parameter: <b>alpha (α)</b> für Länge, <b>beta (β)</b> für Risiko</li>
+        </ul>
+      </div>
+
+      <div className="sub-detail">
+        <strong>Algorithmus:</strong>
+        <ul>
+          <li>Kosten je Kante: `cost = α · länge_m + β · (1 - safety)`</li>
+          <li>k-alternative Pfade (z. B. Yen) berechnen</li>
+          <li>Praxiswerte: `α = 1.0`, `β = 2.0` (Sicherheit doppelt so wichtig wie 100 m)</li>
+        </ul>
+      </div>
+
+      <div className="sub-detail">
+        <strong>API:</strong>
+        <ul>
+          <li>Einfaches Endpoint: Input = 2 Punkte (Start, Ziel)</li>
+          <li>Output = Route als Liste von Kanten mit `länge_m`, `safety`, `cost`</li>
+          <li>Optional: Varianten „kürzester“ vs. „sicherster“ Weg</li>
+        </ul>
+      </div>
+
+      <div className="sub-detail">
+        <strong>Output:</strong>
+        <ul>
+          <li>GPKG/GeoJSON: `routes_*`, `segments_*`</li>
+          <li>Tabelle pro Route: Länge, mittlere Safety, Anzahl Kreuzungen</li>
+        </ul>
+      </div>
+
+<div className="sub-detail">
+  <RevealBox title="Beispiel API-Aufruf">
+
+~~~json
+POST /route
+{
+  "start": [2685000.0, 1248000.0],
+  "ziel": [2685600.0, 1248400.0],
+  "alpha": 1.0,
+  "beta": 2.0
+}
+
+Response:
+{
+  "route_id": "r1",
+  "segments": [
+    { "id": 101, "länge_m": 85.2, "safety": 0.82, "cost": 0.36 },
+    { "id": 102, "länge_m": 47.8, "safety": 0.90, "cost": 0.20 }
+  ],
+  "summary": { "total_länge": 133.0, "avg_safety": 0.86, "kreuzungen": 1 }
+}
+~~~
+
+  </RevealBox>
+</div>
+
+
+      <div className="sub-detail">
+        <strong>Bildvorschlag:</strong>
+        <ul>
+          <li>Karte mit zwei hervorgehobenen Routen (blau = kürzester, grün = sicherster)</li>
+          <li>Popup je Segment mit `länge`, `safety`, `cost`</li>
+          <li>Kleiner Kasten „API-Beispiel“ mit obigem JSON-Snippet</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
 
 <div className="main-stage">
@@ -696,16 +873,14 @@ import Image from 'next/image'
       <>
         <strong>Output:</strong>
         <ul>
-          <li>Vollständig bereinigtes und harmonisiertes Fusswegnetz von Zürich</li>
-          <li>Knoten- und Kantenstruktur (Graph-Modell) mit konsistenten IDs</li>
-          <li>Dokumentierte Attribute pro Segment (Länge, Zugang, Quelle, Klassifikation)</li>
+          <li>...</li>
+          <li>...</li>
+          <li>...</li>
         </ul>
         <strong>Herausforderungen:</strong>
         <ul>
-          <li>Unterschiedliche Datenqualität und Abdeckung zwischen OSM und OGD-Zürich</li>
-          <li>Topologische Konsistenz: Lücken, Überschneidungen und Duplikate sauber bereinigen</li>
-          <li>Automatisierte Abgrenzung von irrelevanten Segmenten (z. B. kurze Artefakte, private Wege)</li>
-          <li>Skalierbarkeit bei grossen Datenmengen und effiziente Geoprocessing-Workflows</li>
+          <li>...</li>
+          <li>...</li>
         </ul>
       </>
     </div>
@@ -760,7 +935,7 @@ import Image from 'next/image'
     <div className="main-output">
       <>
         <strong>Output:</strong>
-        <ul><li>wird ergänzt</li></ul>
+        <ul><li>...</li></ul>
       </>
     </div>
   </div>
