@@ -164,7 +164,7 @@ export default async function MasterarbeitPage() {
             <PdfViewer url={PDF_URL2} title="Overview Road Network Classified Rule Based" height="78vh" />
           </div>
 
-            <div className="max-w-3xl mx-auto px-4 mb-16">
+          <div className="max-w-3xl mx-auto px-4 mb-16">
             <PdfViewer url={PDF_URL3} title="Overview Road Network Classified ML" height="78vh" />
           </div>
         </FadeInOnScroll>
@@ -172,22 +172,95 @@ export default async function MasterarbeitPage() {
 
       </section>
 
+
+      <FadeInOnScroll>
+        <SectionSeparator text="QGIS Plugin API" className="mb-10" />
+      </FadeInOnScroll>
+
+      <FadeInOnScroll>
+        <div className="max-w-3xl mx-auto px-4 mb-12">
+          <p className="text-lg text-gray-700 leading-relaxed">
+            Für die Arbeit wurde ein QGIS-Processing-Skript erstellt, das Routen von
+            einem entfernten Routing-API abruft. Das Skript unterstützt das Schweizer
+            Koordinatensystem LV95 / EPSG:2056 und speichert die Ergebnisse direkt als
+            Vektorlayer (GeoPackage oder GeoJSON) im aktuellen QGIS-Projekt.
+          </p>
+          <p className="text-lg text-gray-700 leading-relaxed mt-4">
+            Parallel dazu wurde ein schlanker FastAPI-Dienst entwickelt, der
+            <em>k-kürzeste Alternativrouten</em> berechnet. Grundlage ist eine
+            Kostenfunktion, die Weglänge und Sicherheit kombiniert. Das API lädt das
+            Fußwegenetz mit den berechneten Sicherheitswerten beim Start vor und gibt
+            die Ergebnisse als GeoJSON zurück. Für Tests und Demonstrationen wurde der
+            Dienst auf <strong>Render.com (Free Tier)</strong> bereitgestellt.
+          </p>
+
+          <div className="flex justify-center mb-16">
+            <div className="bg-white p-3 rounded-xl shadow-xl inline-block max-w-3xl w-full">
+              <Image
+                src="/img/Masterarbeit/Render.png"
+                alt="Deployment / Dashboard des Routing-API (Beispiel auf Render.com)"
+                width={1000}
+                height={640}
+                className="rounded-lg w-full h-auto"
+              />
+            </div>
+          </div>
+
+          <p className="text-lg text-gray-700 leading-relaxed mt-4">
+            Das QGIS-Skript (<code>qgis_processing_load_route.py</code>) ruft dieses API
+            ab, schreibt das Ergebnis lokal und versieht die Routen automatisch mit einem
+            Standardstil (rote Linie, 1 pt). So lässt sich das Routing reproduzierbar in
+            der Forschung nutzen und gleichzeitig praktisch in QGIS anwenden, etwa durch
+            Planerinnen und Planer, die interaktiv sichere Routen abfragen und darstellen
+            möchten.
+          </p>
+        </div>
+      </FadeInOnScroll>
+
+      <FadeInOnScroll>
+        <div className="flex justify-center mb-8">
+          <div className="bg-white p-3 rounded-xl shadow-xl inline-block max-w-xl w-full">
+            <Image
+              src="/img/Masterarbeit/API_QGIS.png"
+              alt="QGIS Plugin UI: Routing - Route aus Routing-API laden"
+              width={1000}
+              height={720}
+              className="rounded-lg w-full h-auto"
+            />
+          </div>
+        </div>
+      </FadeInOnScroll>
+      <FadeInOnScroll>
+        <div className="flex justify-center mb-8">
+          <div className="bg-white p-3 rounded-xl shadow-xl inline-block max-w-xl w-full">
+            <Image
+              src="/img/Masterarbeit/API_QGIS2.jpg"
+              alt="QGIS Plugin UI: Routing - Route aus Routing-API laden"
+              width={1000}
+              height={720}
+              className="rounded-lg w-full h-auto"
+            />
+          </div>
+        </div>
+      </FadeInOnScroll>
+
+
       {/* Blogposts nur mit Masterarbeit */}
       {filteredPosts.length > 0 && (
-        <PageWrapper>
-          <SectionSeparator text="Beiträge zur Masterarbeit" />
+          <PageWrapper>
+            <SectionSeparator text="Beiträge zur Masterarbeit" />
 
-          <FadeInOnScroll>
-            <p className="text-lg text-gray-700 mb-6">
-              Hier findest du alle Blogbeiträge, die direkt mit meiner
-              Masterarbeit zu tun haben.
-            </p>
-          </FadeInOnScroll>
+            <FadeInOnScroll>
+              <p className="text-lg text-gray-700 mb-6">
+                Hier findest du alle Blogbeiträge, die direkt mit meiner
+                Masterarbeit zu tun haben.
+              </p>
+            </FadeInOnScroll>
 
-<BlogListSimple posts={filteredPosts} tag="masterarbeit" />
+            <BlogListSimple posts={filteredPosts} tag="masterarbeit" />
 
-        </PageWrapper>
-      )}
+          </PageWrapper>
+        )}
     </main>
   );
 }
