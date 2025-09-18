@@ -9,6 +9,8 @@ import BlogListSimple, { Post } from "@/app/_components/BlogListSimple";
 
 // Default: local copy
 const PDF_URL = "/api/pdf-proxy?url=https%3A%2F%2Fwww.dropbox.com%2Fscl%2Ffi%2F69wczx7100jxvqnz3mj6n%2Fmain.pdf%3Frlkey%3Dsubuk5bs2kuwg09jk2qjz96qi%26st%3D3j4grwqy%26dl%3D0";
+const PDF_URL2 = "/api/pdf-proxy?url=https%3A%2F%2Fwww.dropbox.com%2Fscl%2Ffi%2F39ldpz2pnz22grrtc1yjd%2FOverview-Road-Network-Classified-ML.pdf%3Frlkey%3Dozwffi73vku21kihne81ijydd%26st%3Dmribwwi6%26dl%3D0";
+const PDF_URL3 = "/api/pdf-proxy?url=https%3A%2F%2Fwww.dropbox.com%2Fscl%2Ffi%2F9jvvj6eryy6vtfhr94qhd%2FOverview-Road-Network-Classified-Rule-Based.pdf%3Frlkey%3De84vm9fn5cfk21w7zteogemhg%26st%3Dzj57i812%26dl%3D0";
 
 // Hinweise: Falls du eine Datei in Dropbox benutzen willst, kopiere den freigabe-Link
 // (z.B. https://www.dropbox.com/s/abcd1234/myfile.pdf) und verwende die Proxy-Route
@@ -154,9 +156,20 @@ export default async function MasterarbeitPage() {
               Hier kannst du den momentanen Stand der Arbeit direkt lesen oder
               herunterladen:
             </p>
-            <PdfViewer url={PDF_URL} title="Masterarbeit" height="78vh" />
+            <PdfViewer url={PDF_URL} title="Masterarbeit PDF" height="78vh" />
           </div>
         </FadeInOnScroll>
+        <FadeInOnScroll>
+          <div className="max-w-3xl mx-auto px-4 mb-16">
+            <PdfViewer url={PDF_URL2} title="Overview Road Network Classified Rule Based" height="78vh" />
+          </div>
+
+            <div className="max-w-3xl mx-auto px-4 mb-16">
+            <PdfViewer url={PDF_URL3} title="Overview Road Network Classified ML" height="78vh" />
+          </div>
+        </FadeInOnScroll>
+
+
       </section>
 
       {/* Blogposts nur mit Masterarbeit */}
