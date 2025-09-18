@@ -1,6 +1,7 @@
 // import { ThemeSwitcher } from "@/app/_components/theme-switcher";
 import AboutMe from "@/app/_components/AboutMeShort";
 import CV from "@/app/_components/CV";
+import MasterarbeitCard from "@/app/_components/MasterarbeitCard";
 import { TitleScreen } from "@/app/_components/TitleScreen";
 import "@/app/globals.css";
 import { SectionSeparator } from "./_components/section-separator";
@@ -31,6 +32,14 @@ export default function Index() {
       {/* <ThemeSwitcher /> */}
       <FadeInOnScroll>
         <BlogPostSlider />
+      </FadeInOnScroll>
+
+      <FadeInOnScroll>
+        <SectionSeparator text="Masterarbeit" />
+      </FadeInOnScroll>
+
+      <FadeInOnScroll>
+        <MasterarbeitCard />
       </FadeInOnScroll>
 
       <FadeInOnScroll>
