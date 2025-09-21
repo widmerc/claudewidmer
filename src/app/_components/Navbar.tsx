@@ -23,7 +23,7 @@ export default function Navbar() {
         {/* Desktop Navigation */}
         <div className="hidden md:flex gap-12 items-center text-lg font-semibold text-gray-800">
           <Link href="/" className="hover:text-accent-500 transition">Home</Link>
-          <Link href="/masterarbeit" className="hover:text-accent-500 transition">Masterarbeit</Link>
+          <Link href="/masterarbeit_public" className="hover:text-accent-500 transition">Masterarbeit</Link>
           <Link href="/blog_overview" className="hover:text-accent-500 transition">Alle Blogs</Link>
           <Link href="/about" className="hover:text-accent-500 transition">Über mich</Link>
         </div>
