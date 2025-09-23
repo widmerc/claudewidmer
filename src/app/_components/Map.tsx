@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "leaflet/dist/leaflet.css";
 import chroma from "chroma-js";
+import { X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import type {
   Map as LeafletMap,
   GeoJSON as LeafletGeoJSON,
@@ -16,7 +18,6 @@ type ZurichFeatureProps = {
   STADTKREIS: string;
   safety_score_ML?: number | string | null;
   safety_score_RB?: number | string | null;
-  // allow additional properties without using `any`
   [key: string]: unknown;
 };
 
@@ -28,6 +29,7 @@ export default function MapComponent() {
     FeatureCollection<Geometry, ZurichFeatureProps> | null
   >(null);
 
+  const [isOpen, setIsOpen] = useState(false); // Fullscreen Overlay
   const [isLoading, setIsLoading] = useState(false);
   const [isMapReady, setIsMapReady] = useState(false);
   const [styleMode, setStyleMode] = useState<"ml" | "rule">("ml");
@@ -37,6 +39,8 @@ export default function MapComponent() {
   // Farbskala
   const scale = useMemo(() => chroma.scale("RdYlGn").domain([0, 100]), []);
   const getColor = useCallback((d: number) => scale(d).hex(), [scale]);
+
+  // GeoJSON rendern
   const renderGeoJson = useCallback(
     async (
       L: typeof import("leaflet"),
@@ -50,17 +54,16 @@ export default function MapComponent() {
         geoJsonRef.current = null;
       }
 
-      // Filter features
       const filtered: FeatureCollection<Geometry, ZurichFeatureProps> =
         kreis === "all"
           ? data
           : {
-              ...data,
-              features: data.features.filter(
-                (f: Feature<Geometry, ZurichFeatureProps>) =>
-                  !!f.properties && f.properties.STADTKREIS === kreis
-              ),
-            };
+            ...data,
+            features: data.features.filter(
+              (f: Feature<Geometry, ZurichFeatureProps>) =>
+                !!f.properties && f.properties.STADTKREIS === kreis
+            ),
+          };
 
       geoJsonRef.current = L.geoJSON(filtered, {
         style: (featureArg) => {
@@ -88,7 +91,6 @@ export default function MapComponent() {
               <b>ML Score:</b> ${feature.properties.safety_score_ML ?? "-"}<br/>
               <b>RB Score:</b> ${feature.properties.safety_score_RB ?? "-"}
             `;
-            // Safely bind popup if available
             const layerWithPopup = layer as unknown as {
               bindPopup: (html: string) => void;
             };
@@ -108,12 +110,13 @@ export default function MapComponent() {
     [getColor, styleMode]
   );
 
-  // Keep a stable reference to the latest renderGeoJson without forcing initMap to change
+  // Referenz behalten
   const renderGeoJsonRef = useRef(renderGeoJson);
   useEffect(() => {
     renderGeoJsonRef.current = renderGeoJson;
   }, [renderGeoJson]);
 
+  // Map initialisieren
   const initMap = useCallback(
     async (container: HTMLDivElement) => {
       setIsLoading(true);
@@ -127,7 +130,7 @@ export default function MapComponent() {
       const map = L.map(container).setView([47.3769, 8.5417], 12);
       mapRef.current = map;
 
-      // Basis-Attribution
+      // Attribution
       let attribution = `
         &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>,
         <a href="https://www.mapillary.com/">Mapillary</a>,
@@ -136,9 +139,10 @@ export default function MapComponent() {
         Claude Widmer
       `;
 
-      // Tile Layer wählen
+      // Tile Layer
       let url: string;
-      const options: LayerOptions & { subdomains?: string; maxZoom?: number } = {};
+      const options: LayerOptions & { subdomains?: string; maxZoom?: number } =
+        {};
       if (basemap === "light") {
         url =
           "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
@@ -163,7 +167,7 @@ export default function MapComponent() {
         div.style.padding = "6px 8px";
         div.style.borderRadius = "6px";
         div.style.boxShadow = "0 0 6px rgba(0,0,0,0.3)";
-        div.innerHTML = `<b>${styleMode === "ml" ? "ML" : "RB"} Score</b><br>`;
+        div.innerHTML = `<b>${styleMode === "ml" ? "ML" : "RB"} Safety Score</b><br>`;
 
         const grades = [0, 20, 40, 60, 80, 100];
         for (let i = 0; i < grades.length; i++) {
@@ -179,6 +183,7 @@ export default function MapComponent() {
       };
       legend.addTo(map);
 
+      // GeoJSON laden
       if (!geoDataRef.current) {
         const response = await fetch("/img/leaflet/data.geojson");
         geoDataRef.current = (await response.json()) as FeatureCollection<
@@ -194,10 +199,10 @@ export default function MapComponent() {
       setIsLoading(false);
       setIsMapReady(true);
     },
-    [basemap, getColor, selectedKreis]
+    [basemap, getColor, selectedKreis, styleMode]
   );
 
-  // Effekt: Style/Kreis wechseln
+  // Style/Kreis wechseln
   useEffect(() => {
     if (mapRef.current && geoDataRef.current) {
       setIsLoading(true);
@@ -213,91 +218,156 @@ export default function MapComponent() {
     }
   }, [renderGeoJson, selectedKreis]);
 
-  // Effekt: Basemap wechseln
+  // Basemap wechseln
   useEffect(() => {
     if (mapRef.current && geoDataRef.current) {
       initMap(mapContainer.current!);
     }
   }, [basemap, initMap]);
 
-  // --- einziges Return der Komponente ---
+  // Scroll sperren wenn Overlay offen
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+      if (mapContainer.current && !isMapReady) {
+        initMap(mapContainer.current);
+      }
+    } else {
+      document.body.style.overflow = "";
+    }
+  }, [isOpen, initMap, isMapReady]);
+
+  // ESC-Taste schliesst Overlay
+  useEffect(() => {
+    function handleEsc(e: KeyboardEvent) {
+      if (e.key === "Escape" && isOpen) {
+        setIsOpen(false);
+        setIsMapReady(false);
+        if (mapRef.current) {
+          mapRef.current.remove();
+          mapRef.current = null;
+        }
+      }
+    }
+    document.addEventListener("keydown", handleEsc);
+    return () => {
+      document.removeEventListener("keydown", handleEsc);
+    };
+  }, [isOpen]);
+
+  // --- Return ---
   return (
-    <div className="relative w-full h-[600px]">
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center z-10 bg-white/60">
-          <div className="flex flex-col items-center">
-            <div className="h-12 w-12 border-2 border-accent-3 border-t-transparent rounded-full animate-spin mb-3"></div>
-            <p className="text-gray-700">Karte wird geladen...</p>
-          </div>
+    <div>
+      {/* Button zum Öffnen */}
+      {!isOpen && (
+        <div className="w-full h-[20vh] flex items-center justify-center">
+          <button
+            onClick={() => setIsOpen(true)}
+            className="px-8 py-3 text-xl font-semibold rounded-xl bg-accent-3 text-white shadow-lg hover:bg-accent-2"
+          >
+            Webkarte öffnen
+          </button>
+
         </div>
       )}
 
-      {!isMapReady && !isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center z-10 bg-white/80 rounded-xl shadow-lg border-2 border-accent-3">
-          <button
-            onClick={() => initMap(mapContainer.current!)}
-            className="px-6 py-3 rounded-lg bg-accent-3 text-white shadow-lg"
-          >
-            Karte laden
-          </button>
-        </div>
-      )}
 
-      {isMapReady && (
-        <div className="absolute top-4 right-4 z-[1000] flex gap-2 bg-white/90 p-2 rounded-lg shadow-lg border">
-          {/* Buttons ML / RB */}
-          <button
-            className={`px-3 py-1 rounded ${
-              styleMode === "ml"
-                ? "bg-accent-3 text-white"
-                : "bg-gray-200 text-gray-800"
-            }`}
-            onClick={() => setStyleMode("ml")}
+      {/* Fullscreen Overlay mit Animation */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="fixed inset-0 z-[1000] bg-white flex flex-col"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
           >
-            ML
-          </button>
-          <button
-            className={`px-3 py-1 rounded ${
-              styleMode === "rule"
-                ? "bg-accent-3 text-white"
-                : "bg-gray-200 text-gray-800"
-            }`}
-            onClick={() => setStyleMode("rule")}
-          >
-            RB
-          </button>
+            {/* X Button */}
+            <div className="absolute top-4 right-4 z-[1100]">
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  setIsMapReady(false);
+                  if (mapRef.current) {
+                    mapRef.current.remove();
+                    mapRef.current = null;
+                  }
+                }}
+                className="p-2 bg-white rounded-full shadow hover:bg-gray-100"
+              >
+                <X className="w-5 h-5 text-gray-700" />
+              </button>
+            </div>
 
-          {/* Auswahl Kreise */}
-          <select
-            value={selectedKreis}
-            onChange={(e) => setSelectedKreis(e.target.value)}
-            className="ml-2 p-1 border rounded"
-          >
-            <option value="all">Alle Kreise (langsam)</option>
-            {Array.from({ length: 12 }, (_, i) => (
-              <option key={i + 1} value={`Kreis ${i + 1}`}>
-                Kreis {i + 1}
-              </option>
-            ))}
-          </select>
+            {/* Loading Overlay */}
+            {isLoading && (
+              <div className="absolute inset-0 flex items-center justify-center z-10 bg-white/60">
+                <div className="flex flex-col items-center">
+                  <div className="h-12 w-12 border-2 border-accent-3 border-t-transparent rounded-full animate-spin mb-3"></div>
+                  <p className="text-gray-700">Karte wird geladen...</p>
+                </div>
+              </div>
+            )}
 
-          {/* Basemap Auswahl */}
-          <select
-            value={basemap}
-            onChange={(e) => setBasemap(e.target.value as "light" | "dark")}
-            className="ml-2 p-1 border rounded"
-          >
-            <option value="light">Carto Light</option>
-            <option value="dark">ArcGIS Luftbild</option>
-          </select>
-        </div>
-      )}
+            {/* Toolbar */}
+            {isMapReady && (
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1050] flex flex-col sm:flex-row items-start sm:items-center gap-2 bg-white/90 p-3 rounded-xl shadow-lg border max-w-[95%] sm:max-w-[80%]">
+                <span className="hidden sm:block font-semibold text-gray-700 pr-2">
+                  Konfiguration:
+                </span>
 
-      {/* Karte */}
-      <div
-        ref={mapContainer}
-        className="w-full h-full rounded-xl shadow-lg border-2 border-gray-300"
-      />
+                <select
+                  value={styleMode}
+                  onChange={(e) =>
+                    setStyleMode(e.target.value as "ml" | "rule")
+                  }
+                  className="p-2 border rounded-lg shadow-sm hover:border-gray-400 transition"
+                >
+                  <option value="ml">ML (Machine Learning)</option>
+                  <option value="rule">RB (Regel-basiert)</option>
+                </select>
+
+                <select
+                  value={selectedKreis}
+                  onChange={(e) => setSelectedKreis(e.target.value)}
+                  className="p-2 border rounded-lg shadow-sm hover:border-gray-400 transition"
+                >
+                  <option value="all">Alle Kreise (langsam)</option>
+                  {Array.from({ length: 12 }, (_, i) => (
+                    <option key={i + 1} value={`Kreis ${i + 1}`}>
+                      Kreis {i + 1}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  value={basemap}
+                  onChange={(e) =>
+                    setBasemap(e.target.value as "light" | "dark")
+                  }
+                  className="p-2 border rounded-lg shadow-sm hover:border-gray-400 transition"
+                >
+                  <option value="light">Carto Light</option>
+                  <option value="dark">ArcGIS Luftbild</option>
+                </select>
+              </div>
+            )}
+
+            {/* Karte + Info-Box unten */}
+            <motion.div
+              ref={mapContainer}
+              className="w-full h-full relative"
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/90 text-gray-700 text-sm px-4 py-2 rounded-lg z-900 shadow-md border">
+                Routing-Algorithmus ist noch nicht in die Karte eingebaut
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
