@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "leaflet/dist/leaflet.css";
+import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 import chroma from "chroma-js";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -13,7 +14,6 @@ import type {
 } from "leaflet";
 import type { FeatureCollection, Feature, Geometry } from "geojson";
 
-// GeoJSON properties for Zurich features used in this map
 type ZurichFeatureProps = {
   STADTKREIS: string;
   safety_score_ML?: number | string | null;
@@ -29,18 +29,16 @@ export default function MapComponent() {
     FeatureCollection<Geometry, ZurichFeatureProps> | null
   >(null);
 
-  const [isOpen, setIsOpen] = useState(false); // Fullscreen Overlay
+  const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isMapReady, setIsMapReady] = useState(false);
   const [styleMode, setStyleMode] = useState<"ml" | "rule">("ml");
   const [selectedKreis, setSelectedKreis] = useState<string>("Kreis 1");
   const [basemap, setBasemap] = useState<"light" | "dark">("light");
 
-  // Farbskala
   const scale = useMemo(() => chroma.scale("RdYlGn").domain([0, 100]), []);
   const getColor = useCallback((d: number) => scale(d).hex(), [scale]);
 
-  // GeoJSON rendern
   const renderGeoJson = useCallback(
     async (
       L: typeof import("leaflet"),
@@ -58,12 +56,12 @@ export default function MapComponent() {
         kreis === "all"
           ? data
           : {
-            ...data,
-            features: data.features.filter(
-              (f: Feature<Geometry, ZurichFeatureProps>) =>
-                !!f.properties && f.properties.STADTKREIS === kreis
-            ),
-          };
+              ...data,
+              features: data.features.filter(
+                (f: Feature<Geometry, ZurichFeatureProps>) =>
+                  !!f.properties && f.properties.STADTKREIS === kreis
+              ),
+            };
 
       geoJsonRef.current = L.geoJSON(filtered, {
         style: (featureArg) => {
@@ -110,13 +108,11 @@ export default function MapComponent() {
     [getColor, styleMode]
   );
 
-  // Referenz behalten
   const renderGeoJsonRef = useRef(renderGeoJson);
   useEffect(() => {
     renderGeoJsonRef.current = renderGeoJson;
   }, [renderGeoJson]);
 
-  // Map initialisieren
   const initMap = useCallback(
     async (container: HTMLDivElement) => {
       setIsLoading(true);
@@ -130,7 +126,7 @@ export default function MapComponent() {
       const map = L.map(container).setView([47.3769, 8.5417], 12);
       mapRef.current = map;
 
-      // Attribution
+      // Basemap
       let attribution = `
         &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>,
         <a href="https://www.mapillary.com/">Mapillary</a>,
@@ -138,8 +134,6 @@ export default function MapComponent() {
         <a href="https://www.swisstopo.admin.ch/">swisstopo</a>,
         Claude Widmer
       `;
-
-      // Tile Layer
       let url: string;
       const options: LayerOptions & { subdomains?: string; maxZoom?: number } =
         {};
@@ -159,7 +153,15 @@ export default function MapComponent() {
 
       L.tileLayer(url, options).addTo(map);
 
-      // Legende
+      // 🌍 Geocoder oben links
+      await import("leaflet-control-geocoder");
+      L.Control.geocoder({
+        defaultMarkGeocode: true,
+        placeholder: "Adresse oder Ort suchen...",
+        position: "topleft",
+      }).addTo(map);
+
+      // 📊 Legende unten rechts
       const legend = new L.Control({ position: "bottomright" });
       legend.onAdd = () => {
         const div = L.DomUtil.create("div", "info legend");
@@ -202,7 +204,7 @@ export default function MapComponent() {
     [basemap, getColor, selectedKreis, styleMode]
   );
 
-  // Style/Kreis wechseln
+  // Re-render bei Kreiswechsel
   useEffect(() => {
     if (mapRef.current && geoDataRef.current) {
       setIsLoading(true);
@@ -218,14 +220,14 @@ export default function MapComponent() {
     }
   }, [renderGeoJson, selectedKreis]);
 
-  // Basemap wechseln
+  // Re-init bei Basemapwechsel
   useEffect(() => {
     if (mapRef.current && geoDataRef.current) {
       initMap(mapContainer.current!);
     }
   }, [basemap, initMap]);
 
-  // Scroll sperren wenn Overlay offen
+  // Scroll lock bei Overlay
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -237,7 +239,7 @@ export default function MapComponent() {
     }
   }, [isOpen, initMap, isMapReady]);
 
-  // ESC-Taste schliesst Overlay
+  // ESC schliesst Overlay
   useEffect(() => {
     function handleEsc(e: KeyboardEvent) {
       if (e.key === "Escape" && isOpen) {
@@ -255,10 +257,8 @@ export default function MapComponent() {
     };
   }, [isOpen]);
 
-  // --- Return ---
   return (
     <div>
-      {/* Button zum Öffnen */}
       {!isOpen && (
         <div className="w-full h-[20vh] flex items-center justify-center">
           <button
@@ -267,12 +267,9 @@ export default function MapComponent() {
           >
             Webkarte öffnen
           </button>
-
         </div>
       )}
 
-
-      {/* Fullscreen Overlay mit Animation */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -281,7 +278,7 @@ export default function MapComponent() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            {/* X Button */}
+            {/* X-Button */}
             <div className="absolute top-4 right-4 z-[1100]">
               <button
                 onClick={() => {
@@ -352,7 +349,7 @@ export default function MapComponent() {
               </div>
             )}
 
-            {/* Karte + Info-Box unten */}
+            {/* Karte */}
             <motion.div
               ref={mapContainer}
               className="w-full h-full relative"
