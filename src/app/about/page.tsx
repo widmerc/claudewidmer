@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React from "react";
 import SkillRadar from "@/app/_components/SkillRadar";
@@ -24,14 +24,21 @@ const About: React.FC = () => {
       <FadeInOnScroll>
         <section className="max-w-3xl mx-auto text-center mb-6 px-4">
           <p className="text-md text-gray-700 leading-relaxed mb-4">
-            Ich bin {age} Jahre alt, begeistere mich für Geoinformatik, räumliche Datenanalyse und moderne Webtechnologien.
-            Mit Erfahrung aus Studium, Beruf und Freizeit entwickle ich datengetriebene Lösungen mit GIS, Python, R und Webtechnologien.
-            Unten seht ihr eine Auswahl meiner Fähigkeiten, meines bisherigen Werdegangs sowie Stationen aus Studium, Beruf und Freizeit – interaktiv und visuell aufbereitet.
+            Ich bin {age} Jahre alt, stamme aus Luzern und interessiere mich
+            besonders für Geoinformatik, räumliche Datenanalyse und moderne
+            Webtechnologien. Durch mein Studium sowie durch praktische
+            Erfahrungen habe ich gelernt, mit GIS, Python, R und Webframeworks
+            datenbasierte Lösungen zu entwickeln.  
+            <br />
+            <br />
+            Auf dieser Seite findest du einen Überblick über meine wichtigsten
+            Kenntnisse und meinen bisherigen Werdegang – kompakt,
+            übersichtlich und interaktiv dargestellt.
           </p>
           <div className="flex justify-center gap-4 mt-4">
             {/* LinkedIn */}
             <a
-              href="https://www.linkedin.com/in/claude-widmer-a93315251/"
+              href="https://www.linkedin.com/in/claude-widmer/"
               className="mx-3 text-black hover:text-blue-600 duration-200 transition-colors"
               target="_blank"
               rel="noopener noreferrer"
@@ -56,7 +63,7 @@ const About: React.FC = () => {
 
             {/* GitHub */}
             <a
-              href="https://github.com/claudewidmer"
+              href="https://github.com/widmerc"
               className="mx-3 text-black hover:text-gray-800 duration-200 transition-colors"
               target="_blank"
               rel="noopener noreferrer"
@@ -77,8 +84,8 @@ const About: React.FC = () => {
           </div>
         </section>
       </FadeInOnScroll>
-      <FadeInOnScroll>
 
+      <FadeInOnScroll>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-w-4xl mx-auto my-8">
           <SkillCard backgroundImage="/img/QGIS.png" text="QGIS" />
           <SkillCard backgroundImage="/img/PyQGIS.png" text="QGIS Plugins" />
@@ -90,7 +97,6 @@ const About: React.FC = () => {
           <SkillCard backgroundImage="/img/React.png" text="React" />
         </div>
       </FadeInOnScroll>
-
 
       <FadeInOnScroll>
         <SectionSeparator text="Meine Fähigkeiten" />
@@ -109,14 +115,15 @@ const About: React.FC = () => {
       <FadeInOnScroll>
         <section className="max-w-3xl mx-auto text-center mt-4 px-4 mb-12">
           <p className="text-gray-700">
-            Wenn du mehr über meine Projekte erfahren möchtest, kannst du auch gerne meine Blogs durchstöbern.
+            Wenn du mehr über meine Projekte erfahren möchtest, kannst du gerne
+            auch meinen Blog besuchen.
           </p>
           <div className="flex justify-center mt-4">
             <a
               href="/blog_overview"
               className="px-6 py-2 bg-accent-3 text-white font-bold rounded-lg shadow-md hover:bg-accent-3 transition-colors"
             >
-              Zu den Blogs
+              Zum Blog
             </a>
           </div>
         </section>
