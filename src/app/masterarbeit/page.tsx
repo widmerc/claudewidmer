@@ -9,6 +9,7 @@ import RevealBox from "@/app/_components/RevealBox";
 import ZoomableImage from "@/app/_components/ZoomableImage";
 import { getAllPosts } from "@/lib/api";
 import BlogListSimple, { Post } from "@/app/_components/BlogListSimple";
+import ImageSlider from "@/app/_components/ImageSlider";
 
 
 
@@ -113,7 +114,16 @@ export default async function MasterarbeitPage() {
               eigene Algorithmen
             </span>{" "}
             entwickelt.
+            <br />
+            Die Ergebnisse meiner Masterarbeit basieren {" "}
+            <span className="font-semibold text-accent-3">
+              ausschliesslich auf automatisch erkannten Informationen aus Street-Level-
+              und Luftbildern,
+            </span>{" "}
+            die von meinem selbst entwickelten KI-Modell verarbeitet wurden.
           </p>
+
+
         </div>
       </FadeInOnScroll>
 
@@ -313,6 +323,64 @@ export default async function MasterarbeitPage() {
         </div>
       </FadeInOnScroll>
 
+            {/* ======================================== */}
+      {/* Routing Algorithm */}
+      {/* ======================================== */}
+<FadeInOnScroll>
+  <SectionSeparator text="Routing Algorithmus" className="mb-10" />
+</FadeInOnScroll>
+
+<FadeInOnScroll>
+  <div className="max-w-5xl mx-auto px-4 mb-16">
+    <p className="text-lg text-gray-700 leading-relaxed mb-8">
+      Um die berechneten Sicherheitswerte praktisch nutzbar zu machen,
+      habe ich einen Routing-Algorithmus direkt in QGIS{" "}
+      <span className="font-semibold text-accent-3">
+        selbst programmiert
+      </span>{" "}
+      und zusätzlich{" "}
+      <span className="font-semibold text-accent-3">
+        eigene Algorithmen
+      </span>{" "}
+      entwickelt. Dabei wird das Strassennetz mit den Sicherheitswerten
+      angereichert und die Kostenfunktion kombiniert sowohl die Länge eines
+      Weges als auch den erkannten Sicherheitsfaktor. Dadurch können mehrere
+      mögliche Routen berechnet werden – je nach Bedarf als kürzeste,
+      sicherste oder ausgewogene Variante. Alle berechneten Wege werden
+      zusätzlich mit Kennzahlen wie durchschnittlicher Sicherheit, minimalem
+      Wert und dem schwächsten Abschnitt beschrieben. So bleiben die Resultate
+      transparent und nachvollziehbar, sowohl für Eltern und Kinder als auch
+      für Behörden.
+    </p>
+
+    <ImageSlider
+  slides={[
+    {
+      src: "/img/Masterarbeit/Info_API_1.png",
+      caption: "Schritt 1: Start- und Endpunkte im QGIS auswählen.",
+    },
+    {
+      src: "/img/Masterarbeit/Info_API_2.png",
+      caption:
+        "Schritt 2: Ein QGIS-Skript berechnet die Routen direkt innerhalb von QGIS.",
+    },
+    {
+      src: "/img/Masterarbeit/Info_API_3.png",
+      caption:
+        "Schritt 3: Die berechneten Routen werden geladen und im QGIS visualisiert.",
+    },
+  ]}
+  autoPlay={true}
+  interval={6000}
+  pauseOnHover={true}
+
+/>
+
+  </div>
+</FadeInOnScroll>
+
+
+
       {/* ======================================== */}
       {/* Limitationen */}
       {/* ======================================== */}
@@ -342,8 +410,8 @@ export default async function MasterarbeitPage() {
             Diese Limitationen sollten bei der Interpretation der Ergebnisse
             stets berücksichtigt werden.
             <br /><br />
-            Zudem ist zu beachten, dass die Schulwegsicherheit stark von subjektiven Faktoren 
-            abhängt, wie etwa dem Alter des Kindes, dem Geschlecht, individuellen Bedürfnissen 
+            Zudem ist zu beachten, dass die Schulwegsicherheit stark von subjektiven Faktoren
+            abhängt, wie etwa dem Alter des Kindes, dem Geschlecht, individuellen Bedürfnissen
             oder der persönlichen Risikobereitschaft.
             <br /><br />
 
@@ -352,6 +420,10 @@ export default async function MasterarbeitPage() {
           </p>
         </div>
       </FadeInOnScroll>
+
+
+
+
 
       {/* ======================================== */}
       {/* Weitere Impressionen */}
@@ -373,41 +445,41 @@ export default async function MasterarbeitPage() {
       </FadeInOnScroll>
 
       {/* Schritt 1: Verknüpfung Objekte & Strassennetz */}
-{/* YOLO Detection Beispiel */}
-<FadeInOnScroll>
-  <div className="max-w-5xl mx-auto px-4 mb-10">
-    <div className="grid grid-cols-1 gap-6">
-      <ZoomableImage
-        src="/img/Masterarbeit/yolo_detection_example1.jpg"
-        alt="YOLO Detection Beispiel"
-        width={1200}
-        height={800}
-        caption="Beispiel einer YOLO-Detektion: Mein Modell erkennt sicherheitsrelevante Objekte wie Zebrastreifen oder Ampeln."
-      />
-    </div>
-  </div>
-</FadeInOnScroll>
+      {/* YOLO Detection Beispiel */}
+      <FadeInOnScroll>
+        <div className="max-w-5xl mx-auto px-4 mb-10">
+          <div className="grid grid-cols-1 gap-6">
+            <ZoomableImage
+              src="/img/Masterarbeit/yolo_detection_example1.jpg"
+              alt="YOLO Detection Beispiel"
+              width={1200}
+              height={800}
+              caption="Beispiel einer YOLO-Detektion: Mein Modell erkennt sicherheitsrelevante Objekte wie Zebrastreifen oder Ampeln."
+            />
+          </div>
+        </div>
+      </FadeInOnScroll>
 
-<FadeInOnScroll>
-  <div className="max-w-5xl mx-auto px-4 mb-10">
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <ZoomableImage
-        src="/img/Masterarbeit/Methodology_Classification_SWISSIMAGE_match2.png"
-        alt="Coverage pro Strassensegment"
-        width={800}
-        height={600}
-        caption="Hier erkennt mein Modell die Tramlinien von Zürich sehr deutlich. Diese wurden ausschliesslich anhand der Luftbilder identifiziert."
-      />
-      <ZoomableImage
-        src="/img/Masterarbeit/boxplot_conf_per_class.png"
-        alt="Verteilung der Modell-Konfidenzen pro Klasse"
-        width={1000}
-        height={700}
-        caption="Verteilung der Modell-Konfidenzen pro Klasse (Boxplot). Diese Klassen wurden in den Luftbildern von meiner trainierten KI erkannt."
-      />
-    </div>
-  </div>
-</FadeInOnScroll>
+      <FadeInOnScroll>
+        <div className="max-w-5xl mx-auto px-4 mb-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <ZoomableImage
+              src="/img/Masterarbeit/Methodology_Classification_SWISSIMAGE_match2.png"
+              alt="Coverage pro Strassensegment"
+              width={800}
+              height={600}
+              caption="Hier erkennt mein Modell die Tramlinien von Zürich sehr deutlich. Diese wurden ausschliesslich anhand der Luftbilder identifiziert."
+            />
+            <ZoomableImage
+              src="/img/Masterarbeit/boxplot_conf_per_class.png"
+              alt="Verteilung der Modell-Konfidenzen pro Klasse"
+              width={1000}
+              height={700}
+              caption="Verteilung der Modell-Konfidenzen pro Klasse (Boxplot). Diese Klassen wurden in den Luftbildern von meiner trainierten KI erkannt."
+            />
+          </div>
+        </div>
+      </FadeInOnScroll>
 
 
       {/* Schritt 3: Ergebnisse auf SWISSIMAGE */}
