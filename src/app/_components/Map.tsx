@@ -1,261 +1,201 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import "leaflet/dist/leaflet.css";
 import "leaflet-control-geocoder/dist/Control.Geocoder.css";
-import chroma from "chroma-js";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import type {
-  Map as LeafletMap,
-  GeoJSON as LeafletGeoJSON,
-  Layer,
-  LayerOptions,
-} from "leaflet";
-import type { FeatureCollection, Feature, Geometry } from "geojson";
+import type { Map as LeafletMap, GeoJSON as LeafletGeoJSON, TileLayer } from "leaflet";
+import type { FeatureCollection, Geometry } from "geojson";
 
+// Typ für Daten
 type ZurichFeatureProps = {
   STADTKREIS: string;
   safety_score_ML?: number | string | null;
   safety_score_RB?: number | string | null;
-  [key: string]: unknown;
+};
+
+// QGIS-Klassenfarben
+const colorClasses = [
+  { min: 0, max: 20, color: "#d7191c" },
+  { min: 20, max: 50, color: "#f07c4a" },
+  { min: 50, max: 60, color: "#fec981" },
+  { min: 60, max: 70, color: "#ffffc0" },
+  { min: 70, max: 80, color: "#c4e687" },
+  { min: 80, max: 90, color: "#77c35c" },
+  { min: 90, max: 100, color: "#1a9641" },
+];
+
+// Hilfsfunktion für Farbe
+const getColor = (val: number | null | undefined) => {
+  if (val == null || isNaN(val)) return "#ccc";
+  for (const c of colorClasses) {
+    if (val >= c.min && val < c.max) return c.color;
+  }
+  return colorClasses[colorClasses.length - 1].color;
 };
 
 export default function MapComponent() {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
+  const tileLayerRef = useRef<TileLayer | null>(null);
   const geoJsonRef = useRef<LeafletGeoJSON | null>(null);
-  const geoDataRef = useRef<
-    FeatureCollection<Geometry, ZurichFeatureProps> | null
-  >(null);
+  const dataRef = useRef<FeatureCollection<Geometry, ZurichFeatureProps> | null>(null);
+  const legendDivRef = useRef<HTMLDivElement | null>(null);
+  const styleModeRef = useRef<"ml" | "rule">("ml");
 
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isMapReady, setIsMapReady] = useState(false);
   const [styleMode, setStyleMode] = useState<"ml" | "rule">("ml");
-  const [selectedKreis, setSelectedKreis] = useState<string>("Kreis 1");
+  const [selectedKreis, setSelectedKreis] = useState("Kreis 1");
   const [basemap, setBasemap] = useState<"light" | "dark">("light");
 
-  const scale = useMemo(() => chroma.scale("RdYlGn").domain([0, 100]), []);
-  const getColor = useCallback((d: number) => scale(d).hex(), [scale]);
+  // GeoJSON zeichnen/aktualisieren (vor Effekten definiert, damit als Abhängigkeit genutzt werden kann)
+  const drawGeoJson = useCallback(async (L: typeof import("leaflet")) => {
+    if (!mapRef.current || !dataRef.current) return;
 
-  const renderGeoJson = useCallback(
-    async (
-      L: typeof import("leaflet"),
-      data: FeatureCollection<Geometry, ZurichFeatureProps>,
-      kreis: string
-    ) => {
-      if (!mapRef.current) return;
+    if (geoJsonRef.current) {
+      geoJsonRef.current.remove();
+    }
 
-      if (geoJsonRef.current) {
-        geoJsonRef.current.remove();
-        geoJsonRef.current = null;
-      }
-
-      const filtered: FeatureCollection<Geometry, ZurichFeatureProps> =
-        kreis === "all"
-          ? data
-          : {
-              ...data,
-              features: data.features.filter(
-                (f: Feature<Geometry, ZurichFeatureProps>) =>
-                  !!f.properties && f.properties.STADTKREIS === kreis
-              ),
-            };
-
-      geoJsonRef.current = L.geoJSON(filtered, {
-        style: (featureArg) => {
-          const feature = featureArg as
-            | Feature<Geometry, ZurichFeatureProps>
-            | undefined;
-          const raw =
-            styleMode === "ml"
-              ? feature?.properties?.safety_score_ML
-              : feature?.properties?.safety_score_RB;
-          const score = typeof raw === "string" ? parseFloat(raw) : raw ?? 0;
-          return {
-            color: getColor(score),
-            weight: 3,
-            opacity: 1,
+    const filtered =
+      selectedKreis === "all"
+        ? dataRef.current
+        : {
+            ...dataRef.current,
+            features: dataRef.current.features.filter(
+              (f) => f.properties?.STADTKREIS === selectedKreis
+            ),
           };
-        },
-        onEachFeature: (featureArg, layer: Layer) => {
-          const feature = featureArg as
-            | Feature<Geometry, ZurichFeatureProps>
-            | undefined;
-          if (feature?.properties) {
-            const content = `
-              <b>Kreis:</b> ${feature.properties.STADTKREIS}<br/>
-              <b>ML Score:</b> ${feature.properties.safety_score_ML ?? "-"}<br/>
-              <b>RB Score:</b> ${feature.properties.safety_score_RB ?? "-"}
-            `;
-            const layerWithPopup = layer as unknown as {
-              bindPopup: (html: string) => void;
-            };
-            if (typeof layerWithPopup.bindPopup === "function") {
-              layerWithPopup.bindPopup(content);
-            }
-          }
-        },
-      }).addTo(mapRef.current);
 
-      if (geoJsonRef.current.getBounds().isValid()) {
-        mapRef.current.fitBounds(geoJsonRef.current.getBounds());
-      }
+    geoJsonRef.current = L.geoJSON(filtered, {
+      style: (f) => {
+        const raw =
+          f && f.properties
+            ? styleModeRef.current === "ml"
+              ? f.properties.safety_score_ML
+              : f.properties.safety_score_RB
+            : undefined;
+        const score = typeof raw === "string" ? parseFloat(raw) : raw ?? 0;
+        return { color: getColor(score), weight: 3, opacity: 1 };
+      },
+      onEachFeature: (f, layer) => {
+        const content = `
+          <b>Kreis:</b> ${f.properties?.STADTKREIS}<br/>
+          <b>ML Score:</b> ${f.properties?.safety_score_ML ?? "-"}<br/>
+          <b>RB Score:</b> ${f.properties?.safety_score_RB ?? "-"}
+        `;
+        layer.bindPopup(content);
+      },
+    }).addTo(mapRef.current);
 
-      setIsLoading(false);
-    },
-    [getColor, styleMode]
-  );
+    if (geoJsonRef.current.getBounds().isValid()) {
+      mapRef.current.fitBounds(geoJsonRef.current.getBounds());
+    }
+  }, [selectedKreis]);
 
-  const renderGeoJsonRef = useRef(renderGeoJson);
+  // Karte initialisieren
   useEffect(() => {
-    renderGeoJsonRef.current = renderGeoJson;
-  }, [renderGeoJson]);
+    if (!isOpen || !mapContainer.current || mapRef.current) return;
 
-  const initMap = useCallback(
-    async (container: HTMLDivElement) => {
-      setIsLoading(true);
+    (async () => {
       const L = await import("leaflet");
+      await import("leaflet-control-geocoder");
 
-      if (mapRef.current) {
-        mapRef.current.remove();
-        mapRef.current = null;
-      }
-
-      const map = L.map(container).setView([47.3769, 8.5417], 12);
+      const map = L.map(mapContainer.current!).setView([47.3769, 8.5417], 12);
       mapRef.current = map;
 
-      // Basemap
-      let attribution = `
-        &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>,
-        <a href="https://www.mapillary.com/">Mapillary</a>,
-        <a href="https://www.stadt-zuerich.ch/">Stadt Zürich</a>,
-        <a href="https://www.swisstopo.admin.ch/">swisstopo</a>,
-        Claude Widmer
-      `;
-      let url: string;
-      const options: LayerOptions & { subdomains?: string; maxZoom?: number } =
-        {};
-      if (basemap === "light") {
-        url =
-          "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
-        options.subdomains = "abcd";
-        attribution += `, <a href="https://carto.com/">Carto</a>`;
-        options.maxZoom = 20;
-      } else {
-        url =
-          "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
-        attribution += `, <a href="https://www.esri.com/">Esri</a>`;
-        options.maxZoom = 20;
-      }
-      options.attribution = attribution;
+      // TileLayer
+      const tile = L.tileLayer(
+        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+        { subdomains: "abcd", attribution: "&copy; OSM, Carto", maxZoom: 20 }
+      );
+      tile.addTo(map);
+      tileLayerRef.current = tile;
 
-      L.tileLayer(url, options).addTo(map);
+      // Geocoder
+      L.Control.geocoder({ placeholder: "Adresse suchen...", position: "topleft" }).addTo(map);
 
-      // 🌍 Geocoder oben links
-      await import("leaflet-control-geocoder");
-      L.Control.geocoder({
-        defaultMarkGeocode: true,
-        placeholder: "Adresse oder Ort suchen...",
-        position: "topleft",
-      }).addTo(map);
-
-      // 📊 Legende unten rechts
+      // Legende
       const legend = new L.Control({ position: "bottomright" });
       legend.onAdd = () => {
-        const div = L.DomUtil.create("div", "info legend");
+        const div = (legendDivRef.current = L.DomUtil.create("div", "info legend"));
         div.style.background = "white";
         div.style.padding = "6px 8px";
         div.style.borderRadius = "6px";
         div.style.boxShadow = "0 0 6px rgba(0,0,0,0.3)";
-        div.innerHTML = `<b>${styleMode === "ml" ? "ML" : "RB"} Safety Score</b><br>`;
-
-        const grades = [0, 20, 40, 60, 80, 100];
-        for (let i = 0; i < grades.length; i++) {
-          const from = grades[i];
-          const to = grades[i + 1];
-          div.innerHTML +=
-            `<i style="background:${getColor(
-              from + 1
-            )}; width:18px; height:18px; display:inline-block; margin-right:6px;"></i>` +
-            `${from}${to ? "&ndash;" + to : "+"}<br>`;
-        }
+        // Inhalt wird separat anhand von styleMode aktualisiert
+        div.innerHTML = "";
+        colorClasses.forEach(({ min, max, color }) => {
+          div.innerHTML += `<i style="background:${color};width:18px;height:18px;display:inline-block;margin-right:6px;"></i>${min} – ${max}<br>`;
+        });
         return div;
       };
       legend.addTo(map);
 
-      // GeoJSON laden
-      if (!geoDataRef.current) {
-        const response = await fetch("/img/leaflet/data.geojson");
-        geoDataRef.current = (await response.json()) as FeatureCollection<
-          Geometry,
-          ZurichFeatureProps
-        >;
-      }
+      // Daten laden
+      const res = await fetch("/img/leaflet/data_geojson.geojson");
+      dataRef.current = await res.json();
 
-      if (geoDataRef.current) {
-        await renderGeoJsonRef.current(L, geoDataRef.current, selectedKreis);
-      }
+      // Zeichnen
+      drawGeoJson(L);
+    })();
+  }, [isOpen, drawGeoJson]);
 
-      setIsLoading(false);
-      setIsMapReady(true);
-    },
-    [basemap, getColor, selectedKreis, styleMode]
-  );
+  // GeoJSON zeichnen/aktualisieren
+  // drawGeoJson is defined above
 
-  // Re-render bei Kreiswechsel
+  // StyleMode Wechsel → nur Style neu setzen
   useEffect(() => {
-    if (mapRef.current && geoDataRef.current) {
-      setIsLoading(true);
-      import("leaflet").then((L) => {
-        setTimeout(() => {
-          renderGeoJson(
-            L,
-            geoDataRef.current as FeatureCollection<Geometry, ZurichFeatureProps>,
-            selectedKreis
-          );
-        }, 50);
+    // keep ref in sync for functions using it
+    styleModeRef.current = styleMode;
+
+    if (geoJsonRef.current) {
+      geoJsonRef.current.setStyle((f) => {
+        if (!f || !f.properties) return { color: getColor(null), weight: 3, opacity: 1 };
+        const raw =
+          styleMode === "ml" ? f.properties.safety_score_ML : f.properties.safety_score_RB;
+        const score = typeof raw === "string" ? parseFloat(raw) : raw ?? 0;
+        return { color: getColor(score), weight: 3, opacity: 1 };
       });
     }
-  }, [renderGeoJson, selectedKreis]);
+  }, [styleMode]);
 
-  // Re-init bei Basemapwechsel
+  // Update legend title when style mode changes
   useEffect(() => {
-    if (mapRef.current && geoDataRef.current) {
-      initMap(mapContainer.current!);
+    if (legendDivRef.current) {
+      const title = `<b>${styleMode.toUpperCase()} Safety Score</b><br>`;
+      // Rebuild legend content with updated title
+      let body = "";
+      colorClasses.forEach(({ min, max, color }) => {
+        body += `<i style="background:${color};width:18px;height:18px;display:inline-block;margin-right:6px;"></i>${min} – ${max}<br>`;
+      });
+      legendDivRef.current.innerHTML = title + body;
     }
-  }, [basemap, initMap]);
+  }, [styleMode]);
 
-  // Scroll lock bei Overlay
+  // Basemap wechseln → nur TileLayer austauschen
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-      if (mapContainer.current && !isMapReady) {
-        initMap(mapContainer.current);
-      }
-    } else {
-      document.body.style.overflow = "";
-    }
-  }, [isOpen, initMap, isMapReady]);
+    if (!mapRef.current) return;
+    import("leaflet").then((L) => {
+      if (tileLayerRef.current) tileLayerRef.current.remove();
+      const url =
+        basemap === "light"
+          ? "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+          : "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+      const options =
+        basemap === "light"
+          ? { subdomains: "abcd", attribution: "&copy; OSM, Carto", maxZoom: 20 }
+          : { attribution: "&copy; Esri", maxZoom: 20 };
+      tileLayerRef.current = L.tileLayer(url, options).addTo(mapRef.current!);
+    });
+  }, [basemap]);
 
-  // ESC schliesst Overlay
+  // Kreiswechsel → GeoJSON neu rendern
   useEffect(() => {
-    function handleEsc(e: KeyboardEvent) {
-      if (e.key === "Escape" && isOpen) {
-        setIsOpen(false);
-        setIsMapReady(false);
-        if (mapRef.current) {
-          mapRef.current.remove();
-          mapRef.current = null;
-        }
-      }
+    if (mapRef.current && dataRef.current) {
+      import("leaflet").then((L) => drawGeoJson(L));
     }
-    document.addEventListener("keydown", handleEsc);
-    return () => {
-      document.removeEventListener("keydown", handleEsc);
-    };
-  }, [isOpen]);
+  }, [selectedKreis, drawGeoJson]);
 
   return (
     <div>
@@ -278,16 +218,18 @@ export default function MapComponent() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            {/* X-Button */}
+            {/* Schliessen */}
             <div className="absolute top-4 right-4 z-[1100]">
               <button
                 onClick={() => {
                   setIsOpen(false);
-                  setIsMapReady(false);
                   if (mapRef.current) {
                     mapRef.current.remove();
                     mapRef.current = null;
                   }
+                  geoJsonRef.current = null;
+                  tileLayerRef.current = null;
+                  dataRef.current = null;
                 }}
                 className="p-2 bg-white rounded-full shadow hover:bg-gray-100"
               >
@@ -295,73 +237,56 @@ export default function MapComponent() {
               </button>
             </div>
 
-            {/* Loading Overlay */}
-            {isLoading && (
-              <div className="absolute inset-0 flex items-center justify-center z-10 bg-white/60">
-                <div className="flex flex-col items-center">
-                  <div className="h-12 w-12 border-2 border-accent-3 border-t-transparent rounded-full animate-spin mb-3"></div>
-                  <p className="text-gray-700">Karte wird geladen...</p>
-                </div>
-              </div>
-            )}
-
             {/* Toolbar */}
-            {isMapReady && (
-              <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1050] flex flex-col sm:flex-row items-start sm:items-center gap-2 bg-white/90 p-3 rounded-xl shadow-lg border max-w-[95%] sm:max-w-[80%]">
-                <span className="hidden sm:block font-semibold text-gray-700 pr-2">
-                  Konfiguration:
-                </span>
-
-                <select
-                  value={styleMode}
-                  onChange={(e) =>
-                    setStyleMode(e.target.value as "ml" | "rule")
-                  }
-                  className="p-2 border rounded-lg shadow-sm hover:border-gray-400 transition"
-                >
-                  <option value="ml">ML (Machine Learning)</option>
-                  <option value="rule">RB (Regel-basiert)</option>
-                </select>
-
-                <select
-                  value={selectedKreis}
-                  onChange={(e) => setSelectedKreis(e.target.value)}
-                  className="p-2 border rounded-lg shadow-sm hover:border-gray-400 transition"
-                >
-                  <option value="all">Alle Kreise (langsam)</option>
-                  {Array.from({ length: 12 }, (_, i) => (
-                    <option key={i + 1} value={`Kreis ${i + 1}`}>
-                      Kreis {i + 1}
-                    </option>
-                  ))}
-                </select>
-
-                <select
-                  value={basemap}
-                  onChange={(e) =>
-                    setBasemap(e.target.value as "light" | "dark")
-                  }
-                  className="p-2 border rounded-lg shadow-sm hover:border-gray-400 transition"
-                >
-                  <option value="light">Carto Light</option>
-                  <option value="dark">ArcGIS Luftbild</option>
-                </select>
-              </div>
-            )}
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1050] flex flex-col sm:flex-row items-start sm:items-center gap-2 bg-white/90 p-3 rounded-xl shadow-lg border">
+              <select
+                value={styleMode}
+                onChange={(e) => setStyleMode(e.target.value as "ml" | "rule")}
+                className="p-2 border rounded-lg shadow-sm"
+              >
+                <option value="ml">ML (Machine Learning)</option>
+                <option value="rule">RB (Regel-basiert)</option>
+              </select>
+              <select
+                value={selectedKreis}
+                onChange={(e) => setSelectedKreis(e.target.value)}
+                className="p-2 border rounded-lg shadow-sm"
+              >
+                <option value="all">Alle Kreise</option>
+                {Array.from({ length: 12 }, (_, i) => (
+                  <option key={i + 1} value={`Kreis ${i + 1}`}>
+                    Kreis {i + 1}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={basemap}
+                onChange={(e) => setBasemap(e.target.value as "light" | "dark")}
+                className="p-2 border rounded-lg shadow-sm"
+              >
+                <option value="light">Carto Light</option>
+                <option value="dark">ArcGIS Luftbild</option>
+              </select>
+            </div>
 
             {/* Karte */}
-            <motion.div
-              ref={mapContainer}
-              className="w-full h-full relative"
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/90 text-gray-700 text-sm px-4 py-2 rounded-lg z-900 shadow-md border">
-                Routing-Algorithmus ist noch nicht in die Karte eingebaut
+          <motion.div
+            ref={mapContainer}
+            className="w-full h-full relative"
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/90 text-gray-700 text-sm px-4 z-1000 py-2 rounded-lg shadow-md border">
+              Routing-Algorithmus ist noch nicht eingebaut
+            </div>
+            {selectedKreis === "all" && (
+              <div className="absolute bottom-20 left-4 bg-yellow-100 text-gray-800 text-sm px-4 py-2 rounded-lg shadow-md border z-[1000]">
+                Hinweis: Das Laden aller Kreise kann etwas länger dauern
               </div>
-            </motion.div>
+            )}
+          </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

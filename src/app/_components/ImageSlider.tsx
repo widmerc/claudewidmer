@@ -3,6 +3,7 @@
 import { useRef, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import Image from "next/image";
 
 import type { Swiper as SwiperClass } from "swiper";
 
@@ -12,6 +13,8 @@ import "swiper/css/pagination";
 
 type Slide = {
   src: string;
+  width?: number;
+  height?: number;
   caption?: string;
 };
 
@@ -98,10 +101,14 @@ export default function ImageSlider({
         {slides.map((slide, index) => (
           <SwiperSlide key={index}>
             <div className="flex flex-col items-center">
-              <img
+              <Image
                 src={slide.src}
                 alt={slide.caption ?? `Slide ${index + 1}`}
+                width={slide.width ?? 1200}
+                height={slide.height ?? 675}
                 className="w-full h-auto rounded-t-xl object-cover"
+                sizes="(max-width: 768px) 100vw, 800px"
+                priority={index === 0}
               />
               {slide.caption && (
                 <div className="w-full bg-white text-gray-700 text-sm p-3 rounded-b-xl shadow-inner">
